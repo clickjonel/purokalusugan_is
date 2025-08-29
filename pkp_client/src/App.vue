@@ -3,6 +3,14 @@
   import { Bell } from "lucide-vue-next"
   import { Button } from "@/components/ui/button"
   import AppSidebar from "@/components/AppSidebar.vue";
+  import {
+      Breadcrumb,
+      BreadcrumbItem,
+      BreadcrumbLink,
+      BreadcrumbList,
+      BreadcrumbPage,
+      BreadcrumbSeparator,
+  } from '@/components/ui/breadcrumb';
 </script>
 
 <template>
@@ -13,7 +21,25 @@
 
         <div class="w-full flex justify-between items-center p-2 bg-sidebar rounded-md shadow-md">
           <SidebarTrigger />
-          <span>Page Title</span>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                    <BreadcrumbLink href="/">
+                      Home
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/components">
+                      Components
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                  </BreadcrumbItem>
+              </BreadcrumbList>
+          </Breadcrumb>
           <div class="flex justify-center items-center gap-2">
             <Button variant="outline" size="icon">
               <Bell class="w-4 h-4" />
