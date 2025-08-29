@@ -18,7 +18,7 @@ const { toggleSidebar,open } = useSidebar()
     data-slot="sidebar-trigger"
     variant="outline"
     size="icon"
-    :class="cn('size-7 cursor-pointer', props.class)"
+    :class="cn('size-8 cursor-pointer', props.class)"
     @click="toggleSidebar"
   >
     <ArrowRightFromLine v-if="!open" class="size-5"/>

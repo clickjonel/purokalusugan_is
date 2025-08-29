@@ -12,6 +12,17 @@ import {
   SidebarFooter,
   SidebarHeader
 } from "@/components/ui/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from "@/components/ui/button"
+import { SquareActivity } from 'lucide-vue-next';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 // Menu items.
 const items = [
@@ -47,13 +58,16 @@ const items = [
   <Sidebar>
     <SidebarHeader>
         <div class="w-full flex justify-start items-center">
-            <span>Sidebar Header Here</span>
+            <Button variant="outline" size="default" class="w-full flex justify-start items-center gap-2">
+              <SquareActivity class="size-6"/>
+              <span>PK PULSE</span>
+            </Button>
         </div>
     </SidebarHeader>
 
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel class="text-base">PuroKalusugan</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-base">Navigation</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
               <SidebarMenuItem v-for="item in items" :key="item.title">
@@ -71,7 +85,24 @@ const items = [
 
     <SidebarFooter>
         <div class="w-full flex justify-start items-center">
-            <span>Sidebar Footer Here</span>
+             <DropdownMenu class="w-full">
+                <DropdownMenuTrigger class="w-full">
+                    <Button variant="outline" class="w-full flex justify-start items-center gap-2">
+                        <Avatar class="size-6">
+                          <AvatarImage src="https://github.com/unovue.png" alt="@unovue"/>
+                        </Avatar>
+                        <span>Laksa Goreng</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-[220px] font-poppins">
+                  <DropdownMenuLabel>Laksa Goreng</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Team</DropdownMenuItem>
+                  <DropdownMenuItem>Program</DropdownMenuItem>
+                  <DropdownMenuItem>Position</DropdownMenuItem>
+                  <DropdownMenuItem>Province</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
         </div>
     </SidebarFooter>
     
