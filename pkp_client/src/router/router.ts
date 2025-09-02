@@ -1,4 +1,5 @@
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import Login from '@/pages/login.vue'
 import Dashboard from '@/pages/admin/dashboard.vue'
 import Hrh from '@/pages/admin/hrh/Hrh.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -8,51 +9,56 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/',
+      name: 'Login',
+      component: Login,
+    },
+    {
       path: '/admin',
       name: 'Admin',
       component: AdminLayout,
-      meta: { 
+      meta: {
         requiresAuth: true,
-         breadcrumbs:[
-              {
-                name:'Admin',
-                link:'/admin'
-              },
-            ]
+        breadcrumbs: [
+          {
+            name: 'Admin',
+            link: '/admin'
+          },
+        ]
       },
       children: [
         {
           path: 'dashboard',
           name: 'Dashboard',
           component: Dashboard,
-          meta: { 
+          meta: {
             requiresAuth: true,
-            breadcrumbs:[
+            breadcrumbs: [
               {
-                name:'Admin',
-                link:'/admin'
+                name: 'Admin',
+                link: '/admin'
               },
               {
-                name:'Dashboard',
-                link:'/admin/dashboard'
+                name: 'Dashboard',
+                link: '/admin/dashboard'
               }
             ]
-           }
+          }
         },
         {
           path: 'hrh',
           name: 'HRH',
           component: Hrh,
-          meta: { 
+          meta: {
             requiresAuth: true,
-             breadcrumbs:[
+            breadcrumbs: [
               {
-                name:'Admin',
-                link:'/admin'
+                name: 'Admin',
+                link: '/admin'
               },
               {
-                name:'HRH Listing',
-                link:'/admin/hrh'
+                name: 'HRH Listing',
+                link: '/admin/hrh'
               }
             ]
           }
