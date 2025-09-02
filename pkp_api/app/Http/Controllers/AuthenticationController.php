@@ -17,7 +17,7 @@ class AuthenticationController extends Controller
 
         $user = User::with(['assignment.division','assignment.section'])->where('username',$credentials['username'])->where('password',md5($credentials['password']))->first();
 
-        if($user && $user->account_status !== 'Assigned'){
+        if($user && $user->account_status !== 'Active'){
 
             return response()->json([
                 'status' => false,
@@ -27,7 +27,7 @@ class AuthenticationController extends Controller
 
         if($user){
 
-             $token = $user->createToken($user->user_id)->plainTextToken;
+             $token = $user->createToken($user->hrh_user_id)->plainTextToken;
 
                 return response()->json([
                     'token' => $token,

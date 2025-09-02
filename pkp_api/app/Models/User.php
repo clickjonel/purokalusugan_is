@@ -13,12 +13,12 @@ class User extends Authenticatable
     use HasFactory, Notifiable,HasApiTokens;
 
     protected $connection = 'dohis';
-    protected $table = 'dohis_user';
-    protected $primaryKey = 'user_id';
+    protected $table = 'dohis_hrh_user';
+    protected $primaryKey = 'hrh_user_id';
 
     public function assignment()
     {
-        return $this->hasOne(UserAssignment::class, 'user_id', 'user_id');
+        return $this->hasOne(UserAssignment::class, 'hrh_user_id', 'hrh_user_id');
     }
 
 }

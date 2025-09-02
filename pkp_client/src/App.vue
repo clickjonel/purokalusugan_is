@@ -1,68 +1,7 @@
 <script setup lang="ts">
-  import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-  import { Bell } from "lucide-vue-next"
-  import { Button } from "@/components/ui/button"
-  import AppSidebar from "@/components/AppSidebar.vue";
-  import {
-      Breadcrumb,
-      BreadcrumbItem,
-      BreadcrumbLink,
-      BreadcrumbList,
-      BreadcrumbPage,
-      BreadcrumbSeparator,
-  } from '@/components/ui/breadcrumb';
+
 </script>
 
 <template>
-  <div class="flex w-full h-screen justify-start items-start gap-2 bg-[#EFEFEF] font-poppins">
-    <SidebarProvider>
-      <AppSidebar />
-      <main class="w-full h-screen flex flex-col justify-between items-start gap-4 p-2">
-
-        <div class="w-full flex justify-between items-center p-2 bg-sidebar rounded-md shadow-md">
-          <SidebarTrigger />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                    <BreadcrumbLink href="/">
-                      Home
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/components">
-                      Components
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-                  </BreadcrumbItem>
-              </BreadcrumbList>
-          </Breadcrumb>
-          <div class="flex justify-center items-center gap-2">
-            <Button variant="outline" size="icon">
-              <Bell class="w-4 h-4" />
-            </Button>
-            <Button variant="outline">
-              Username
-            </Button>
-          </div>
-        </div>
-
-        <!-- <slot /> -->
-
-        <div class="w-full h-full flex flex-col justify-start items-start bg-sidebar rounded-md shadow-md">
-
-        </div>
-
-        <div class="w-full flex flex-col justify-center items-center p-2 bg-sidebar rounded-md shadow-md">
-          <span class="text-xs italic">Copyright © Department of Health</span>
-          <span class="text-xs italic"><strong>Center for Health Development</strong> - Cordillera Administrative Region</span>
-          <span class="text-xs italic">Developed By: ICTMU</span>
-        </div>
-
-      </main>
-    </SidebarProvider>
-  </div>
+  <router-view />
 </template>

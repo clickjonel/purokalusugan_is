@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-vue-next"
+import { Calendar, Home, Inbox, Search, Settings,Users  } from "lucide-vue-next"
 import {
   Sidebar,
   SidebarContent,
@@ -28,13 +28,13 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar'
 const items = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/admin/dashboard",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "HRH",
+    url: "/admin/hrh",
+    icon: Users,
   },
   {
     title: "Calendar",
