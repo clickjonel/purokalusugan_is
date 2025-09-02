@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Calendar, Home, Inbox, Search, Settings,Users  } from "lucide-vue-next"
+import { useRoute } from "vue-router"
+import { Calendar, Home, Search, Settings,Users  } from "lucide-vue-next"
 import {
   Sidebar,
   SidebarContent,
@@ -52,6 +53,9 @@ const items = [
     icon: Settings,
   },
 ];
+
+const route = useRoute()
+
 </script>
 
 <template>
@@ -70,7 +74,7 @@ const items = [
         <SidebarGroupLabel class="text-base">Navigation</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-              <SidebarMenuItem v-for="item in items" :key="item.title">
+              <SidebarMenuItem v-for="item in items" :key="item.title" :class="route.path === item.url ? 'bg-gray-200' : ''">
                 <SidebarMenuButton asChild>
                     <a :href="item.url">
                       <component :is="item.icon" />
