@@ -13,6 +13,9 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { useRoute } from "vue-router";
+import { useAuthStore } from "@/store/authStore";
+
+const store = useAuthStore();
 
 const route = useRoute();
 const breadcrumbs = computed(() => Array.isArray(route.meta?.breadcrumbs) ? route.meta.breadcrumbs : []);
@@ -52,7 +55,7 @@ const breadcrumbs = computed(() => Array.isArray(route.meta?.breadcrumbs) ? rout
               <Bell class="w-4 h-4" />
             </Button>
             <Button variant="outline">
-              Username
+              {{ store.user?.first_name }}
             </Button>
           </div>
 

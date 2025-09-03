@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router"
+import { useAuthStore } from "@/store/authStore";
 import { Calendar, Home, Search, Settings,Users  } from "lucide-vue-next"
 import {
   Sidebar,
@@ -55,6 +56,7 @@ const items = [
 ];
 
 const route = useRoute()
+const store = useAuthStore();
 
 </script>
 
@@ -95,16 +97,17 @@ const route = useRoute()
                         <Avatar class="size-6">
                           <AvatarImage src="https://github.com/unovue.png" alt="@unovue"/>
                         </Avatar>
-                        <span>Laksa Goreng</span>
+                        <span>User Profile</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent class="w-[220px] font-poppins">
-                  <DropdownMenuLabel>Laksa Goreng</DropdownMenuLabel>
+                  <DropdownMenuLabel class="text-center bg-gray-200 rounded-xl">{{ `${store.user?.first_name} ${store.user?.last_name}` }}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>Team</DropdownMenuItem>
                   <DropdownMenuItem>Program</DropdownMenuItem>
                   <DropdownMenuItem>Position</DropdownMenuItem>
                   <DropdownMenuItem>Province</DropdownMenuItem>
+                  <Button variant="outline" class="w-full flex justify-center items-center bg-red-200 cursor-pointer" size="sm">Logout</Button>
                 </DropdownMenuContent>
               </DropdownMenu>
         </div>
