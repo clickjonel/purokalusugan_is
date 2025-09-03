@@ -8,6 +8,12 @@ class Pkp_indicator extends Model
 {
     protected $connection = 'pkpulse';
     protected $fillable = [
+        'program_id',
         'indicator_id',
+        'indicator_code',
+        'indicator_name',
+        'indicator_description',
+        'indicator_status',
+        'indicator_scope'
     ];
 }

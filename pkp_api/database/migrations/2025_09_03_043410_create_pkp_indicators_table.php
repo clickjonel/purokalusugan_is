@@ -15,11 +15,11 @@ return new class extends Migration
         Schema::connection('pkpulse')->create('pkp_indicators', function (Blueprint $table) {
             $table->id('indicator_id');
             $table->unsignedBigInteger('program_id');
-            $table->string('indicator_code')->maxLength(100);
+            $table->string('indicator_code')->maxLength(100)->nullable();
             $table->string('indicator_name');
-            $table->text('indicator_description');
-            $table->integer('indicator_status')->maxLength(1);
-            $table->integer('indicator_scope')->maxLength(1);
+            $table->text('indicator_description')->nullable();
+            $table->integer('indicator_status')->maxLength(1)->default(1);
+            $table->integer('indicator_scope')->maxLength(1)->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pkp_indicators');
+        Schema::connection('pkpulse')->dropIfExists('pkp_indicators');
     }
 };
