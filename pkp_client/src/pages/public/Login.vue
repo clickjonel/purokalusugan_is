@@ -7,13 +7,22 @@ import { Label } from "@/components/ui/label"
 import { User, Lock, Eye, EyeOff } from "lucide-vue-next"
 
 // form state
-const username = ref("")
-const password = ref("")
+// const username = ref("")
+// const password = ref("")
+const credentials = ref<credentials>({
+  username: "",
+  password: ""
+})
 const showPassword = ref(false)
 
 function handleLogin() {
-  console.log("Logging in with:", username.value, password.value)
+  console.log("Logging in with:", credentials.value)
   // Add your authentication logic here
+}
+
+interface credentials {
+  username: string;
+  password: string;
 }
 
 </script>
@@ -40,7 +49,7 @@ function handleLogin() {
             <Label for="username">Username</Label>
             <div class="flex items-center border rounded-md px-2 mt-2">
               <User class="w-4 h-4 text-gray-400 mr-2" />
-              <Input id="username" v-model="username" placeholder="Enter your username"
+              <Input id="username" v-model="credentials.username" placeholder="Enter your username"
                 class="border-0 focus:ring-0 flex-1" />
             </div>
           </div>
@@ -50,7 +59,7 @@ function handleLogin() {
             <Label for="password">Password</Label>
             <div class="flex items-center border rounded-md px-2 relative mt-2">
               <Lock class="w-4 h-4 text-gray-400 mr-2" />
-              <Input id="password" :type="showPassword ? 'text' : 'password'" v-model="password"
+              <Input id="password" :type="showPassword ? 'text' : 'password'" v-model="credentials.password"
                 placeholder="Enter your password" class="border-0 focus:ring-0 flex-1" />
               <button type="button" class="absolute right-2 text-gray-500 hover:text-gray-700"
                 @click="showPassword = !showPassword">
