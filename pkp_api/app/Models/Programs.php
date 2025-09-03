@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Programs extends Model
 {
     protected $connection = 'pkpulse';
-    protected $fillable = [
-        'name'
+    protected $fillable = [        
+        'program_code',
+        'program_name',
+        'program_status'
     ];
-
+    protected $primaryKey = 'program_id';
 }
