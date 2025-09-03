@@ -64,6 +64,10 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 Create Model with Migration,Controller,Seeder
 php artisan make:model Programs -mcs
+php artisan migrate
+php artisan cache:clear
+php artisan config:clear
+
 
 Sanctum
 Session_Driver=file

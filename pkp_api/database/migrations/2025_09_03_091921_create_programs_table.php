@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('pkp')->create('programs', function (Blueprint $table) {
+        Schema::connection('pkpulse')->create('programs', function (Blueprint $table) {
             $table->id();
             $table->string('name')->maxLength(60);
             $table->timestamps();
