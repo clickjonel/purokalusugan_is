@@ -74,3 +74,6 @@ Session_Driver=file
 
 Session
 Session_Driver=database
+
+Migrate Database into PKPulse Database then seed the database
+php artisan migrate:fresh --database=pkpulse --seed
