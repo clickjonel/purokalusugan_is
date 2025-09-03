@@ -27,6 +27,13 @@ class ProgramsController extends Controller
         return response()->json(['message' => 'Updated created successfully'], 200);
 
     }
+
+    public function list()
+    {
+        return response()->json([
+            'programs' => Programs::all()
+        ]);
+    }
     
 
 }
