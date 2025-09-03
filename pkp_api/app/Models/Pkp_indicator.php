@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Pkp_indicator extends Model
 {
     protected $connection = 'pkpulse';
-    protected $fillable = [
+    protected $fillable = [        
         'program_id',
-        'indicator_id',
         'indicator_code',
         'indicator_name',
         'indicator_description',
