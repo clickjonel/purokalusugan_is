@@ -1,5 +1,5 @@
-<script setup>
-import { ref, reactive } from "vue"
+<script setup lang="ts">
+import { ref } from "vue"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
@@ -19,7 +19,7 @@ function handleLogin() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 relative overflow-hidden font-poppins">
 
     <!-- Card -->
     <Card class="w-full max-w-md shadow-2xl rounded-2xl bg-white/90 backdrop-blur">

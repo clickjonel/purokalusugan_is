@@ -1,7 +1,7 @@
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import Login from '@/pages/login.vue'
 import Dashboard from '@/pages/admin/dashboard.vue'
 import Hrh from '@/pages/admin/hrh/Hrh.vue'
+import Login from '@/pages/public/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
