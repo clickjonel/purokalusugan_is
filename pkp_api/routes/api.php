@@ -20,5 +20,8 @@ Route::group([
     'prefix' => 'indicator'
 ], function () {
     Route::post('/create',[PkpIndicatorController::class,'createIndicator']);
-    // other functions here from controller
+    Route::get('/', [PkpIndicatorController::class, 'getIndicators']);
+    Route::get('/{indicator_id}', [PkpIndicatorController::class, 'getIndicator']);
+    Route::put('/{indicator_id}', [PkpIndicatorController::class, 'updateIndicator']);
+    Route::delete('/{indicator_id}', [PkpIndicatorController::class, 'deleteIndicator']);
 });

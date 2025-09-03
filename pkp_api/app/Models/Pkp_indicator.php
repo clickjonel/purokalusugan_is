@@ -15,4 +15,5 @@ class Pkp_indicator extends Model
         'indicator_status',
         'indicator_scope'
     ];
+    protected $primaryKey = 'indicator_id';
 }
