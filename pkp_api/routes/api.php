@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/program/create', [ProgramsController::class, 'create']);
+Route::get('/programs', [ProgramsController::class, 'list']);
 
 
 Route::post('/login',[AuthenticationController::class,'login']);
