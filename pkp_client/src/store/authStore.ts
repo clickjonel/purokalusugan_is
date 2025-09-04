@@ -1,20 +1,25 @@
 import { defineStore } from 'pinia'
 import axios from '../axios/axios'
 
+interface User {
+  first_name: string;
+  last_name: string;
+  [key: string]: any
+}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
+    user: null as User | null,
     token: localStorage.getItem('token') || '',
     isAuthenticated: false,
-    isAdmin:false
+    isAdmin: false
   }),
 
   actions: {
-    setUser(user) {
-        this.user = user
-        this.isAuthenticated = true
-        console.log(user)
+    setUser(user: User) {
+      this.user = user
+      this.isAuthenticated = true
+      console.log(user)
     },
 
     setToken(token: string) {
@@ -23,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     clearUser() {
-     
+
       this.token = ''
       localStorage.removeItem('token')
     },

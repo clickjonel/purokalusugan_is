@@ -86,27 +86,32 @@ const router = createRouter({
 
 let isInitialized = true
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
+  try {
     const authStore = useAuthStore()
-    
     if (!isInitialized) {
-        await authStore.initAuth()
-        isInitialized = true
+      await authStore.initAuth()
+      isInitialized = true
     }
-    
+
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-    
+
     if (requiresAuth && !authStore.isAuthenticated) {
       next({ name: 'Login' })
     }
 
     else if (!requiresAuth && authStore.isAuthenticated && to.name === 'Login') {
       next({ name: 'AdminDashboard' })
-    } 
-    
+    }
+
     else {
       next()
     }
+  } catch (error) {
+    console.error('Navigation guard error:', error)
+    next({ name: 'Login' }) // Fallback to login on error
+  }
+
 })
 
 export default router
