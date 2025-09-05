@@ -6,6 +6,7 @@ import PublicDashboard from '@/pages/public/Dashboard.vue'
 import Login from '@/pages/public/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
+import Programs from '@/pages/admin/programs/Programs.vue';
 
 
 const router = createRouter({
@@ -21,6 +22,7 @@ const router = createRouter({
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
     },
+    
     {
       path: '/indicators',
       name: 'Indicators',
@@ -54,6 +56,24 @@ const router = createRouter({
               {
                 name: 'Dashboard',
                 link: '/admin/dashboard'
+              }
+            ]
+          }
+        },
+        {
+          path: 'programs',
+          name: 'Programs',
+          component: Programs,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Programs',
+                link: '/admin/programs'
               }
             ]
           }
