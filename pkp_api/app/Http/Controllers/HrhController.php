@@ -39,7 +39,7 @@ class HrhController extends Controller
 
     public function getHrhList(Request $request):JsonResponse
     {
-        $list = Hrh::all();
+        $list = Hrh::orderBy('hrh_user_id','DESC')->get();
 
          return response()->json([
             'message' => 'Fetched HRH List successfully',

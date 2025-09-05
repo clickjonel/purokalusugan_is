@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router"
 import { useAuthStore } from "@/store/authStore";
-import { Calendar, Home, Search, Settings,Users  } from "lucide-vue-next"
+import { Calendar, Home, House, Search, Settings,Users  } from "lucide-vue-next"
 import {
   Sidebar,
   SidebarContent,
@@ -23,8 +23,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from "@/components/ui/button"
-import { SquareActivity } from 'lucide-vue-next';
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { SquareActivity,HousePlus } from 'lucide-vue-next';
+import { Avatar, AvatarImage  } from '@/components/ui/avatar'
 
 // Menu items.
 const items = [
@@ -39,9 +39,9 @@ const items = [
     icon: Users,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Programs",
+    url: "/admin/programs",
+    icon: HousePlus,
   },
   {
     title: "Search",
