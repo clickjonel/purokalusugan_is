@@ -31,8 +31,8 @@ Route::group([
     'prefix' => 'program'
 ], function () {
     Route::post('/create',[ProgramsController::class,'createProgram']);
-    Route::get('/', [ProgramsController::class, 'getPrograms']);
-    Route::get('/{program_id}', action: [ProgramsController::class, 'getProgram']);
-    Route::put('/{program_id}', [ProgramsController::class, 'updateProgram']);
-    Route::delete('/{program_id}', [ProgramsController::class, 'deleteProgram']);
+    Route::get('/list', [ProgramsController::class, 'getPrograms']);
+    Route::get('/find', action: [ProgramsController::class, 'getProgram']);
+    Route::put('/update', [ProgramsController::class, 'updateProgram']);
+    Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
 });

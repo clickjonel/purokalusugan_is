@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('program_id');
             $table->string('program_name')->maxLength(60);
             $table->string('program_code')->unique();
-            $table->string('program_status')->default('active');
+            $table->boolean('program_status')->default(true);
             $table->timestamps();
         });
     }

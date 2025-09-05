@@ -39,4 +39,5 @@ export default router
 http://localhost:[port]/indicators
 
 4. enter the content of Indicators.vue file
+example: 
 

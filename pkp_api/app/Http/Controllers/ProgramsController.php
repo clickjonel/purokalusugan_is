@@ -32,37 +32,44 @@ class ProgramsController extends Controller
         ], 200);
     }
     //read one
-    public function getProgram($id): JsonResponse
+    public function getProgram(Request $request): JsonResponse
     {
-        $program = Programs::find($id);
-        if (!$program) {
-            return response()->json([
-                'message' => 'Program not found'
-            ], 404);
-        }
+        $validatedData = $request->validate([
+            'program_id' => 'required|integer|exists:pkp_program,program_id',            
+        ]);
+       
+        $program = Programs::findOrFail($validatedData['program_id']);
+
+        // $program = Programs::find($request->program_id);
+        // if (!$program) {
+        //     return response()->json([
+        //         'message' => 'Program not found'
+        //     ], 404);
+        // }
+        
         return response()->json([
             'message' => 'Program retrieved successfully',
             'data' => $program
         ], 200);
     }
     // update
-    public function updateProgram(Request $request, $id): JsonResponse
+    public function updateProgram(Request $request): JsonResponse
     {
-        $program = Programs::find($id);
-        if (!$program) {
-            return response()->json([
-                'message' => 'Program not found'
-            ], 404);
-        }
         $validatedData = $request->validate([
-            'program_id' => 'sometimes|required|integer',
-            'Program_code' => 'sometimes|string',
-            'Program_name' => 'sometimes|string',
-            'Program_description' => 'sometimes|string',
-            'Program_status' => 'sometimes|integer',
-            'Program_scope' => 'sometimes|integer'
+            'program_id' => 'required|integer|exists:pkp_program,program_id',
+            'program_code' => 'required|string',
+            'program_name' => 'required|string',            
+            'program_status' => 'nullable|boolean'            
         ]);
-        $program->update($validatedData);
+       
+        $program = Programs::find($validatedData['program_id'])
+            ->update($validatedData);
+        // if (!$program) {
+        //     return response()->json([
+        //         'message' => 'Program not found'
+        //     ], 404);
+        // }
+        
         return response()->json([
             'message' => 'Updated successfully',
             'data' => $program
