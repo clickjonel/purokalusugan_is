@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::connection('pkpulse')->create('pkp_indicators', function (Blueprint $table) {
             $table->id('indicator_id');
             $table->unsignedBigInteger('program_id');
-            $table->string('indicator_code')->maxLength(100)->nullable();
+            $table->string('indicator_code')->maxLength(100)->unique();
             $table->string('indicator_name');
             $table->text('indicator_description')->nullable();
             $table->integer('indicator_status')->maxLength(1)->default(1);

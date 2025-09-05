@@ -20,10 +20,10 @@ Route::group([
     'prefix' => 'indicator'
 ], function () {
     Route::post('/create',[PkpIndicatorController::class,'createIndicator']);
-    Route::get('/', [PkpIndicatorController::class, 'getIndicators']);
-    Route::get('/{indicator_id}', [PkpIndicatorController::class, 'getIndicator']);
-    Route::put('/{indicator_id}', [PkpIndicatorController::class, 'updateIndicator']);
-    Route::delete('/{indicator_id}', [PkpIndicatorController::class, 'deleteIndicator']);
+    Route::get('/list', [PkpIndicatorController::class, 'getIndicators']);
+    Route::get('/find', [PkpIndicatorController::class, 'getIndicator']);
+    Route::put('/update', [PkpIndicatorController::class, 'updateIndicator']);
+    Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
 });
 
 //Programs

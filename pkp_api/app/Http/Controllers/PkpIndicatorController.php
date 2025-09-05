@@ -35,37 +35,31 @@ class PkpIndicatorController extends Controller
         ], 200);
     }
     //read one
-    public function getIndicator($id): JsonResponse
+    public function getIndicator(Request $request): JsonResponse
     {
-        $pkpIndicator = Pkp_indicator::find($id);
-        if (!$pkpIndicator) {
-            return response()->json([
-                'message' => 'Indicator not found'
-            ], 404);
-        }
+        $validatedData = $request->validate([
+            'indicator_id' => 'required|integer|exists:pkp_indicators,indicator_id',            
+        ]);
+        $pkpIndicator = Pkp_indicator::findOrFail($validatedData['indicator_id']);
         return response()->json([
             'message' => 'Indicator retrieved successfully',
             'data' => $pkpIndicator
         ], 200);
     }
     // update
-    public function updateIndicator(Request $request, $id): JsonResponse
+    public function updateIndicator(Request $request): JsonResponse
     {
-        $pkpIndicator = Pkp_indicator::find($id);
-        if (!$pkpIndicator) {
-            return response()->json([
-                'message' => 'Indicator not found'
-            ], 404);
-        }
         $validatedData = $request->validate([
-            'program_id' => 'sometimes|required|integer',
+            'indicator_id' => 'required|integer|exists:pkp_indicators,indicator_id',
+            'program_id' => 'required|integer',
             'indicator_code' => 'sometimes|string',
             'indicator_name' => 'sometimes|string',
             'indicator_description' => 'sometimes|string',
             'indicator_status' => 'sometimes|integer',
             'indicator_scope' => 'sometimes|integer'
         ]);
-        $pkpIndicator->update($validatedData);
+        $pkpIndicator = Pkp_indicator::find($validatedData['indicator_id'])
+            ->update($validatedData);        
         return response()->json([
             'message' => 'Updated successfully',
             'data' => $pkpIndicator
@@ -73,15 +67,12 @@ class PkpIndicatorController extends Controller
     }    
 
     //delete    
-    public function deleteIndicator($id): JsonResponse
+    public function deleteIndicator(Request $request): JsonResponse
     {
-        $pkpIndicator = Pkp_indicator::find($id);
-        if (!$pkpIndicator) {
-            return response()->json([
-                'message' => 'Indicator not found'
-            ], 404);
-        }
-        $pkpIndicator->delete();
+        $validatedData = $request->validate([
+            'indicator_id' => 'required|integer|exists:pkp_indicators,indicator_id',            
+        ]);
+        Pkp_indicator::find($validatedData['indicator_id'])->delete();
         return response()->json([
             'message' => 'Deleted successfully'
         ], 200);
