@@ -36,3 +36,12 @@ Route::group([
     Route::put('/update', [ProgramsController::class, 'updateProgram']);
     Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
 });
+
+
+//HRH User
+Route::group([
+    'prefix' => 'hrh',
+    'middleware' => 'auth:sanctum'
+], function () {
+    Route::post('/create',[ProgramsController::class,'createHrhUser']);
+});
