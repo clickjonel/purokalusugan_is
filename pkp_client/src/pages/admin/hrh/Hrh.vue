@@ -127,7 +127,7 @@
 
         <!-- table -->
         <div class="w-full h-full flex flex-col jusitfy-start items-start border">
-            <div class="w-full h-[600px] overflow-y-scroll">
+            <div class="w-full h-[640px] overflow-y-scroll">
                 <Table >
                     <TableHeader>
                         <TableRow>
