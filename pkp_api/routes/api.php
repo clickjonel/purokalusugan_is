@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\ProgramsController;
 use Illuminate\Http\Request;
@@ -43,5 +44,6 @@ Route::group([
     'prefix' => 'hrh',
     'middleware' => 'auth:sanctum'
 ], function () {
-    Route::post('/create',[ProgramsController::class,'createHrhUser']);
+    Route::post('/create',[HrhController::class,'createHrhUser']);
+    Route::get('/list',[HrhController::class,'getHrhList']);
 });
