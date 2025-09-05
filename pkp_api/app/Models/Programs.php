@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Programs extends Model
 {
     protected $connection = 'pkpulse';
+    protected $table = 'pkp_program';
     protected $fillable = [        
         'program_code',
         'program_name',

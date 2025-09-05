@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('pkpulse')->create('programs', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->maxLength(60);
+        Schema::connection('pkpulse')->create('pkp_program', function (Blueprint $table) {
+            $table->id('program_id');
+            $table->string('program_name')->maxLength(60);
+            $table->string('program_code')->unique();
+            $table->string('program_status')->default('active');
             $table->timestamps();
         });
     }

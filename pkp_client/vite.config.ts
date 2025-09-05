@@ -13,12 +13,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  build: {
-    outDir: path.resolve(__dirname, '../pkp_api/public/pkp/'), // Laravel's public folder
-    emptyOutDir: true,
-    target: 'esnext',
-  },
-  root: '.',
-  publicDir: 'public',
-  base: '/pkp/',
+  // build: {
+  //   // outDir: path.resolve(__dirname, '../pkp_api/public/pkp/'), // Laravel's public folder
+  //   emptyOutDir: true,
+  //   target: 'esnext',
+  // },
+  // root: '.',
+  // publicDir: 'public',
+  // base: '/pkp/',
 })

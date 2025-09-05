@@ -84,7 +84,7 @@ const router = createRouter({
 })
 
 
-let isInitialized = true
+let isInitialized = false
 
 router.beforeEach(async (to, _from, next) => {
   try {

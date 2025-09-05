@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import axios from 'axios';
+import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "vue-router";
@@ -8,7 +8,7 @@ import { useRouter } from "vue-router";
 const router = useRouter()
 
 function handleCreateIndicator() {
-    axios.post('http://127.0.0.1:8000/api/indicator/create', indicator.value)
+    axios.post('/indicator/create', indicator.value)
         .then((response) => {
             console.log(response.data);
             // Handle success response, e.g., redirect to indicator list or show success message
@@ -30,6 +30,7 @@ interface Indicator {
     indicator_status: number;
     indicator_scope: number;
 }
+
 const indicator = ref < Indicator > ({
     program_id: '',
     indicator_code: '',
