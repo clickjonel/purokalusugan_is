@@ -6,7 +6,7 @@ How to Start Api(Fresh Download/Clone)
   2. Enter composer install
   3. Enter php artisan serve
 
-# Needed items
+# Needed items for backend
 1. you need nodeJS v20 and higher
 2. you need composer.js
 https://getcomposer.org/download/
@@ -20,7 +20,42 @@ wait to finish
 php artisan serve
 
 # how to create/migrate tables using migration
-# this will add/create tables automatically to your database
+1. update your env file with the database you want to work on
+example:
+inside .env
+
+PKP_DB_CONNECTION=pkpulse
+PKP_DB_HOST=127.0.0.1
+PKP_DB_PORT=3306
+PKP_DB_DATABASE=pkpulse
+PKP_DB_USERNAME=root
+PKP_DB_PASSWORD=
+
+2. update the database file inside config/database.php
+set the default 
+    'default' => env('DB_CONNECTION', 'pkpulse'),
+    to the database you plan to use
+
+    then inside connections array variable include your database
+    'connections' => [
+    'pkpulse' => [
+            'driver' => 'mysql',
+            'host' => env('PKP_DB_HOST'),
+            'port' => env('PKP_DB_PORT'),
+            'database' => env('PKP_DB_DATABASE'),
+            'username' => env('PKP_DB_USERNAME'),
+            'password' => env('PKP_DB_PASSWORD'),
+        ],
+    ]
+
+3. then run a shortcut to create model, migration, controller seeder
+
+run this on your command line
+
+php artisan make:model Programs -mcs
+note: the model is Programs -mcs will create migration, controller and seeder files
+then edit accordingly the generated files
+4. # this will add/create tables automatically to your database
 1. create a blank database on phpmyadmin for this example :create one for pkpulse
 2. then run
 php artisan migrate:fresh --database=pkpulse --seed

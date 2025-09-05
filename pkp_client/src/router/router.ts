@@ -1,11 +1,12 @@
-import AdminLayout from '@/layouts/AdminLayout.vue'
-import Dashboard from '@/pages/admin/dashboard.vue'
-import Hrh from '@/pages/admin/hrh/Hrh.vue'
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import Dashboard from '@/pages/admin/dashboard.vue';
+import Hrh from '@/pages/admin/hrh/Hrh.vue';
+import Programs from '@/pages/admin/hrh/Programs.vue';
 import Indicators from '@/pages/admin/hrh/Indicators.vue';
-import PublicDashboard from '@/pages/public/Dashboard.vue'
-import Login from '@/pages/public/Login.vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/store/authStore'
+import PublicDashboard from '@/pages/public/Dashboard.vue';
+import Login from '@/pages/public/Login.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/store/authStore';
 
 
 const router = createRouter({
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
+    },
+    {
+      path: '/programs',
+      name: 'Programs',
+      component: Programs,
     },
     {
       path: '/indicators',
