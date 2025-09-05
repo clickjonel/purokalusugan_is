@@ -6,7 +6,7 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="w-full md:w-[28rem] border-t md:border-t-0 md:border-l bg-white overflow-y-auto">
+    <div class="w-full md:w-[28rem] border-t md:border-t-0 md:border-l bg-white overflow-y-auto font-poppins">
       <ProvinceDashboard v-if="selectedProvince" :provinceName="selectedProvince.name" />
       <ProvinceDashboard v-else-if="selectedMarker" :provinceName="selectedMarker.title" />
       <div v-else class="p-4 text-gray-500 text-center">

@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="w-full h-full"></div>
+  <div id="map" class="w-full h-full font-poppins"></div>
 </template>
 
 <script setup>
@@ -80,4 +80,6 @@ onMounted(async () => {
   min-height: 300px;
   /* Ensures it's usable on mobile */
 }
+
+
 </style>
