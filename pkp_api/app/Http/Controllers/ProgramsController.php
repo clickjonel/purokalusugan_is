@@ -11,9 +11,8 @@ class ProgramsController extends Controller
     public function createProgram(Request $request):JsonResponse
     {
         $validatedData=$request->validate([            
-            'program_code' => 'required|integer',
-            'program_name' => 'string',
-            'program_status' => 'string'          
+            'program_name' => 'required|string',
+            'program_code' => 'required|string'            
         ]);
         $program=Programs::create($validatedData);
          return response()->json([
@@ -37,16 +36,7 @@ class ProgramsController extends Controller
         $validatedData = $request->validate([
             'program_id' => 'required|integer|exists:pkp_program,program_id',            
         ]);
-       
         $program = Programs::findOrFail($validatedData['program_id']);
-
-        // $program = Programs::find($request->program_id);
-        // if (!$program) {
-        //     return response()->json([
-        //         'message' => 'Program not found'
-        //     ], 404);
-        // }
-        
         return response()->json([
             'message' => 'Program retrieved successfully',
             'data' => $program
@@ -57,19 +47,12 @@ class ProgramsController extends Controller
     {
         $validatedData = $request->validate([
             'program_id' => 'required|integer|exists:pkp_program,program_id',
-            'program_code' => 'required|string',
             'program_name' => 'required|string',            
+            'program_code' => 'required|string',
             'program_status' => 'nullable|boolean'            
         ]);
-       
         $program = Programs::find($validatedData['program_id'])
             ->update($validatedData);
-        // if (!$program) {
-        //     return response()->json([
-        //         'message' => 'Program not found'
-        //     ], 404);
-        // }
-        
         return response()->json([
             'message' => 'Updated successfully',
             'data' => $program
@@ -77,15 +60,12 @@ class ProgramsController extends Controller
     }    
 
     //delete    
-    public function deleteProgram($id): JsonResponse
+    public function deleteProgram(Request $request): JsonResponse
     {
-        $program = Programs::find($id);
-        if (!$program) {
-            return response()->json([
-                'message' => 'Program not found'
-            ], 404);
-        }
-        $program->delete();
+        $validatedData = $request->validate([
+            'program_id' => 'required|integer|exists:pkp_program,program_id',            
+        ]);
+        Programs::findOrFail($validatedData['program_id'])->delete();        
         return response()->json([
             'message' => 'Deleted successfully'
         ], 200);
