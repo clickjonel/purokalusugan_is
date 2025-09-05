@@ -23,10 +23,10 @@ class CreateHrhRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_code' => 'required|string',
-            'image' => 'nullable|string',
-            'username' => 'required|string',
-            'password' => 'required|string',
+            // 'user_code' => 'required|string',
+            // 'image' => 'nullable|string',
+            // 'username' => 'required|string',
+            // 'password' => 'required|string',
             'prefix' => 'nullable|string',
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
@@ -34,8 +34,8 @@ class CreateHrhRequest extends FormRequest
             'suffix' => 'nullable|string',
             'nickname' => 'required|string',
             'email_address' => 'required|string',
-            'contact_number' => 'required|string',
-            'account_status' => 'required|string|in:Assigned,Unassigned',
+            'contact_no' => 'required|string',
+            // 'account_status' => 'required|string|in:Assigned,Unassigned',
         ];
     }
 }
