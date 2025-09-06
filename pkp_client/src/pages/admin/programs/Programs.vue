@@ -28,6 +28,7 @@ import { toast } from "vue-sonner";
 
 const router = useRouter();
 const programs = ref([]);
+const currentList=ref([]);
 let searchKeyword = ref("");
 let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
@@ -53,7 +54,12 @@ const program = ref<Program>({
 });
 
 function search() {
-  console.log(searchKeyword.value);
+  const searchTerm = searchKeyword.value.toLowerCase();  
+  const searchedData = programs.value.filter(program => {
+    const programName = program.program_name.toLowerCase();
+    return programName.includes(searchTerm);
+  });
+  currentList.value = searchedData;  
 }
 
 function handleClose() {
@@ -192,6 +198,7 @@ const fetchPrograms = () => {
 onMounted(() => {
   fetchPrograms();
 });
+
 </script>
 <template>
   <div class="w-full h-full flex flex-col justify-between items-start gap-2 p-2">
@@ -204,7 +211,7 @@ onMounted(() => {
           type="text"
           placeholder="Search Keyword"
           class="pl-8"
-          @change="search"
+          @input="search"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
           <Search class="size-4 text-muted-foreground" />
@@ -231,7 +238,7 @@ onMounted(() => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="program in programs">
+            <TableRow v-for="program in currentList">
               <TableCell>{{ program.program_id }}</TableCell>
               <TableCell>{{ program.program_code }}</TableCell>
               <TableCell>{{ program.program_name }}</TableCell>
