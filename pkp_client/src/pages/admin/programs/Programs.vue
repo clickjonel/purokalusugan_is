@@ -188,6 +188,7 @@ const fetchPrograms = () => {
     .get("/program/list")
     .then((response) => {
       programs.value = response.data.data;
+      currentList.value = response.data.data;
       console.log("programs", programs.value);
     })
     .catch((error) => {
@@ -209,7 +210,7 @@ onMounted(() => {
           v-model="searchKeyword"
           id="search"
           type="text"
-          placeholder="Search Keyword"
+          placeholder="Search Program Name"
           class="pl-8"
           @input="search"
         />
