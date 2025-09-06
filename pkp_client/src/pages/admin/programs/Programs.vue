@@ -22,12 +22,13 @@ import {
     TableRow,
     } from '@/components/ui/table'
 import { useRouter } from "vue-router";
+import { toast } from 'vue-sonner'
 
 const router = useRouter();
 const programs = ref([]);
 let searchKeyword = ref('');
+let errorDetail = ref('');
 let isCreateModalOpen = ref(false);
-let isRecordExistingModal =ref(false);
 let isRecordCreationSuccessfulModal=ref(false);
 
 interface Program {
@@ -50,18 +51,39 @@ function handleClose(){
     isCreateModalOpen.value=false;
 }
 
+function explainError(error){            
+    if(error.includes('Integrity constraint violation')){
+        errorDetail.value='The program code you entered already exists. Please enter another!'
+    }    
+    return errorDetail;
+}
+
 function handleCreate() {
     axios.post('/program/create', program.value)
         .then((response) => {
             console.log(response.data);            
             isCreateModalOpen.value = false;
             router.push({ path: '/programs' });
-            isRecordCreationSuccessfulModal.value=true;
+            toast('Program created successfully!',{
+                description: response.data.message,
+                action:{
+                    label: 'Close',
+                    onClick:()=>toast.dismiss(),
+                },
+            })
             fetchPrograms();
         })
-        .catch((error) => {
-            isRecordExistingModal.value=true;
-            console.error(error.response.data);
+        .catch((error) => {            
+            console.error(error.response.data);                        
+            if(error.response){
+                toast('Failed with errors',{
+                    description: explainError(error.response.data.message),
+                    action:{
+                        label:'Close',
+                        onClick: ()=>toast.dismiss()
+                    }
+                })
+            }
         })
         .finally(() => { });
 }
@@ -69,7 +91,7 @@ function handleCreate() {
 const fetchPrograms = () => {
     axios.get('/program/list')
         .then((response) => {
-            programs.value = response.data.data; // Assign the data from the response to the programs ref
+            programs.value = response.data.data;
             console.log('programs',programs.value)
         })
         .catch((error) => {
@@ -131,7 +153,6 @@ onMounted(() => {
     <Dialog v-model:open="isCreateModalOpen">
         <DialogTrigger />
         <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-
             <DialogHeader>
                 <DialogTitle class="">Create a Program</DialogTitle>
                 <DialogDescription>This is the Programs management. </DialogDescription>
@@ -154,27 +175,6 @@ onMounted(() => {
                 <Button type="submit" class="cursor-pointer hover:bg-red-500" @click="handleClose()">Cancel</Button>
                 <Button type="submit" class="cursor-pointer hover:bg-emerald-500 hover:text-black" @click="handleCreate">Submit</Button>
             </DialogFooter>
-
-        </DialogContent>
-    </Dialog>
-
-    <Dialog v-model:open="isRecordExistingModal">
-        <DialogTrigger />
-        <DialogContent class="font-poppins sm:max-w-[500px] md:max-w-[1000px] lg:max-w-[1200px]">
-            <DialogHeader>
-                <DialogTitle class="">The Record Already Exists</DialogTitle>
-                <DialogDescription>The Program Code you have entered already exists</DialogDescription>
-            </DialogHeader>
-        </DialogContent>
-    </Dialog>
-
-    <Dialog v-model:open="isRecordCreationSuccessfulModal">
-        <DialogTrigger />
-        <DialogContent class="font-poppins sm:max-w-[500px] md:max-w-[1000px] lg:max-w-[1200px]">
-            <DialogHeader>
-                <DialogTitle class="">Record Creation Successful</DialogTitle>
-                <DialogDescription>The Program has been created successfully</DialogDescription>
-            </DialogHeader>
         </DialogContent>
     </Dialog>
 </template>
