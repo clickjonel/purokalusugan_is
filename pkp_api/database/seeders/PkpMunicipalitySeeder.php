@@ -709,6 +709,6 @@ class PkpMunicipalitySeeder extends Seeder
             ],
         ];
 
-        DB::table('pkp_municipalities')->insert($municipalities);
+        DB::table('pkp_municipality')->insert($municipalities);
     }
 }
