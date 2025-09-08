@@ -21,11 +21,11 @@ const router = createRouter({
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
     },
-    {
-      path: '/programs',
-      name: 'Programs',
-      component: Programs,
-    },
+    // {
+    //   path: '/programs',
+    //   name: 'Programs',
+    //   component: Programs,
+    // },
     {
       path: '/admin',
       name: 'Admin',
@@ -58,24 +58,24 @@ const router = createRouter({
             ]
           }
         },
-        // {
-        //   path: 'programs',
-        //   name: 'Programs',
-        //   component: Programs,
-        //   meta: {
-        //     requiresAuth: true,
-        //     breadcrumbs: [
-        //       {
-        //         name: 'Admin',
-        //         link: '/admin'
-        //       },
-        //       {
-        //         name: 'Programs',
-        //         link: '/admin/programs'
-        //       }
-        //     ]
-        //   }
-        // },
+        {
+          path: 'programs',
+          name: 'Programs',
+          component: Programs,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Programs',
+                link: '/admin/programs'
+              }
+            ]
+          }
+        },
         {
           path: 'hrh',
           name: 'HRH',

@@ -57,6 +57,15 @@ note: the model is Programs -mcs will create migration, controller and seeder fi
 then edit accordingly the generated files
 4. # this will add/create tables automatically to your database
 1. create a blank database on phpmyadmin for this example :create one for pkpulse
+2. prepare the following Model, Controller, Migration by issuing the command
+php artisan make:model Programs -mcs
+Note: from the command above it will automatically create the files
+ProgramModel.php
+ProgramController.php
+ProgramMigration.php
+ProgramSeeder.php
+
+complete the content of the files accordingly
 2. then run
 php artisan migrate:fresh --database=pkpulse --seed
 on your command line

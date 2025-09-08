@@ -23,11 +23,12 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 
 //Programs
 Route::group([
-    'prefix' => 'program'
+    'prefix' => 'program',
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [ProgramsController::class, 'createProgram']);
     Route::get('/list', [ProgramsController::class, 'getPrograms']);
-    Route::get('/find', action: [ProgramsController::class, 'getProgram']);
+    Route::get('/find',  [ProgramsController::class, 'getProgram']);
     Route::put('/update', [ProgramsController::class, 'updateProgram']);
     Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
     Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);

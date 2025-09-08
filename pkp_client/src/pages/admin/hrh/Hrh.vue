@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue"
 import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input'
-import { Search } from "lucide-vue-next"
+import { Search,EllipsisVertical  } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
 import {
     Dialog,
@@ -33,6 +33,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 interface Hrh {
     user_level: string;
@@ -155,7 +161,7 @@ function closeCreateHrhModal() {
                             <TableHead>Middle Name</TableHead>
                             <TableHead>Lastname</TableHead>
                             <TableHead>Nickname</TableHead>
-                            <TableHead>Actions</TableHead>
+                            <TableHead class="text-end">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -164,9 +170,33 @@ function closeCreateHrhModal() {
                             <TableCell>{{ hrh.middle_name }}</TableCell>
                             <TableCell>{{ hrh.last_name }}</TableCell>
                             <TableCell>{{ hrh.nickname }}</TableCell>
-                            <TableCell class="w-full flex justify-start items-center gap-2">
-                                <Button variant="outline" size="sm" class="cursor-pointer text-xs">Assign</Button>
-                                <Button variant="outline" size="sm" class="cursor-pointer text-xs">Deactivate</Button>
+                            <TableCell class="w-full flex justify-end items-center gap-2">
+                                <!-- <Button variant="outline" size="sm" class="cursor-pointer text-xs">Assign</Button>
+                                <Button variant="outline" size="sm" class="cursor-pointer text-xs">Deactivate</Button> -->
+                                
+                                <!-- <Button @click="actionsPopver = true" variant="ghost" size="icon" class="cursor-pointer text-xs">
+                                    <EllipsisVertical/>
+                                </Button> -->
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" size="icon" class="cursor-pointer">
+                                                <EllipsisVertical class="h-4 w-4" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent class="w-40 p-2">
+                                            <div class="flex flex-col gap-1">
+                                                <Button variant="ghost" size="sm" class="justify-start text-xs">
+                                                    Edit
+                                                </Button>
+                                                <Button variant="ghost" size="sm" class="justify-start text-xs">
+                                                    Assign
+                                                </Button>
+                                                <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">
+                                                    Deactivate
+                                                </Button>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
                             </TableCell>
                         </TableRow>
                     </TableBody>

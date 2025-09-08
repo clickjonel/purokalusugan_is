@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-vue-next";
+import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2 } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +21,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-
 
 interface Program {
   program_name: string;
@@ -93,7 +97,7 @@ function generateProgramCode(event: any) {
   const splittedUserInput = userInput.split(' ');
   let suggestedProgramCode = "";
   for (let i = 0; i < splittedUserInput.length; i++) {
-    let word = splittedUserInput[i];    
+    let word = splittedUserInput[i];
     let firstLetter = word.substring(0, 1).toUpperCase();
     suggestedProgramCode += firstLetter;
   }
@@ -102,7 +106,7 @@ function generateProgramCode(event: any) {
 }
 
 //CRUD
-function handleCreate() {  
+function handleCreate() {
   if (program.value.program_code == '') {
     program.value.program_code = programCode;
   }
@@ -227,13 +231,23 @@ function handleStatus(program: Program, status: string) {
   isStatusModalOpen.value = true;
   console.log('details here', programToEdit)
 }
-function showStatusLabel(status:number){
-  if(status == 1){
+function showStatusLabel(status: boolean) {
+  if (status == true) {
     return "Active"
   }
-  if(status == 0){
+  if (status == false) {
     return "Inactive"
   }
+  return "Unknown"
+}
+function determineStatusColor(status: boolean) {
+  if (status == true) {
+    return "text-green-700"
+  }
+  if (status == false) {
+    return "text-red-800"
+  }
+  return "Unknown"
 }
 
 function confirmProgramStatusUpdate() {
@@ -252,7 +266,8 @@ function confirmProgramStatusUpdate() {
         },
       });
       fetchPrograms();
-      isEditModalOpen.value = false;
+      isStatusModalOpen.value = false;
+
     })
     .catch((error) => {
       console.error(error.response.data);
@@ -306,10 +321,11 @@ onMounted(() => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Program Id</TableHead>
+              <TableHead>Id</TableHead>
               <TableHead>Program Code</TableHead>
               <TableHead>Program Name</TableHead>
-              <TableHead>Program Status</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead class="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -317,16 +333,35 @@ onMounted(() => {
               <TableCell>{{ program.program_id }}</TableCell>
               <TableCell>{{ program.program_code }}</TableCell>
               <TableCell>{{ program.program_name }}</TableCell>
-              <TableCell>{{ showStatusLabel(program.status) }}</TableCell>
-              <TableCell class="w-full flex justify-start items-center gap-2">
-                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
-                  @click="handleEdit(program)">Edit</Button>
-                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
-                  @click="handleStatus(program, 'activate')">Activate</Button>
-                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
-                  @click="handleStatus(program, 'deactivate')">Deactivate</Button>
-                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
-                  @click="handleDelete(program.program_id)">Delete</Button>
+              <TableCell :class=determineStatusColor(program.program_status)>{{
+                showStatusLabel(program.program_status) }}</TableCell>
+              <TableCell class="w-full flex justify-end items-center gap-2">
+                <Popover>
+                  <PopoverTrigger>
+                    <Button variant="ghost" size="icon" class="cursor-pointer">
+                      <EllipsisVertical class="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div class="flex flex-col gap-1">
+                      <Button variant="ghost" size="sm"
+                        class="cursor-pointer text-xs flex justify-start items-center gap-1"
+                        @click="handleEdit(program)">
+                        <Pencil class="h-[1rem] w-[1rem]" />
+                        Edit
+                      </Button>
+                      <div class="ml-2 flex items-center justify-start">
+                        <XCircle v-if="program.program_status" class="h-[1rem] w-[1rem]" />
+                        <CheckCircle2 v-else class="h-[1rem] w-[1rem]" />
+                        <Button variant="ghost" size="sm"
+                          :class="determineStatusColor(!program.program_status)"
+                          @click="handleStatus(program, program.program_status ? 'deactivate' : 'activate')">
+                          {{ program.program_status ? 'Deactivate' : 'Activate' }}
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </TableCell>
             </TableRow>
           </TableBody>
@@ -417,12 +452,12 @@ onMounted(() => {
     <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
       <DialogHeader>
         <DialogTitle>Confirm Changes</DialogTitle>
-        <DialogDescription>Are you sure you want to {{ programStatus}} this program?</DialogDescription>
+        <DialogDescription>Are you sure you want to {{ programStatus }} this program?</DialogDescription>
       </DialogHeader>
       <DialogFooter>
         <Button type="button" class="cursor-pointer" @click="isStatusModalOpen = false">Cancel</Button>
-        <Button type="button" class="cursor-pointer text-white"
-          @click="confirmProgramStatusUpdate">{{programStatus}}</Button>
+        <Button type="button" class="cursor-pointer text-white" @click="confirmProgramStatusUpdate">{{ programStatus
+        }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
