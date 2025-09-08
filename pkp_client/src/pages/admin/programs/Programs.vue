@@ -228,12 +228,14 @@ function handleStatus(program: Program, status: string) {
   console.log('details here', programToEdit)
 }
 function showStatusLabel(status:number){
+  console.log('status',status)
   if(status == 1){
     return "Active"
   }
   if(status == 0){
     return "Inactive"
   }
+  return "Unknown"
 }
 
 function confirmProgramStatusUpdate() {
@@ -317,7 +319,7 @@ onMounted(() => {
               <TableCell>{{ program.program_id }}</TableCell>
               <TableCell>{{ program.program_code }}</TableCell>
               <TableCell>{{ program.program_name }}</TableCell>
-              <TableCell>{{ showStatusLabel(program.status) }}</TableCell>
+              <TableCell>{{ showStatusLabel(program.program_status) }}</TableCell>
               <TableCell class="w-full flex justify-start items-center gap-2">
                 <Button variant="outline" size="sm" class="cursor-pointer text-xs"
                   @click="handleEdit(program)">Edit</Button>
