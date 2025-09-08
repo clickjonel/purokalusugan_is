@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\PkpRegionController;
 use App\Http\Controllers\GeoJsonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,7 @@ Route::group([
     Route::get('/find',  [ProgramsController::class, 'getProgram']);
     Route::put('/update', [ProgramsController::class, 'updateProgram']);
     Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
-    Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);    
+    Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);
 });
 
 //Indicators
@@ -51,4 +52,12 @@ Route::group([
 ], function () {
     Route::post('/create', [HrhController::class, 'createHrhUser']);
     Route::get('/list', [HrhController::class, 'getHrhList']);
+});
+
+//PKP Region
+Route::group([
+    'prefix' => 'region',
+], function () {
+    Route::get('/list', [PkpRegionController::class, 'getRegions']);
+    Route::get('/find', [PkpRegionController::class, 'getRegion']);
 });
