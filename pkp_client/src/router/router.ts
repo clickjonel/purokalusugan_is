@@ -1,8 +1,7 @@
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import Dashboard from '@/pages/admin/dashboard.vue'
 import Hrh from '@/pages/admin/hrh/Hrh.vue'
-import Indicators from '@/pages/admin/hrh/Indicators.vue';
-import PublicDashboard from '@/pages/public/PublicDashboard.vue'
+import PublicDashboard from '@/pages/public/Dashboard.vue'
 import Login from '@/pages/public/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
@@ -21,16 +20,6 @@ const router = createRouter({
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
-    },
-    {
-      path: '/programs',
-      name: 'Programs',
-      component: Programs,
-    },
-    {
-      path: '/indicators',
-      name: 'Indicators',
-      component: Indicators,
     },
     {
       path: '/admin',
@@ -64,24 +53,24 @@ const router = createRouter({
             ]
           }
         },
-        // {
-        //   path: 'programs',
-        //   name: 'Programs',
-        //   component: Programs,
-        //   meta: {
-        //     requiresAuth: true,
-        //     breadcrumbs: [
-        //       {
-        //         name: 'Admin',
-        //         link: '/admin'
-        //       },
-        //       {
-        //         name: 'Programs',
-        //         link: '/admin/programs'
-        //       }
-        //     ]
-        //   }
-        // },
+        {
+          path: 'programs',
+          name: 'Programs',
+          component: Programs,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Programs',
+                link: '/admin/programs'
+              }
+            ]
+          }
+        },
         {
           path: 'hrh',
           name: 'HRH',

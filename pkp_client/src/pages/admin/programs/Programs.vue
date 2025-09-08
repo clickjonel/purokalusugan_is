@@ -33,8 +33,9 @@ interface Program {
 }
 
 const router = useRouter();
-const programs = ref([]);
-const currentList = ref<Program[]>([]);
+const programs = ref<Program[]>([]);
+const currentList=ref<Program[]>([]);
+const programCode = ref();
 let searchKeyword = ref("");
 let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
@@ -42,12 +43,21 @@ let isDeleteModalOpen = ref(false);
 let programIdToDelete = ref(0);
 let isEditModalOpen = ref(false);
 let programToEdit = ref<Program>({
+  program_id: 0,
   program_name: "",
   program_code: "",
   program_status: true,
 });
 
+interface Program {
+  program_id: number;
+  program_name: string;
+  program_code: any;
+  program_status: boolean;
+}
+
 const program = ref<Program>({
+  program_id: 0,
   program_name: "",
   program_code: "",
   program_status: true,
@@ -62,11 +72,12 @@ function search() {
   currentList.value = searchedData;
 }
 
+
 function handleClose() {
   isCreateModalOpen.value = false;
 }
 
-function explainError(error) {
+function explainError(error:string) {
   if (error.includes("Integrity constraint violation")) {
     errorDetail.value =
       "The program code you entered already exists. Please enter another!";
@@ -74,7 +85,23 @@ function explainError(error) {
   return errorDetail;
 }
 
+function generateProgramCode(event:any){
+  const userInput = event.target.value;  
+  const splittedUserInput = userInput.split(' ');  
+  let suggestedProgramCode = "P";
+  for(let i=0;i<splittedUserInput.length;i++){
+    let word = splittedUserInput[i];
+    let firstLetter = word.substring(0,1).toUpperCase();
+    suggestedProgramCode+=firstLetter;
+  }
+  programCode.value=suggestedProgramCode;
+}
+
+//CRUD
 function handleCreate() {
+  if(program.value.program_code == ''){
+    program.value.program_code = programCode;
+  }
   axios
     .post("/program/create", program.value)
     .then((response) => {
@@ -259,13 +286,25 @@ onMounted(() => {
       <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
         <form @submit.prevent="handleCreate" class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
-            <label for="indicator_code">Program Code:</label>
-            <Input type="text" id="indicator_code" placeholder="NP-0001" v-model="program.program_code" required />
+            <label for="program_code">Program Code:</label>
+            <Input
+              type="text"
+              id="program_code"
+              
+              placeholder="leave blank to auto generated"              
+              v-model="program.program_code"
+            />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="program_id">Program Name:</label>
-            <Input type="text" id="program_id" placeholder="example: Nutrition" v-model="program.program_name"
-              required />
+            <label for="program_name">Program Name:</label>
+            <Input
+              type="text"
+              id="program_name"
+              placeholder="example: Nutrition"
+              @input="generateProgramCode($event)"
+              v-model="program.program_name"
+              required
+            />
           </div>
         </form>
       </div>
