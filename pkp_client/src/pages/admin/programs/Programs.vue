@@ -25,6 +25,12 @@ import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 
 
+interface Program {
+  program_name: string;
+  program_code: any;
+  program_status: boolean;
+  [key: string]: any
+}
 
 const router = useRouter();
 const programs = ref<Program[]>([]);
@@ -87,15 +93,16 @@ function generateProgramCode(event: any) {
   const splittedUserInput = userInput.split(' ');
   let suggestedProgramCode = "";
   for (let i = 0; i < splittedUserInput.length; i++) {
-    let word = splittedUserInput[i];
+    let word = splittedUserInput[i];    
     let firstLetter = word.substring(0, 1).toUpperCase();
     suggestedProgramCode += firstLetter;
   }
   programCode.value = suggestedProgramCode;
+  programCode.value = suggestedProgramCode;
 }
 
 //CRUD
-function handleCreate() {
+function handleCreate() {  
   if (program.value.program_code == '') {
     program.value.program_code = programCode;
   }
@@ -127,6 +134,7 @@ function handleCreate() {
       }
     })
     .finally(() => { });
+
 }
 
 function handleDelete(programId: number) {
@@ -265,6 +273,7 @@ const fetchPrograms = () => {
 onMounted(() => {
   fetchPrograms();
 });
+
 
 </script>
 <template>
