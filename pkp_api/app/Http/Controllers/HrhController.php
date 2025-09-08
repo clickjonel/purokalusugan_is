@@ -20,14 +20,12 @@ class HrhController extends Controller
             'image' => null,
             'username' => $this->formatUsername($validatedData['first_name'], $validatedData['middle_name'] ?? null, $validatedData['last_name']),
             'password' => bcrypt('12345'),
-            'prefix' => $validatedData['prefix'] ?? null,
             'first_name' => $validatedData['first_name'],
             'middle_name' => $validatedData['middle_name'] ?? null,
             'last_name' => $validatedData['last_name'],
             'suffix' => $validatedData['suffix'] ?? null,
             'nickname' => $validatedData['nickname'],
-            'email_address' => $validatedData['email_address'],
-            'contact_number' => $validatedData['contact_no'],
+            'user_level' => $validatedData['user_level'],
             'account_status' => 'unassigned',
         ]);
 

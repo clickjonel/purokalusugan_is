@@ -27,14 +27,14 @@ class CreateHrhRequest extends FormRequest
             // 'image' => 'nullable|string',
             // 'username' => 'required|string',
             // 'password' => 'required|string',
-            'prefix' => 'nullable|string',
+            'user_level' => 'required|numeric',
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
             'suffix' => 'nullable|string',
             'nickname' => 'required|string',
-            'email_address' => 'required|string',
-            'contact_no' => 'required|string',
+            // 'email_address' => 'required|string',
+            // 'contact_no' => 'required|string',
             // 'account_status' => 'required|string|in:Assigned,Unassigned',
         ];
     }
