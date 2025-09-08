@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { onMounted, ref } from "vue"
 import L, { Map, GeoJSON, Layer } from "leaflet"
 import type { PathOptions } from "leaflet"
 import "leaflet/dist/leaflet.css"
@@ -8,8 +8,11 @@ import type { Feature, FeatureCollection, Geometry } from "geojson"
 const emit = defineEmits<{
   (e: "province-selected", payload: { name: string; info: Record<string, unknown> }): void
   (e: "marker-selected", payload: { title: string; population: number; region: string }): void
+  (e: "region-selected"): void // <-- New event for CAR
 }>()
-
+// Default and fallback colors
+const defaultColor = "#3399ff"
+const fallbackColor = "#00cc66"
 // Province color mapping
 const provinceColors: Record<string, string> = {
   "Cordillera Administrative Region": "#FF5733",
@@ -21,6 +24,8 @@ const provinceColors: Record<string, string> = {
   "Mountain Province": "#FF66B2",
   "Baguio City": "#66FFFF",
 }
+// Track currently selected province layer
+const selectedLayer = ref<Layer | null>(null)
 
 onMounted(async () => {
   const map: Map = L.map("map").setView([16.6, 121.2], 7)
@@ -34,25 +39,34 @@ onMounted(async () => {
   const provinces: FeatureCollection = await res.json()
 
   const geojsonLayer: GeoJSON = L.geoJSON(provinces, {
-    style: (feature?: Feature<Geometry, any>): PathOptions => {
-      const provName: string | undefined = feature?.properties?.name
+    style: (feature?: Feature<any>): PathOptions => {
+      const provName: string | undefined = feature?.geometry?.properties?.name
       const color: string = (provName && provinceColors[provName]) || "#CCCCCC"
       return {
-        color,
+        color: defaultColor,
         weight: 2,
         fillColor: color,
         fillOpacity: 0.4,
       }
     },
-    onEachFeature: (feature: Feature<Geometry, any>, layer: Layer) => {
+    onEachFeature: (feature: Feature<any>, layer: Layer) => {
+      const provName = feature.geometry?.properties?.name ?? "Unknown"
       if (feature.properties?.name) {
         layer.bindTooltip(feature.properties.name)
       }
 
-      layer.on("click", () => {
+      layer.on("click", (e) => {
+        e.originalEvent?.stopPropagation()
         if ("getBounds" in layer) {
           map.fitBounds((layer as any).getBounds(), { padding: [20, 20] })
         }
+        if (selectedLayer.value) {
+          (selectedLayer.value as L.Path).setStyle({ color: defaultColor, fillColor: defaultColor })
+        }
+        const color = provinceColors[provName] || fallbackColor
+          ; (layer as L.Path).setStyle({ color, fillColor: color })
+        selectedLayer.value = layer
+        map.fitBounds((layer as any).getBounds(), { padding: [20, 20] })
         emit("province-selected", {
           name: feature.properties?.name ?? "Unknown",
           info: feature.properties ?? {},
