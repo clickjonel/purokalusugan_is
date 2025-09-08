@@ -24,14 +24,23 @@ import {
     TableRow,
 } from '@/components/ui/table'
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 interface Hrh {
-    prefix?: string;
+    user_level: string;
     first_name: string;
     middle_name: string;
     last_name: string;
     suffix?: string;
     nickname: string;
-    email_address: string;
     [key: string]: any
 }
 
@@ -41,14 +50,12 @@ var isCreateHrhModalOpen = ref(false)
 
 const hrhList = ref<Hrh[]>([]);
 const hrh = ref<Hrh>({
-    prefix: '',
+    user_level: '',
     first_name: '',
     middle_name: '',
     last_name: '',
     suffix: '',
     nickname: '',
-    email_address: '',
-    contact_no: ''
 })
 
 onMounted(() => {
@@ -111,8 +118,7 @@ function resetCreateHrhForm() {
         last_name: '',
         suffix: '',
         nickname: '',
-        email_address: '',
-        contact_no: ''
+        user_level: ''
     }
 }
 
@@ -149,8 +155,6 @@ function closeCreateHrhModal() {
                             <TableHead>Middle Name</TableHead>
                             <TableHead>Lastname</TableHead>
                             <TableHead>Nickname</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Contact Number</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -160,8 +164,6 @@ function closeCreateHrhModal() {
                             <TableCell>{{ hrh.middle_name }}</TableCell>
                             <TableCell>{{ hrh.last_name }}</TableCell>
                             <TableCell>{{ hrh.nickname }}</TableCell>
-                            <TableCell>{{ hrh.email_address }}</TableCell>
-                            <TableCell>{{ hrh.contact_number }}</TableCell>
                             <TableCell class="w-full flex justify-start items-center gap-2">
                                 <Button variant="outline" size="sm" class="cursor-pointer text-xs">Assign</Button>
                                 <Button variant="outline" size="sm" class="cursor-pointer text-xs">Deactivate</Button>
@@ -203,6 +205,21 @@ function closeCreateHrhModal() {
                     <div class="w-full flex justify-start items-start relative gap-4">
                         <Input v-model="hrh.email_address" type="email" placeholder="Email" />
                         <Input v-model="hrh.contact_no" type="text" placeholder="Contact Number" />
+                        <Select v-model="hrh.user_level">
+                            <SelectTrigger class="w-[180px]">
+                                <SelectValue placeholder="Select User Access Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Access Levels</SelectLabel>
+                                    <SelectItem value="1">Administrator</SelectItem>
+                                    <SelectItem value="2">PK Committee Member</SelectItem>
+                                    <SelectItem value="3">Program Head</SelectItem>
+                                    <SelectItem value="4">C/PDOHO</SelectItem>
+                                    <SelectItem value="5">HRH</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
             </div>

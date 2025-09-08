@@ -26,15 +26,13 @@ class HrhUserSeeder extends Seeder
                 'image' => null,
                 'username' => $this->formatUsername($hrh->first_name, $hrh->middle_name ?? null, $hrh->last_name),
                 'password' => bcrypt('12345'),
-                'prefix' => $hrh->prefix ?? null,
                 'first_name' => $hrh->first_name,
                 'middle_name' => $hrh->middle_name ?? null,
                 'last_name' => $hrh->last_name,
                 'suffix' => $hrh->suffix ?? null,
                 'nickname' => $hrh->nickname,
-                'email_address' => $hrh->email_address,
-                'contact_number' => $hrh->contact_number,
                 'account_status' => 'unassigned',
+                'user_level' => 5
             ]);
         });
 

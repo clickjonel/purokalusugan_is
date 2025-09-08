@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Hrh extends Model
@@ -14,14 +15,28 @@ class Hrh extends Model
         'image',
         'username',
         'password',
-        'prefix',
+        'user_level',
         'first_name',
         'middle_name',
         'last_name',
         'suffix',
         'nickname',
-        'email_address',
-        'contact_number',
         'account_status',
     ];
+
+    protected $appends = ['user_level_name'];
+
+    public function getUserLevelNameAttribute()
+    {
+        $user_levels = [
+            1 => 'Admin',
+            2 => 'PK Committee Member',
+            3 => 'Program Head',
+            4 => 'C/PDOHO',
+            5 => 'HRH'
+        ];
+
+        return $user_levels[$this->user_level] ?? 'Unknown';
+    }
+
 }

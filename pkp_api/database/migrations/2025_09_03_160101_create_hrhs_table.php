@@ -17,15 +17,14 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('username');
             $table->string('password');
-            $table->string('prefix')->nullable();
+            // $table->string('prefix')->nullable();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('suffix')->nullable();
             $table->string('nickname');
-            $table->string('email_address');
-            $table->string('contact_number');
             $table->string('account_status')->default('unassigned');
+            $table->smallInteger('user_level');
             $table->timestamps();
         });
     }
