@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical } from "lucide-vue-next";
+import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2 } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -325,7 +325,7 @@ onMounted(() => {
               <TableHead>Program Code</TableHead>
               <TableHead>Program Name</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead class="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -335,9 +335,7 @@ onMounted(() => {
               <TableCell>{{ program.program_name }}</TableCell>
               <TableCell :class=determineStatusColor(program.program_status)>{{
                 showStatusLabel(program.program_status) }}</TableCell>
-              <TableCell class="w-full flex justify-start items-center gap-2">
-
-
+              <TableCell class="w-full flex justify-end items-center gap-2">
                 <Popover>
                   <PopoverTrigger>
                     <Button variant="ghost" size="icon" class="cursor-pointer">
@@ -346,12 +344,21 @@ onMounted(() => {
                   </PopoverTrigger>
                   <PopoverContent>
                     <div class="flex flex-col gap-1">
-                      <Button variant="ghost" size="sm" class="cursor-pointer text-xs"
-                        @click="handleEdit(program)">Edit</Button>
-                      <Button v-if="program.program_status" variant="ghost" size="sm" class="cursor-pointer text-xs"
-                        @click="handleStatus(program, 'deactivate')">Deactivate</Button>
-                      <Button v-if="!program.program_status" variant="ghost" size="sm" class="cursor-pointer text-xs"
-                        @click="handleStatus(program, 'activate')">Activate</Button>
+                      <Button variant="ghost" size="sm"
+                        class="cursor-pointer text-xs flex justify-start items-center gap-1"
+                        @click="handleEdit(program)">
+                        <Pencil class="h-[1rem] w-[1rem]" />
+                        Edit
+                      </Button>
+                      <div class="ml-2 flex items-center justify-start">
+                        <XCircle v-if="program.program_status" class="h-[1rem] w-[1rem]" />
+                        <CheckCircle2 v-else class="h-[1rem] w-[1rem]" />
+                        <Button variant="ghost" size="sm"
+                          :class="determineStatusColor(!program.program_status)"
+                          @click="handleStatus(program, program.program_status ? 'deactivate' : 'activate')">
+                          {{ program.program_status ? 'Deactivate' : 'Activate' }}
+                        </Button>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
