@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::connection('pkpulse')->create('pkp_province', function (Blueprint $table) {
             $table->id('province_id');
-            $table->unsignedBigInteger('uidregion_id');
+            $table->unsignedBigInteger('region_id');
             $table->text('province_name');
             $table->unsignedBigInteger('uid');
             $table->timestamps();
 
-            $table->foreign('region_id')
-                ->references('region_id')
-                ->on('pkp_region')
-                ->onDelete('cascade');
+            // $table->foreign('region_id')
+            //     ->references('region_id')
+            //     ->on('pkp_region')
+            //     ->onDelete('cascade');
         });
     }
 

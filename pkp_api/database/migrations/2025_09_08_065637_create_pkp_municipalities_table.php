@@ -18,17 +18,17 @@ return new class extends Migration
             $table->string('municipality_name', 255);
             $table->unsignedBigInteger('uid');
             $table->timestamps();
-            $table->softDeletes();
+            // $table->softDeletes();
 
-            $table->foreign('region_id')
-                ->references('region_id')
-                ->on('pkp_region')
-                ->onDelete('cascade');
+            // $table->foreign('region_id')
+            //     ->references('region_id')
+            //     ->on('pkp_region')
+            //     ->onDelete('cascade');
 
-            $table->foreign('province_id')
-                ->references('province_id')
-                ->on('pkp_province')
-                ->onDelete('cascade');
+            // $table->foreign('province_id')
+            //     ->references('province_id')
+            //     ->on('pkp_province')
+            //     ->onDelete('cascade');
         });
     }
     /**

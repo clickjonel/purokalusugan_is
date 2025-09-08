@@ -21,7 +21,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1411,
@@ -30,7 +29,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1427,
@@ -39,7 +37,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1432,
@@ -48,7 +45,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1444,
@@ -57,7 +53,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1481,
@@ -66,7 +61,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
             [
                 'province_id'   => 1430,
@@ -75,7 +69,6 @@ class PkpProvinceSeeder extends Seeder
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
-                'deleted_at'    => null,
             ],
         ];
 

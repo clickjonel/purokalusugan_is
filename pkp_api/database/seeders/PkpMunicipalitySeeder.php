@@ -22,7 +22,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140102,
@@ -32,7 +31,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140103,
@@ -42,7 +40,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140104,
@@ -52,7 +49,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140105,
@@ -62,7 +58,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140106,
@@ -72,7 +67,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140107,
@@ -82,7 +76,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140108,
@@ -92,7 +85,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140109,
@@ -102,7 +94,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140110,
@@ -112,7 +103,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140111,
@@ -122,7 +112,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140112,
@@ -132,7 +121,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140113,
@@ -142,7 +130,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140114,
@@ -152,7 +139,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140115,
@@ -162,7 +148,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140116,
@@ -172,7 +157,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140117,
@@ -182,7 +166,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140118,
@@ -192,7 +175,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140119,
@@ -202,7 +184,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140120,
@@ -212,7 +193,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140121,
@@ -222,7 +202,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140122,
@@ -232,7 +211,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140123,
@@ -242,7 +220,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140124,
@@ -252,7 +229,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140125,
@@ -262,7 +238,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140126,
@@ -272,7 +247,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 140127,
@@ -282,7 +256,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141101,
@@ -292,7 +265,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141102,
@@ -302,7 +274,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141103,
@@ -312,7 +283,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141104,
@@ -322,7 +292,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141105,
@@ -332,7 +301,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141106,
@@ -342,7 +310,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141107,
@@ -352,7 +319,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141108,
@@ -362,7 +328,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141109,
@@ -372,7 +337,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141110,
@@ -382,7 +346,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141111,
@@ -392,7 +355,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141112,
@@ -402,7 +364,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141113,
@@ -412,7 +373,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 141114,
@@ -422,7 +382,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142701,
@@ -432,7 +391,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142702,
@@ -442,7 +400,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142703,
@@ -452,7 +409,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142704,
@@ -462,7 +418,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142705,
@@ -472,7 +427,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142706,
@@ -482,7 +436,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142707,
@@ -492,7 +445,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142708,
@@ -502,7 +454,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142709,
@@ -512,7 +463,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142710,
@@ -522,7 +472,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 142711,
@@ -532,7 +481,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143201,
@@ -542,7 +490,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143206,
@@ -552,7 +499,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143208,
@@ -562,7 +508,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143209,
@@ -572,7 +517,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143211,
@@ -582,7 +526,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143213,
@@ -592,7 +535,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143214,
@@ -602,7 +544,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 143215,
@@ -612,7 +553,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144401,
@@ -622,7 +562,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144402,
@@ -632,7 +571,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144403,
@@ -642,7 +580,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144404,
@@ -652,7 +589,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144405,
@@ -662,7 +598,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144406,
@@ -672,7 +607,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144407,
@@ -682,7 +616,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144408,
@@ -692,7 +625,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144409,
@@ -702,7 +634,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 144410,
@@ -712,7 +643,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148101,
@@ -722,7 +652,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148102,
@@ -732,7 +661,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148103,
@@ -742,7 +670,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148104,
@@ -752,7 +679,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148105,
@@ -762,7 +688,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148106,
@@ -772,7 +697,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
             [
                 'municipality_id' => 148107,
@@ -782,7 +706,6 @@ class PkpMunicipalitySeeder extends Seeder
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
-                'deleted_at' => null,
             ],
         ];
 
