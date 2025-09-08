@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -20,7 +19,7 @@ export interface CatchmentOverviewProps {
 export interface Site {
   code: string
   name: string
-  status: "Active" | "Inactive"
+  status: string
 }
 
 const props = defineProps<{

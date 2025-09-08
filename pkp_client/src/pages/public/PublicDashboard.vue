@@ -12,8 +12,10 @@ interface ProvincePayload {
 
 interface MarkerPayload {
   title: string
-  population: number
+  population?: number
   region: string
+  level: "province" | "municipality" | "barangay"
+  status: string
 }
 
 const selectedProvince = ref<ProvincePayload | null>(null)
@@ -285,16 +287,24 @@ const carData = computed(() => {
           </Button>
         </div>
 
-        <!-- Province Dashboard -->
+        <!-- Province Mode -->
         <ProvinceDashboard v-if="selectedProvince" :provinceName="selectedProvince.name"
           :cards="provinceData[selectedProvince.name]?.cards || []"
           :sites="provinceData[selectedProvince.name]?.sites || []" />
 
-        <!-- Marker  -->
-        <ProvinceDashboard v-else-if="selectedMarker" :provinceName="selectedMarker.title" :cards="[]" :sites="[]" />
+        <!-- Barangay Mode -->
+        <ProvinceDashboard v-else-if="selectedMarker?.level === 'barangay'"
+          :provinceName="`${selectedMarker.title} (Barangay)`" :cards="[]"
+          :sites="[{ code: 'BRG', name: selectedMarker.title, status: selectedMarker.status || '' }]" />
 
+        <!-- Province Capital Marker Mode -->
+        <ProvinceDashboard v-else-if="selectedMarker?.level === 'province'" :provinceName="selectedMarker.title"
+          :cards="[]" :sites="[]" />
+
+        <!-- Region (CAR) Mode -->
         <ProvinceDashboard v-else provinceName="Cordillera Administrative Region" :cards="carData.cards"
           :sites="carData.sites" />
+
       </div>
     </div>
   </div>
