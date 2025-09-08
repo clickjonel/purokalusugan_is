@@ -1,7 +1,7 @@
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import Dashboard from '@/pages/admin/dashboard.vue'
 import Hrh from '@/pages/admin/hrh/Hrh.vue'
-import Indicators from '@/pages/admin/hrh/Indicators.vue';
+import Indicators from '@/pages/admin/indicators/Indicators.vue';
 import PublicDashboard from '@/pages/public/Dashboard.vue'
 import Login from '@/pages/public/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
