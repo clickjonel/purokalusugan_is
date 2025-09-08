@@ -20,5 +20,5 @@ export default defineConfig({
   // },
   // root: '.',
   // publicDir: 'public',
-  // base: '/pkp/',
+  // base: 'https://{base_url_outside_world}/pkp/',
 })
