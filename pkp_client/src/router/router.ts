@@ -21,6 +21,11 @@ const router = createRouter({
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
     },
+    // {
+    //   path: '/programs',
+    //   name: 'Programs',
+    //   component: Programs,
+    // },
     {
       path: '/admin',
       name: 'Admin',
