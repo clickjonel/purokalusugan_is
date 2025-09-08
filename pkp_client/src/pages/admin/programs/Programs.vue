@@ -36,12 +36,15 @@ const router = useRouter();
 const programs = ref<Program[]>([]);
 const currentList = ref<Program[]>([]);
 const programCode = ref();
+
 let searchKeyword = ref("");
 let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
 let isDeleteModalOpen = ref(false);
 let programIdToDelete = ref(0);
+let programStatus = ref(true);
 let isEditModalOpen = ref(false);
+let isStatusModalOpen = ref(false);
 let programToEdit = ref<Program>({
   program_id: 0,
   program_name: "",
@@ -88,17 +91,18 @@ function explainError(error: string) {
 function generateProgramCode(event: any) {
   const userInput = event.target.value;
   const splittedUserInput = userInput.split(' ');
-  let suggestedProgramCode = "P";
+  let suggestedProgramCode = "";
   for (let i = 0; i < splittedUserInput.length; i++) {
-    let word = splittedUserInput[i];
+    let word = splittedUserInput[i];    
     let firstLetter = word.substring(0, 1).toUpperCase();
     suggestedProgramCode += firstLetter;
   }
   programCode.value = suggestedProgramCode;
+  programCode.value = suggestedProgramCode;
 }
 
 //CRUD
-function handleCreate() {
+function handleCreate() {  
   if (program.value.program_code == '') {
     program.value.program_code = programCode;
   }
@@ -130,6 +134,7 @@ function handleCreate() {
       }
     })
     .finally(() => { });
+
 }
 
 function handleDelete(programId: number) {
@@ -210,6 +215,48 @@ function confirmEdit() {
     });
 }
 
+function handleStatus(program: Program, status: string) {
+  if (status == "deactivate") {
+    programToEdit.value = { ...program, program_status: false }
+  }
+  if (status == "activate") {
+    programToEdit.value = { ...program, program_status: true }
+  }
+  isStatusModalOpen.value = true;
+  console.log('details here', programToEdit)
+}
+
+function confirmProgramStatusUpdate() {
+  axios
+    .put("/program/status", {
+      program_id: programToEdit.value.program_id,
+      program_status: programToEdit.value.program_status,
+    })
+    .then((response) => {
+      console.log(response.data);
+      toast("Program updated successfully!", {
+        description: response.data.message,
+        action: {
+          label: "Close",
+          onClick: () => toast.dismiss(),
+        },
+      });
+      fetchPrograms();
+      isEditModalOpen.value = false;
+    })
+    .catch((error) => {
+      console.error(error.response.data);
+      if (error.response) {
+        toast("Failed to update program", {
+          description: error.response.data.message,
+          action: {
+            label: "Close",
+            onClick: () => toast.dismiss(),
+          },
+        });
+      }
+    });
+}
 const fetchPrograms = () => {
   axios
     .get("/program/list")
@@ -226,6 +273,7 @@ const fetchPrograms = () => {
 onMounted(() => {
   fetchPrograms();
 });
+
 
 </script>
 <template>
@@ -262,6 +310,10 @@ onMounted(() => {
                 <Button variant="outline" size="sm" class="cursor-pointer text-xs"
                   @click="handleEdit(program)">Edit</Button>
                 <Button variant="outline" size="sm" class="cursor-pointer text-xs"
+                  @click="handleStatus(program, 'activate')">Activate</Button>
+                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
+                  @click="handleStatus(program, 'deactivate')">Deactivate</Button>
+                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
                   @click="handleDelete(program.program_id)">Delete</Button>
               </TableCell>
             </TableRow>
@@ -283,17 +335,17 @@ onMounted(() => {
         <DialogDescription>This is the Programs management. </DialogDescription>
       </DialogHeader>
 
-      <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
+      <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
         <form @submit.prevent="handleCreate" class="flex flex-col gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="program_code">Program Code:</label>
-            <Input type="text" id="program_code" placeholder="leave blank to auto generated"
-              v-model="program.program_code" />
-          </div>
           <div class="flex flex-col gap-2">
             <label for="program_name">Program Name:</label>
             <Input type="text" id="program_name" placeholder="example: Nutrition" @input="generateProgramCode($event)"
               v-model="program.program_name" required />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="program_code">Program Code:</label>
+            <Input type="text" id="program_code" placeholder="leave blank to auto generated"
+              v-model="program.program_code" />
           </div>
         </form>
       </div>
@@ -328,6 +380,35 @@ onMounted(() => {
       </DialogHeader>
       <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
         <form @submit.prevent="confirmEdit" class="flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label for="program_code">Program Code:</label>
+            <Input type="text" class="bg-slate-200" id="program_code" placeholder="NP-0001"
+              v-model="programToEdit.program_code" readonly />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="program_name">Program Name:</label>
+            <Input type="text" id="program_name" placeholder="example: Nutrition" v-model="programToEdit.program_name"
+              required />
+          </div>
+          <!-- Add more fields as needed -->
+        </form>
+      </div>
+      <DialogFooter>
+        <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
+        <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white"
+          @click="confirmEdit">Save</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <Dialog v-model:open="isStatusModalOpen">
+    <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
+      <DialogHeader>
+        <DialogTitle>Update Status of Program</DialogTitle>
+        <DialogDescription>Program status update</DialogDescription>
+      </DialogHeader>
+      <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
+        <form @submit.prevent="confirmProgramStatusUpdate" class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <label for="program_code">Program Code:</label>
             <Input type="text" class="bg-slate-200" id="program_code" placeholder="NP-0001"
