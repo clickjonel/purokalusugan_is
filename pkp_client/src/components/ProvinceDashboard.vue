@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -10,86 +11,66 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 
-
-const props = defineProps<{
-  provinceName: string
-}>()
-
-interface CardItem {
+export interface CatchmentOverviewProps {
   title: string
   value: string | number
   subtitle: string
 }
 
-interface Site {
+export interface Site {
   code: string
   name: string
   status: "Active" | "Inactive"
 }
 
-// ✅ Demo data
-const cards: CardItem[] = [
-  { title: "Total No. of Barangay", value: 200, subtitle: "" },
-  { title: "Total No. of Purok", value: 247, subtitle: "" },
-  { title: "Total No. of Sites", value: 130, subtitle: "" },
-  { title: "Coverage Rate", value: "30%", subtitle: "" },
-  { title: "Field Operations", value: "100/130", subtitle: "" },
-  { title: "Training Completed", value: "0/130", subtitle: "" },
-  { title: "Monitoring Activities", value: 24, subtitle: "This month" },
-  { title: "HRH Deployed", value: 287, subtitle: "Active personnel" },
-  { title: "High Priority Areas", value: 12, subtitle: "Districts" },
-  { title: "Population Enumeration", value: "500/1000", subtitle: "91.1%" },
-]
-
-const sites: Site[] = [
-  { code: "B001", name: "Barangay Uno", status: "Active" },
-  { code: "B002", name: "Barangay Dos", status: "Inactive" },
-  { code: "B003", name: "Barangay Tres", status: "Active" },
-]
+const props = defineProps<{
+  provinceName: string
+  cards: CatchmentOverviewProps[]
+  sites: Site[]
+}>()
 </script>
 
 <template>
-  <div class="p-4 space-y-4">
-    <!-- Title -->
-    <h2 class="text-lg sm:text-xl font-bold text-center">CATCHMENT OVERVIEW</h2>
-    <p class="text-xs sm:text-sm text-gray-500 text-center">
-      Real-time monitoring of {{ props.provinceName }} with operational status, data collection, and administrative
-      metrics.
-    </p>
+  <div class="p-3 space-y-4">
+    <!-- Compact Title -->
+    <div class="text-center space-y-1">
+      <h2 class="text-lg font-bold tracking-tight">CATCHMENT OVERVIEW</h2>
+      <p class="text-xs text-muted-foreground">{{ props.provinceName }}</p>
+    </div>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <Card v-for="card in cards" :key="card.title" class="shadow-sm rounded-xl">
-        <CardContent class="p-4">
-          <div class="text-xs sm:text-sm font-medium text-gray-500">
+    <!-- Compact Cards Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <Card v-for="card in props.cards" :key="card.title" class="rounded-lg shadow-sm">
+        <CardHeader class="p-3 space-y-1">
+          <CardTitle class="text-xs font-medium text-muted-foreground leading-tight">
             {{ card.title }}
-          </div>
-          <div class="text-base sm:text-lg font-bold">{{ card.value }}</div>
-          <div class="text-xs text-gray-400">{{ card.subtitle }}</div>
-        </CardContent>
+          </CardTitle>
+          <CardDescription class="text-base font-bold text-foreground">
+            {{ card.value }}
+          </CardDescription>
+          <p v-if="card.subtitle" class="text-xs text-muted-foreground">{{ card.subtitle }}</p>
+        </CardHeader>
       </Card>
     </div>
 
-    <!-- Table -->
-    <div class="mt-6">
-      <h3 class="font-semibold mb-2 text-center sm:text-left">
-        PuroKalusugan Sites
-      </h3>
-      <div class="border rounded-lg overflow-x-auto">
-        <Table class="min-w-[500px] w-full">
+    <!-- Compact Table -->
+    <div class="space-y-2">
+      <h3 class="font-semibold text-sm text-center sm:text-left">Sites ({{ props.sites.length }})</h3>
+      <div class="border rounded-lg overflow-hidden">
+        <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Barangay Code</TableHead>
-              <TableHead>Barangay</TableHead>
-              <TableHead>Status</TableHead>
+            <TableRow class="h-10">
+              <TableHead class="text-xs font-semibold py-2">Code</TableHead>
+              <TableHead class="text-xs font-semibold py-2">Barangay</TableHead>
+              <TableHead class="text-xs font-semibold py-2 text-center w-20">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="(row, i) in sites" :key="i">
-              <TableCell>{{ row.code }}</TableCell>
-              <TableCell>{{ row.name }}</TableCell>
-              <TableCell>
-                <Badge :variant="row.status === 'Active' ? 'default' : 'destructive'">
+            <TableRow v-for="(row, i) in props.sites" :key="i" class="h-12">
+              <TableCell class="text-sm py-2 font-mono">{{ row.code }}</TableCell>
+              <TableCell class="text-sm py-2">{{ row.name }}</TableCell>
+              <TableCell class="text-center py-2">
+                <Badge :variant="row.status === 'Active' ? 'default' : 'destructive'" class="text-xs px-2 py-0.5">
                   {{ row.status }}
                 </Badge>
               </TableCell>
