@@ -173,7 +173,7 @@ function handleEdit(program: Program) {
 function confirmEdit() {
   axios
     .put("/program/update", {
-      program_name: programToEdit.value.program_name,
+      program_id: programToEdit.value.program_id,
       program_name: programToEdit.value.program_name,
       program_code: programToEdit.value.program_code,
       program_status: programToEdit.value.program_status,
