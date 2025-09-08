@@ -14,8 +14,8 @@ interface MarkerPayload {
   title: string
   population?: number
   region: string
-  level: "province" | "municipality" | "barangay"
-  status: string
+  level?: "province" | "municipality" | "barangay"
+  status?: string
 }
 
 const selectedProvince = ref<ProvincePayload | null>(null)
@@ -25,10 +25,21 @@ const selectProvince = (province: ProvincePayload) => {
   selectedProvince.value = province
   selectedMarker.value = null
 }
-const selectMarker = (marker: MarkerPayload) => {
-  selectedMarker.value = marker
+const selectMarker = (marker: {
+  title: string
+  population?: number
+  region: string
+  level?: "province" | "municipality" | "barangay"
+  status?: string
+}) => {
+  selectedMarker.value = {
+    ...marker,
+    level: marker.level ?? "barangay", // fallback
+    status: marker.status ?? "Active"  // fallback
+  } as MarkerPayload
   selectedProvince.value = null
 }
+
 
 const selectRegion = () => {
   selectedProvince.value = null;
