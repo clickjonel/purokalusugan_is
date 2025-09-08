@@ -25,10 +25,16 @@ import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 
 
+interface Program {
+  program_name?: string;
+  program_code?: string;
+  program_status?: boolean;
+  [key: string]: any
+}
 
 const router = useRouter();
 const programs = ref([]);
-const currentList = ref([]);
+const currentList = ref<Program[]>([]);
 let searchKeyword = ref("");
 let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
@@ -40,12 +46,6 @@ let programToEdit = ref<Program>({
   program_code: "",
   program_status: true,
 });
-
-interface Program {
-  program_name: string;
-  program_code: string;
-  program_status: boolean;
-}
 
 const program = ref<Program>({
   program_name: "",
