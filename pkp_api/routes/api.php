@@ -20,6 +20,18 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticationController::class, 'login']);
 
+//Programs
+Route::group([
+    'prefix' => 'program'
+], function () {
+    Route::post('/create', [ProgramsController::class, 'createProgram']);
+    Route::get('/list', [ProgramsController::class, 'getPrograms']);
+    Route::get('/find', action: [ProgramsController::class, 'getProgram']);
+    Route::put('/update', [ProgramsController::class, 'updateProgram']);
+    Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
+    Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);    
+});
+
 //Indicators
 Route::group([
     'prefix' => 'indicator'
@@ -30,18 +42,6 @@ Route::group([
     Route::put('/update', [PkpIndicatorController::class, 'updateIndicator']);
     Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
 });
-
-//Programs
-Route::group([
-    'prefix' => 'program'
-], function () {
-    Route::post('/create', [ProgramsController::class, 'createProgram']);
-    Route::get('/list', [ProgramsController::class, 'getPrograms']);
-    Route::get('/find', action: [ProgramsController::class, 'getProgram']);
-    Route::put('/update', [ProgramsController::class, 'updateProgram']);
-    Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
-});
-
 
 //HRH User
 Route::group([

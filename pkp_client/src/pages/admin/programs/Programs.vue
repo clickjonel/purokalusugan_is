@@ -42,7 +42,7 @@ let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
 let isDeleteModalOpen = ref(false);
 let programIdToDelete = ref(0);
-let programStatus = ref(true);
+let programStatus = ref("");
 let isEditModalOpen = ref(false);
 let isStatusModalOpen = ref(false);
 let programToEdit = ref<Program>({
@@ -218,12 +218,22 @@ function confirmEdit() {
 function handleStatus(program: Program, status: string) {
   if (status == "deactivate") {
     programToEdit.value = { ...program, program_status: false }
+    programStatus.value = "Deactivate";
   }
   if (status == "activate") {
     programToEdit.value = { ...program, program_status: true }
+    programStatus.value = "Activate";
   }
   isStatusModalOpen.value = true;
   console.log('details here', programToEdit)
+}
+function showStatusLabel(status:number){
+  if(status == 1){
+    return "Active"
+  }
+  if(status == 0){
+    return "Inactive"
+  }
 }
 
 function confirmProgramStatusUpdate() {
@@ -299,6 +309,7 @@ onMounted(() => {
               <TableHead>Program Id</TableHead>
               <TableHead>Program Code</TableHead>
               <TableHead>Program Name</TableHead>
+              <TableHead>Program Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -306,6 +317,7 @@ onMounted(() => {
               <TableCell>{{ program.program_id }}</TableCell>
               <TableCell>{{ program.program_code }}</TableCell>
               <TableCell>{{ program.program_name }}</TableCell>
+              <TableCell>{{ showStatusLabel(program.status) }}</TableCell>
               <TableCell class="w-full flex justify-start items-center gap-2">
                 <Button variant="outline" size="sm" class="cursor-pointer text-xs"
                   @click="handleEdit(program)">Edit</Button>
@@ -404,28 +416,13 @@ onMounted(() => {
   <Dialog v-model:open="isStatusModalOpen">
     <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
       <DialogHeader>
-        <DialogTitle>Update Status of Program</DialogTitle>
-        <DialogDescription>Program status update</DialogDescription>
+        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogDescription>Are you sure you want to {{ programStatus}} this program?</DialogDescription>
       </DialogHeader>
-      <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
-        <form @submit.prevent="confirmProgramStatusUpdate" class="flex flex-col gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="program_code">Program Code:</label>
-            <Input type="text" class="bg-slate-200" id="program_code" placeholder="NP-0001"
-              v-model="programToEdit.program_code" readonly />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="program_name">Program Name:</label>
-            <Input type="text" id="program_name" placeholder="example: Nutrition" v-model="programToEdit.program_name"
-              required />
-          </div>
-          <!-- Add more fields as needed -->
-        </form>
-      </div>
       <DialogFooter>
-        <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
-        <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white"
-          @click="confirmEdit">Save</Button>
+        <Button type="button" class="cursor-pointer" @click="isStatusModalOpen = false">Cancel</Button>
+        <Button type="button" class="cursor-pointer text-white"
+          @click="confirmProgramStatusUpdate">{{programStatus}}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

@@ -71,4 +71,17 @@ class ProgramsController extends Controller
         ], 200);
     }
 
+    public function updateStatusOfProgram(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'program_id' => 'required|integer|exists:pkp_program,program_id',
+            'program_status' => 'nullable|boolean'            
+        ]);
+        $program = Programs::find($validatedData['program_id'])
+            ->update($validatedData);
+        return response()->json([
+            'message' => 'Updated successfully',
+            'data' => $program
+        ], 200);
+    } 
 }
