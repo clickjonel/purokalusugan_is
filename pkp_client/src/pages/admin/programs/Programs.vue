@@ -58,12 +58,12 @@ const program = ref<Program>({
 });
 
 function search() {
-  const searchTerm = searchKeyword.value.toLowerCase();  
+  const searchTerm = searchKeyword.value.toLowerCase();
   const searchedData = programs.value.filter(program => {
     const programName = program.program_name.toLowerCase();
     return programName.includes(searchTerm);
   });
-  currentList.value = searchedData;  
+  currentList.value = searchedData;
 }
 
 
@@ -123,7 +123,7 @@ function handleCreate() {
         });
       }
     })
-    .finally(() => {});
+    .finally(() => { });
 }
 
 function handleDelete(programId: number) {
@@ -227,25 +227,13 @@ onMounted(() => {
     <!-- header -->
     <div class="w-full flex justify-between items-center p-2 border">
       <div class="relative items-center">
-        <Input
-          v-model="searchKeyword"
-          id="search"
-          type="text"
-          placeholder="Search Program Name"
-          class="pl-8"
-          @input="search"
-        />
+        <Input v-model="searchKeyword" id="search" type="text" placeholder="Search Program Name" class="pl-8"
+          @input="search" />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
           <Search class="size-4 text-muted-foreground" />
         </span>
       </div>
-      <Button
-        @click="isCreateModalOpen = true"
-        variant="default"
-        class="cursor-pointer"
-        size="sm"
-        >Create</Button
-      >
+      <Button @click="isCreateModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create</Button>
     </div>
 
     <!-- table -->
@@ -265,14 +253,10 @@ onMounted(() => {
               <TableCell>{{ program.program_code }}</TableCell>
               <TableCell>{{ program.program_name }}</TableCell>
               <TableCell class="w-full flex justify-start items-center gap-2">
-                <Button variant="outline" size="sm" class="cursor-pointer text-xs" @click="handleEdit(program)">Edit</Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  class="cursor-pointer text-xs"
-                  @click="handleDelete(program.program_id)"
-                  >Delete</Button
-                >
+                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
+                  @click="handleEdit(program)">Edit</Button>
+                <Button variant="outline" size="sm" class="cursor-pointer text-xs"
+                  @click="handleDelete(program.program_id)">Delete</Button>
               </TableCell>
             </TableRow>
           </TableBody>
@@ -320,58 +304,53 @@ onMounted(() => {
       </div>
 
       <DialogFooter>
-        <Button
-          type="submit"
-          class="cursor-pointer hover:bg-red-500"
-          @click="handleClose()"
-          >Cancel</Button
-        >
-        <Button
-          type="submit"
-          class="cursor-pointer hover:bg-emerald-500 hover:text-black"
-          @click="handleCreate"
-          >Submit</Button
-        >
+        <Button type="submit" class="cursor-pointer hover:bg-red-500" @click="handleClose()">Cancel</Button>
+        <Button type="submit" class="cursor-pointer hover:bg-emerald-500 hover:text-black"
+          @click="handleCreate">Submit</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
 
   <Dialog v-model:open="isDeleteModalOpen">
-  <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-    <DialogHeader>
-      <DialogTitle>Confirm Deletion</DialogTitle>
-      <DialogDescription>Are you sure you want to delete this program?</DialogDescription>
-    </DialogHeader>
-    <DialogFooter>
-      <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
-      <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white" @click="confirmDelete">Delete</Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+    <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
+      <DialogHeader>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogDescription>Are you sure you want to delete this program?</DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
+        <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white"
+          @click="confirmDelete">Delete</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 
-<Dialog v-model:open="isEditModalOpen">
-  <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-    <DialogHeader>
-      <DialogTitle>Edit Program</DialogTitle>
-      <DialogDescription>Update the program details.</DialogDescription>
-    </DialogHeader>
-    <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
-      <form @submit.prevent="confirmEdit" class="flex flex-col gap-4">
-        <div class="flex flex-col gap-2">
-          <label for="program_code">Program Code:</label>
-          <Input type="text" class="bg-slate-200"id="program_code" placeholder="NP-0001" v-model="programToEdit.program_code" readonly />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="program_name">Program Name:</label>
-          <Input type="text" id="program_name" placeholder="example: Nutrition" v-model="programToEdit.program_name" required />
-        </div>
-        <!-- Add more fields as needed -->
-      </form>
-    </div>
-    <DialogFooter>
-      <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
-      <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white" @click="confirmEdit">Save</Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+  <Dialog v-model:open="isEditModalOpen">
+    <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
+      <DialogHeader>
+        <DialogTitle>Edit Program</DialogTitle>
+        <DialogDescription>Update the program details.</DialogDescription>
+      </DialogHeader>
+      <div class="w-full flex flex-col justify-start items-start gap-2 p-2 border">
+        <form @submit.prevent="confirmEdit" class="flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label for="program_code">Program Code:</label>
+            <Input type="text" class="bg-slate-200" id="program_code" placeholder="NP-0001"
+              v-model="programToEdit.program_code" readonly />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="program_name">Program Name:</label>
+            <Input type="text" id="program_name" placeholder="example: Nutrition" v-model="programToEdit.program_name"
+              required />
+          </div>
+          <!-- Add more fields as needed -->
+        </form>
+      </div>
+      <DialogFooter>
+        <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
+        <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white"
+          @click="confirmEdit">Save</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
