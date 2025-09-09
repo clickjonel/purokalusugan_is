@@ -21,6 +21,7 @@ class HrhUserSeeder extends Seeder
         $hrh = DB::connection('dohis')->table('dohis_hrh_user')->get();
         
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         // $hrh->each(function ($hrh){
         //     Hrh::create([
         //         'user_code' => "DOH".uniqid(),
@@ -37,6 +38,8 @@ class HrhUserSeeder extends Seeder
         //     ]);
         // });
 =======
+=======
+>>>>>>> Stashed changes
         $hrh->each(function ($hrh){
             Hrh::create([
                 'user_code' => $hrh->user_code,
@@ -53,6 +56,9 @@ class HrhUserSeeder extends Seeder
             ]);
         });
         // dd($hrh);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }
