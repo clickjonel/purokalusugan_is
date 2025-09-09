@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Check, Search } from 'lucide-vue-next'
-import { ref } from 'vue'
+import axios from "@/axios/axios";
+import { ref,onMounted } from 'vue'
 import {
   Combobox,
   ComboboxAnchor,
@@ -12,41 +13,33 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 
+
 // Region interface
 interface Region {
   region_id: number
   region_name: string
 }
 
-// Sample API data (replace with fetch/axios later)
-const apiData = {
-  message: "Data retrieved successfully",
-  data: [
-    { region_id: 1, region_name: "Region I (Ilocos Region)" },
-    { region_id: 2, region_name: "Region II (Cagayan Valley)" },
-    { region_id: 3, region_name: "Region III (Central Luzon)" },
-    { region_id: 4, region_name: "Region IV-A (CALABARZON)" },
-    { region_id: 5, region_name: "Region V (Bicol Region)" },
-    { region_id: 6, region_name: "Region VI (Western Visayas)" },
-    { region_id: 7, region_name: "Region VII (Central Visayas)" },
-    { region_id: 8, region_name: "Region VIII (Eastern Visayas)" },
-    { region_id: 9, region_name: "Region IX (Zamboanga Peninsula)" },
-    { region_id: 10, region_name: "Region X (Northern Mindanao)" },
-    { region_id: 11, region_name: "Region XI (Davao Region)" },
-    { region_id: 12, region_name: "Region XII (SOCCSKSARGEN)" },
-    { region_id: 13, region_name: "National Capital Region (NCR)" },
-    { region_id: 14, region_name: "Cordillera Administrative Region" },
-    { region_id: 15, region_name: "Bangsamoro Autonomous Region in Muslim Mindanao" },
-    { region_id: 16, region_name: "Region XIII (Caraga)" },
-    { region_id: 17, region_name: "Region IV-B (MIMAROPA)" },
-  ]
+const fetchRegions=()=>{
+  axios
+    .get("/region/list")
+    .then((response) => {
+      regions.value = response.data.data;      
+      console.log("data here", regions.value);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
 }
-
 // Assign data to regions array
-const regions = ref<Region[]>(apiData.data)
+const regions = ref<Region[]>([])
 
 // Selected region
 const selectedRegion = ref<Region | undefined>()
+
+onMounted(()=>{
+  fetchRegions();
+})
 </script>
 
 <template>
