@@ -21,7 +21,7 @@ return new class extends Migration
         // Team Has Scope
         Schema::connection('pkpulse')->create('pkp_team_scope', function (Blueprint $table) {
             $table->id('team_scope_id');
-            $table->unsignedBigInteger('purok_id');
+            $table->unsignedBigInteger('barangay_id');
             $table->unsignedBigInteger('team_id');
             $table->timestamps();
         });

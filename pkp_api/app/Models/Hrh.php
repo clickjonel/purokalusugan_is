@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Hrh extends Model
 {
     protected $table = 'pkp_hrh_user';
-    protected $primaryKey = 'hrh_user_id';
+    protected $primaryKey = 'pk_user_id';
 
     protected $fillable = [
         'user_code',

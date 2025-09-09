@@ -9,6 +9,7 @@ import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,Dialog
 import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
 import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
+import SelectBarangay from "@/components/selections/SelectBarangay.vue";
 
 interface Hrh {
     user_level: string;
@@ -125,8 +126,7 @@ function confirmDeactivateHrh(id:number){
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create
-                Hrh</Button>
+            <!-- <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button> -->
         </div>
 
         <!-- table -->
@@ -155,11 +155,19 @@ function confirmDeactivateHrh(id:number){
                                             <EllipsisVertical class="h-4 w-4" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent class="w-40 p-2">
-                                        <div class="flex flex-col gap-1">
+                                    <PopoverContent class="w-45 p-2">
+                                        <div class="flex flex-col">
                                             <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
-                                                Assign
+                                                Assign Team
+                                            </Button>
+                                            <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                                <UserRoundCog/> 
+                                                Update Details
+                                            </Button>
+                                             <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                                <UserRoundCog/> 
+                                                Update Credentials
                                             </Button>
                                             <Button @click="confirmDeactivateHrh(hrh.hrh_user_id)" variant="ghost" size="sm" class="justify-start text-xs text-red-600">
                                                 <UserLock /> 

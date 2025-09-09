@@ -7,7 +7,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
-import RegionCombobox from '@/components/RegionCombobox.vue'
+import PlaceSelection from '@/components/PlaceSelection.vue'
+import Teams from '@/pages/admin/team/Teams.vue'
 
 
 const router = createRouter({
@@ -19,10 +20,11 @@ const router = createRouter({
       component: Login,
     },
     {
-      path: '/regions',
-      name: 'region',
-      component: RegionCombobox,
+      path: '/place',
+      name: 'place',
+      component: PlaceSelection,
     },
+
     {
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
@@ -115,6 +117,24 @@ const router = createRouter({
               {
                 name: 'HRH Listing',
                 link: '/admin/hrh'
+              }
+            ]
+          }
+        },
+        {
+          path: 'teams',
+          name: 'Team',
+          component: Teams,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Teams',
+                link: '/admin/teams'
               }
             ]
           }
