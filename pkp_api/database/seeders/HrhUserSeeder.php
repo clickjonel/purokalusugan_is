@@ -20,6 +20,7 @@ class HrhUserSeeder extends Seeder
     {
         $hrh = DB::connection('dohis')->table('dohis_hrh_user')->get();
         
+<<<<<<< Updated upstream
         // $hrh->each(function ($hrh){
         //     Hrh::create([
         //         'user_code' => "DOH".uniqid(),
@@ -35,5 +36,23 @@ class HrhUserSeeder extends Seeder
         //         'user_level' => 5
         //     ]);
         // });
+=======
+        $hrh->each(function ($hrh){
+            Hrh::create([
+                'user_code' => $hrh->user_code,
+                'image' => null,
+                'username' => $hrh->username,
+                'password' => $hrh->password,
+                'first_name' => $hrh->first_name,
+                'middle_name' => $hrh->middle_name ?? null,
+                'last_name' => $hrh->last_name,
+                'suffix' => $hrh->suffix ?? null,
+                'nickname' => $hrh->nickname,
+                'account_status' => $hrh->account_status,
+                'user_level' => $hrh->user_level
+            ]);
+        });
+        // dd($hrh);
+>>>>>>> Stashed changes
     }
 }
