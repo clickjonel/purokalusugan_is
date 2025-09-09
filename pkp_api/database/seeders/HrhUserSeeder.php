@@ -20,26 +20,6 @@ class HrhUserSeeder extends Seeder
     {
         $hrh = DB::connection('dohis')->table('dohis_hrh_user')->get();
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        // $hrh->each(function ($hrh){
-        //     Hrh::create([
-        //         'user_code' => "DOH".uniqid(),
-        //         'image' => null,
-        //         'username' => $this->formatUsername($hrh->first_name, $hrh->middle_name ?? null, $hrh->last_name),
-        //         'password' => bcrypt('12345'),
-        //         'first_name' => $hrh->first_name,
-        //         'middle_name' => $hrh->middle_name ?? null,
-        //         'last_name' => $hrh->last_name,
-        //         'suffix' => $hrh->suffix ?? null,
-        //         'nickname' => $hrh->nickname,
-        //         'account_status' => 'unassigned',
-        //         'user_level' => 5
-        //     ]);
-        // });
-=======
-=======
->>>>>>> Stashed changes
         $hrh->each(function ($hrh){
             Hrh::create([
                 'user_code' => $hrh->user_code,
@@ -56,9 +36,5 @@ class HrhUserSeeder extends Seeder
             ]);
         });
         // dd($hrh);
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
 }
