@@ -5,6 +5,9 @@ use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\PkpRegionController;
+use App\Http\Controllers\PkpProvinceController;
+use App\Http\Controllers\PkpMunicipalityController;
+use App\Http\Controllers\PkpBarangayController;
 use App\Http\Controllers\GeoJsonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,4 +63,28 @@ Route::group([
 ], function () {
     Route::get('/list', [PkpRegionController::class, 'getRegions']);
     Route::get('/find', [PkpRegionController::class, 'getRegion']);
+});
+
+//PKP Province
+Route::group([
+    'prefix' => 'province',
+], function () {
+    Route::get('/list', [PkpProvinceController::class, 'getProvinces']);
+    Route::get('/find', [PkpProvinceController::class, 'getProvince']);
+});
+
+//PKP Municipality
+Route::group([
+    'prefix' => 'municipality',
+], function () {
+    Route::get('/list', [PkpMunicipalityController::class, 'getMunicipalities']);
+    Route::get('/find', [PkpMunicipalityController::class, 'getMunicipality']);
+});
+
+//PKP Barangay
+Route::group([
+    'prefix' => 'barangay',
+], function () {
+    Route::get('/list', [PkpBarangayController::class, 'getBarangays']);
+    Route::get('/find', [PkpBarangayController::class, 'getBarangay']);
 });

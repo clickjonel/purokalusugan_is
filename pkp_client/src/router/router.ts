@@ -6,6 +6,7 @@ import Login from '@/pages/public/Login.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
+import RegionCombobox from '@/components/RegionCombobox.vue'
 
 
 const router = createRouter({
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/',
       name: 'Login',
       component: Login,
+    },
+    {
+      path: '/regions',
+      name: 'region',
+      component: RegionCombobox,
     },
     {
       path: '/dashboard',
