@@ -81,7 +81,7 @@ console.log("Provinces:", provinces);
 
       <ComboboxList class="max-h-60 overflow-y-auto">
         <ComboboxEmpty>No province found.</ComboboxEmpty>
-        <ComboboxGroup>
+        <ComboboxGroup class="h-60 overflow-y-scroll">
           <ComboboxItem v-for="province in provinces" :key="province.province_id" :value="province">
             {{ province.province_name }}
             <ComboboxItemIndicator>

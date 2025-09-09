@@ -77,7 +77,7 @@ watch(
 
     <ComboboxList class="max-h-60 overflow-y-auto">
       <ComboboxEmpty>No municipality found.</ComboboxEmpty>
-      <ComboboxGroup>
+      <ComboboxGroup class="h-60 overflow-y-scroll">
         <ComboboxItem v-for="m in municipalities" :key="m.municipality_id" :value="m">
           {{ m.municipality_name }}
           <ComboboxItemIndicator>

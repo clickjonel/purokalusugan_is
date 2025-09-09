@@ -19,26 +19,31 @@ interface Barangay {
 }
 
 const props = defineProps<{
-  modelValue?: Barangay
+  modelValue?: number          // 👈 expect just the barangay_id
   municipalityId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: Barangay | undefined): void
+  (e: "update:modelValue", value: number | undefined): void
 }>()
 
 const barangays = ref<Barangay[]>([])
-const selectedBarangay = ref<Barangay | undefined>(props.modelValue)
+const selectedBarangay = ref<Barangay | undefined>()
 
-// Sync prop ↔ local
-watch(() => props.modelValue, (val) => {
-  selectedBarangay.value = val
-})
+// keep local selection in sync when modelValue changes
+watch(
+  () => props.modelValue,
+  (id) => {
+    selectedBarangay.value = barangays.value.find(b => b.barangay_id === id)
+  }
+)
+
+// emit only the id when selection changes
 watch(selectedBarangay, (val) => {
-  emit("update:modelValue", val)
+  emit("update:modelValue", val?.barangay_id)
 })
 
-// Fetch barangays when municipality changes
+// fetch barangays when municipalityId changes
 watch(
   () => props.municipalityId,
   async (newMunicipalityId) => {
@@ -49,9 +54,16 @@ watch(
     }
     try {
       const { data } = await axios.get("/barangay/municipality/find", {
-        params: { municipality_id: newMunicipalityId }
+        params: { municipality_id: newMunicipalityId },
       })
       barangays.value = data.data ?? []
+
+      // reselect if current id exists in the new list
+      if (props.modelValue) {
+        selectedBarangay.value = barangays.value.find(
+          (b) => b.barangay_id === props.modelValue
+        )
+      }
     } catch (error) {
       console.error("Error fetching barangays:", error)
       barangays.value = []
@@ -73,7 +85,7 @@ watch(
       </div>
     </ComboboxAnchor>
 
-    <ComboboxList>
+    <ComboboxList class="w-full max-h-60 overflow-y-auto">
       <ComboboxEmpty>No barangay found.</ComboboxEmpty>
       <ComboboxGroup class="h-60 overflow-y-scroll">
         <ComboboxItem v-for="barangay in barangays" :key="barangay.barangay_id" :value="barangay">
