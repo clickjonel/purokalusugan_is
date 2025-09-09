@@ -1,7 +1,7 @@
+
 <script setup lang="ts">
 import { Check, Search } from 'lucide-vue-next'
-import axios from "@/axios/axios";
-import { ref,onMounted } from 'vue'
+import { ref, defineProps, defineEmits, watch } from 'vue'
 import {
   Combobox,
   ComboboxAnchor,
@@ -13,33 +13,32 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 
-
-// Region interface
 interface Region {
   region_id: number
   region_name: string
 }
 
-const fetchRegions=()=>{
-  axios
-    .get("/region/list")
-    .then((response) => {
-      regions.value = response.data.data;      
-      console.log("data here", regions.value);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-}
-// Assign data to regions array
-const regions = ref<Region[]>([])
+const props = defineProps<{
+  regions: Region[]
+  modelValue?: Region
+}>()
 
-// Selected region
-const selectedRegion = ref<Region | undefined>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Region | undefined): void
+}>()
 
-onMounted(()=>{
-  fetchRegions();
+const selectedRegion = ref<Region | undefined>(props.modelValue)
+
+watch(selectedRegion, (val) => {
+  emit('update:modelValue', val)
 })
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    selectedRegion.value = val
+  }
+)
 </script>
 
 <template>
@@ -55,10 +54,10 @@ onMounted(()=>{
         </div>
       </ComboboxAnchor>
 
-      <ComboboxList>
+      <ComboboxList class="max-h-60 overflow-y-auto">
         <ComboboxEmpty>No region found.</ComboboxEmpty>
         <ComboboxGroup>
-          <ComboboxItem v-for="region in regions" :key="region.region_id" :value="region">
+          <ComboboxItem v-for="region in props.regions" :key="region.region_id" :value="region">
             {{ region.region_name }}
             <ComboboxItemIndicator>
               <Check class="ml-auto size-4" />
@@ -67,10 +66,5 @@ onMounted(()=>{
         </ComboboxGroup>
       </ComboboxList>
     </Combobox>
-
-    <!-- Example: Show selected region_id -->
-    <p v-if="selectedRegion" class="mt-4 text-sm text-gray-600">
-      Selected Region ID: <b>{{ selectedRegion.region_id }}</b>
-    </p>
   </div>
 </template>

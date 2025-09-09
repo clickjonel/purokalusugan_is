@@ -7,7 +7,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
-import RegionCombobox from '@/components/RegionCombobox.vue'
+import PlaceCombobox from '@/components/PlaceCombobox.vue'
+import ReusableBarangayList from '@/components/ReusableBarangayList.vue'
 
 
 const router = createRouter({
@@ -19,9 +20,14 @@ const router = createRouter({
       component: Login,
     },
     {
-      path: '/regions',
-      name: 'region',
-      component: RegionCombobox,
+      path: '/place',
+      name: 'place',
+      component: PlaceCombobox,
+    },
+    {
+      path: '/barangays',
+      name: 'barangay',
+      component: ReusableBarangayList,
     },
     {
       path: '/dashboard',
