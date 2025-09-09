@@ -53,10 +53,9 @@ onMounted(() => {
         </div>
       </ComboboxAnchor>
 
-      <!-- ✅ Scrollable dropdown -->
-      <ComboboxList class="max-h-60 overflow-y-auto">
+      <ComboboxList>
         <ComboboxEmpty>No barangay found.</ComboboxEmpty>
-        <ComboboxGroup>
+        <ComboboxGroup class="h-60 overflow-y-scroll">
           <ComboboxItem v-for="barangay in barangays" :key="barangay.barangay_id" :value="barangay">
             {{ barangay.barangay_name }}
             <ComboboxItemIndicator>

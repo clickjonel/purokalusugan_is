@@ -12,9 +12,6 @@ import {
   ComboboxItemIndicator,
   ComboboxList,
 } from '@/components/ui/combobox'
-import {
-  ScrollArea
-} from '@/components/ui/scroll-area'
 
 interface Barangay {
   barangay_id: number
@@ -76,17 +73,15 @@ watch(
       </div>
     </ComboboxAnchor>
 
-    <ComboboxList class="max-h-60 overflow-y-auto">
+    <ComboboxList>
       <ComboboxEmpty>No barangay found.</ComboboxEmpty>
-      <ComboboxGroup>
-        <ScrollArea class="h-[200px] w-[350px] rounded-md border p-4">
-          <ComboboxItem v-for="barangay in barangays" :key="barangay.barangay_id" :value="barangay">
-            {{ barangay.barangay_name }}
-            <ComboboxItemIndicator>
-              <Check class="ml-auto size-4" />
-            </ComboboxItemIndicator>
-          </ComboboxItem>
-        </ScrollArea>
+      <ComboboxGroup class="h-60 overflow-y-scroll">
+        <ComboboxItem v-for="barangay in barangays" :key="barangay.barangay_id" :value="barangay">
+          {{ barangay.barangay_name }}
+          <ComboboxItemIndicator>
+            <Check class="ml-auto size-4" />
+          </ComboboxItemIndicator>
+        </ComboboxItem>
       </ComboboxGroup>
     </ComboboxList>
   </Combobox>
