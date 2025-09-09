@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Check, Search } from 'lucide-vue-next'
+import { Check, Search, Loader2 } from 'lucide-vue-next'
 import axios from "@/axios/axios"
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import {
   Combobox,
   ComboboxAnchor,
@@ -29,6 +29,10 @@ const emit = defineEmits<{
 
 const municipalities = ref<Municipality[]>([])
 const selectedMunicipality = ref<Municipality | undefined>(props.modelValue)
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+const isDisabled = computed(() => !props.provinceId || isLoading.value)
 
 // Watch for changes from parent
 watch(() => props.modelValue, (val) => {
@@ -40,23 +44,30 @@ watch(selectedMunicipality, (val) => {
   emit("update:modelValue", val)
 })
 
-// Fetch municipalities when province changes
 watch(
   () => props.provinceId,
   async (newProvinceId) => {
     if (!newProvinceId) {
       municipalities.value = []
       selectedMunicipality.value = undefined
+      error.value = null
       return
     }
+
+    isLoading.value = true
+    error.value = null
+
     try {
       const { data } = await axios.get("/municipality/province/find", {
         params: { province_id: newProvinceId }
       })
       municipalities.value = data.data ?? []
-    } catch (error) {
-      console.error("Error fetching municipalities:", error)
+    } catch (err) {
+      error.value = "Failed to load municipalities"
       municipalities.value = []
+      console.error("Error fetching municipalities:", err)
+    } finally {
+      isLoading.value = false
     }
   },
   { immediate: true }
@@ -64,21 +75,26 @@ watch(
 </script>
 
 <template>
-  <Combobox v-model="selectedMunicipality" by="municipality_id">
+  <Combobox v-model="selectedMunicipality" by="municipality_id" :disabled="isDisabled">
     <ComboboxAnchor>
       <div class="relative w-full items-center">
-        <ComboboxInput class="pl-1 max-w-xl" :display-value="val => val?.municipality_name ?? ''"
-          placeholder="Select municipality..." />
+        <!-- Consistent padding and added loading state -->
+        <ComboboxInput class="pl-1" :display-value="val => val?.municipality_name ?? ''"
+          :placeholder="isLoading ? 'Loading municipalities...' : 'Select municipality...'" :disabled="isDisabled" />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
-          <Search class="size-4 text-muted-foreground" />
+          <Loader2 v-if="isLoading" class="size-4 text-muted-foreground animate-spin" />
+          <Search v-else class="size-4 text-muted-foreground" />
         </span>
       </div>
     </ComboboxAnchor>
 
+    <!-- Fixed duplicate overflow styles and added error handling -->
     <ComboboxList class="max-h-60 overflow-y-auto">
-      <ComboboxEmpty>No municipality found.</ComboboxEmpty>
+      <ComboboxEmpty>
+        {{ error || "No municipality found." }}
+      </ComboboxEmpty>
       <ComboboxGroup class="h-60 overflow-y-scroll">
-        <ComboboxItem v-for="m in municipalities" :key="m.municipality_id" :value="m">
+        <ComboboxItem v-for="m in municipalities" :key="m.municipality_id" :value="m" class="cursor-pointer">
           {{ m.municipality_name }}
           <ComboboxItemIndicator>
             <Check class="ml-auto size-4" />

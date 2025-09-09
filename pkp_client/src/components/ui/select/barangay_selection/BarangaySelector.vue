@@ -25,11 +25,6 @@ interface Municipality {
   municipality_name: string
 }
 
-interface Barangay {
-  barangay_id: number
-  barangay_name: string
-}
-
 interface SelectedLocation {
   province?: Province
   municipality?: Municipality
