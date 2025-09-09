@@ -12,14 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         // Team
-        Schema::connection('pkpulse')->create('teams', function (Blueprint $table) {
-            $table->id();
+        Schema::connection('pkpulse')->create('pkp_team', function (Blueprint $table) {
+            $table->id('team_id');
+            $table->string('team_name');
             $table->timestamps();
         });
 
         // Team Has Scope
+        Schema::connection('pkpulse')->create('pkp_team_scope', function (Blueprint $table) {
+            $table->id('team_scope_id');
+            $table->unsignedBigInteger('purok_id');
+            $table->unsignedBigInteger('team_id');
+            $table->timestamps();
+        });
 
         // Team Has Members
+        Schema::connection('pkpulse')->create('pkp_team_member', function (Blueprint $table) {
+            $table->id('team_member_id');
+            $table->unsignedBigInteger('hrh_id');
+            $table->unsignedBigInteger('team_id');
+            $table->timestamps();
+        });
+
     }
 
     /**
