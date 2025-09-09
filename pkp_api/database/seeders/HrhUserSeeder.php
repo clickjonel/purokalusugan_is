@@ -35,6 +35,5 @@ class HrhUserSeeder extends Seeder
         //         'user_level' => 5
         //     ]);
         // });
-
     }
 }

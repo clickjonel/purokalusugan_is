@@ -77,6 +77,19 @@ class PkpIndicatorController extends Controller
             'message' => 'Deleted successfully'
         ], 200);
     }
+    public function updateStatusOfProgram(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'indicator_id' => 'required|integer|exists:pkp_indicators,indicator_id',
+            'indicator_status' => 'nullable|boolean'            
+        ]);
+        $indicator_id = Pkp_indicator::find($validatedData['indicator_id'])
+            ->update($validatedData);
+        return response()->json([
+            'message' => 'Updated successfully',
+            'data' => $indicator_id
+        ], 200);
+    } 
 }
 
 

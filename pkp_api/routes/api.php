@@ -24,7 +24,7 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 //Programs
 Route::group([
     'prefix' => 'program',
-    'middleware' => 'auth:sanctum'
+    // 'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [ProgramsController::class, 'createProgram']);
     Route::get('/list', [ProgramsController::class, 'getPrograms']);
@@ -43,6 +43,7 @@ Route::group([
     Route::get('/find', [PkpIndicatorController::class, 'getIndicator']);
     Route::put('/update', [PkpIndicatorController::class, 'updateIndicator']);
     Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
+    Route::put('/status', [PkpIndicatorController::class, 'updateStatusOfProgram']);
 });
 
 //HRH User

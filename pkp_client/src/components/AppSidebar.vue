@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from "@/components/ui/button"
-import { SquareActivity, HousePlus } from 'lucide-vue-next';
+import { SquareActivity, HousePlus,AlertTriangle } from 'lucide-vue-next';
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 
 // Menu items.
@@ -42,6 +42,11 @@ const items = [
     title: "Programs",
     url: "/admin/programs",
     icon: HousePlus,
+  },
+  {
+    title: "Indicators",
+    url: "/admin/indicators",
+    icon: AlertTriangle,
   },
   {
     title: "Search",

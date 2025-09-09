@@ -29,13 +29,6 @@ import {
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 
-interface Program {
-  program_name: string;
-  program_code: any;
-  program_status: boolean;
-  [key: string]: any
-}
-
 const router = useRouter();
 const programs = ref<Program[]>([]);
 const currentList = ref<Program[]>([]);
@@ -115,7 +108,7 @@ function handleCreate() {
     .then((response) => {
       console.log(response.data);
       isCreateModalOpen.value = false;
-      router.push({ path: "/programs" });
+      router.push({ path: "/admin/programs" });
       toast("Program created successfully!", {
         description: response.data.message,
         action: {
@@ -123,7 +116,7 @@ function handleCreate() {
           onClick: () => toast.dismiss(),
         },
       });
-      fetchPrograms();
+      fetchList();
     })
     .catch((error) => {
       console.error(error.response.data);
@@ -138,7 +131,6 @@ function handleCreate() {
       }
     })
     .finally(() => { });
-
 }
 
 function handleDelete(programId: number) {
@@ -162,7 +154,7 @@ function confirmDelete() {
           onClick: () => toast.dismiss(),
         },
       });
-      fetchPrograms();
+      fetchList();
       isDeleteModalOpen.value = false;
     })
     .catch((error) => {
@@ -202,7 +194,7 @@ function confirmEdit() {
           onClick: () => toast.dismiss(),
         },
       });
-      fetchPrograms();
+      fetchList();
       isEditModalOpen.value = false;
     })
     .catch((error) => {
@@ -249,7 +241,6 @@ function determineStatusColor(status: boolean) {
   }
   return "Unknown"
 }
-
 function confirmProgramStatusUpdate() {
   axios
     .put("/program/status", {
@@ -265,7 +256,7 @@ function confirmProgramStatusUpdate() {
           onClick: () => toast.dismiss(),
         },
       });
-      fetchPrograms();
+      fetchList();
       isStatusModalOpen.value = false;
 
     })
@@ -282,7 +273,7 @@ function confirmProgramStatusUpdate() {
       }
     });
 }
-const fetchPrograms = () => {
+const fetchList = () => {
   axios
     .get("/program/list")
     .then((response) => {
@@ -296,7 +287,7 @@ const fetchPrograms = () => {
 };
 
 onMounted(() => {
-  fetchPrograms();
+  fetchList();
 });
 
 
