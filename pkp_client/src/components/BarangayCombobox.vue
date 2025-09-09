@@ -12,6 +12,9 @@ import {
   ComboboxItemIndicator,
   ComboboxList,
 } from '@/components/ui/combobox'
+import {
+  ScrollArea
+} from '@/components/ui/scroll-area'
 
 interface Barangay {
   barangay_id: number
