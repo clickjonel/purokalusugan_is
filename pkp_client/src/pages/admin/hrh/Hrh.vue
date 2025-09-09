@@ -3,42 +3,12 @@ import { onMounted, ref } from "vue"
 import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input'
-import { Search,EllipsisVertical  } from "lucide-vue-next"
+import { Search,EllipsisVertical,UserRoundCog,UserLock } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog'
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger } from '@/components/ui/dialog'
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
+import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
+import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
 
 interface Hrh {
     user_level: string;
@@ -133,6 +103,14 @@ function closeCreateHrhModal() {
     resetCreateHrhForm()
 }
 
+function openAssignHrhModal(hrh:Hrh){
+    console.log(hrh)
+}
+
+function confirmDeactivateHrh(id:number){
+    console.log(id)
+}
+
 </script>
 
 
@@ -171,32 +149,25 @@ function closeCreateHrhModal() {
                             <TableCell>{{ hrh.last_name }}</TableCell>
                             <TableCell>{{ hrh.nickname }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
-                                <!-- <Button variant="outline" size="sm" class="cursor-pointer text-xs">Assign</Button>
-                                <Button variant="outline" size="sm" class="cursor-pointer text-xs">Deactivate</Button> -->
-                                
-                                <!-- <Button @click="actionsPopver = true" variant="ghost" size="icon" class="cursor-pointer text-xs">
-                                    <EllipsisVertical/>
-                                </Button> -->
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="ghost" size="icon" class="cursor-pointer">
-                                                <EllipsisVertical class="h-4 w-4" />
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="ghost" size="icon" class="cursor-pointer">
+                                            <EllipsisVertical class="h-4 w-4" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-40 p-2">
+                                        <div class="flex flex-col gap-1">
+                                            <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                                <UserRoundCog/> 
+                                                Assign
                                             </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent class="w-40 p-2">
-                                            <div class="flex flex-col gap-1">
-                                                <Button variant="ghost" size="sm" class="justify-start text-xs">
-                                                    Edit
-                                                </Button>
-                                                <Button variant="ghost" size="sm" class="justify-start text-xs">
-                                                    Assign
-                                                </Button>
-                                                <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">
-                                                    Deactivate
-                                                </Button>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                            <Button @click="confirmDeactivateHrh(hrh.hrh_user_id)" variant="ghost" size="sm" class="justify-start text-xs text-red-600">
+                                                <UserLock /> 
+                                                Deactivate
+                                            </Button>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
                             </TableCell>
                         </TableRow>
                     </TableBody>
