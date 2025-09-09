@@ -9,7 +9,7 @@ use App\Models\Pkp_barangay;
 
 class PkpBarangayController extends Controller
 {
-    public function getMunicipalities(): JsonResponse
+    public function getBarangays(): JsonResponse
     {
         $data = Pkp_barangay::all();
         return response()->json([
@@ -17,7 +17,7 @@ class PkpBarangayController extends Controller
             'data' => $data
         ], 200);
     }
-    public function getMunicipality(Request $request): JsonResponse
+    public function getBarangay(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'barangay_id' => 'required|integer|exists:pkp_barangay,barangay_id',
