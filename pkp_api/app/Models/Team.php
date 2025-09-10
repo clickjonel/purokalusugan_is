@@ -16,7 +16,7 @@ class Team extends Model
         'team_name',
     ];
 
-    public function scope():HasMany
+    public function scopes():HasMany
     {
         return $this->hasMany(TeamScope::class, 'team_id', 'team_id');
     }
