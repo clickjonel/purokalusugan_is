@@ -45,6 +45,7 @@ Route::group([
     Route::get('/list', [TeamController::class, 'list']);
     Route::get('/find', [TeamController::class, 'getTeam']);
     Route::post('/member/create', [TeamController::class, 'saveMember']);
+    Route::delete('/member/remove', [TeamController::class, 'removeMember']);
 });
 
 Route::group([

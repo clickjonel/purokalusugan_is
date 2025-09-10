@@ -20,7 +20,7 @@ class PkpEventsController extends Controller
             'event_proponent' => 'string',     
             'event_partner' => 'string',     
             'event_scope' => 'string',     
-            'is_pk_site' => 'boolean',     
+            'is_pk_site' => 'integer',     
         ]);
         $data=Pkp_events::create($validatedData);
          return response()->json([
@@ -43,13 +43,13 @@ class PkpEventsController extends Controller
             'event_id' => 'required|integer|exists:pkp_events,event_id',
             'event_date' => 'required|date',
             'event_venue' => 'string',     
-            'event_budget' => 'decimal',     
-            'event_actual_budget' => 'decimal',     
+            'event_budget' => 'numeric',     
+            'event_actual_budget' => 'numeric',     
             'event_fund_source' => 'string',     
             'event_proponent' => 'string',     
             'event_partner' => 'string',     
             'event_scope' => 'string',     
-            'is_pk_site' => 'boolean'         
+            'is_pk_site' => 'integer'         
         ]);
         $data = Pkp_events::find($validatedData['event_id'])
             ->update($validatedData);
