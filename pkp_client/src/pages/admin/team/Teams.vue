@@ -7,16 +7,12 @@ import { Search,EllipsisVertical,UserRoundCog,UserLock } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
 import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
-import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle } from '@/components/ui/dialog'
+import { useRouter } from "vue-router";
 
-
+const router = useRouter()
 var searchKeyword = ref('')
 
 const teams = ref<Team[]>([]);
-
-const team = ref<Team>({
-    team_name:''
-});
 
 const popovers = ref({
     createPopover:{
@@ -24,16 +20,6 @@ const popovers = ref({
             team_name:'',
             selectedMembers:[],
         },
-    }
-})
-
-const modals = ref({
-    manageMembers:{
-        show:false,
-        fields:{
-
-        },
-        team:{}
     }
 })
 
@@ -55,6 +41,20 @@ function fetchTeams(){
 
     })
 }
+
+// function fetchHRHList(){
+//     axios.get('/hrh/list')
+//     .then((response) => {
+//         hrhList.value = response.data.list
+//         console.log(hrhList.value)
+//     })
+//     .catch((error) => {
+//         console.log(error)
+//     })
+//     .finally(() => {
+
+//     })
+// }
 
 function saveTeam(){
     if(popovers.value.createPopover.fields.team_name !== ''){
@@ -97,8 +97,10 @@ function saveTeam(){
     }
 }
 
+
 interface Team {
     team_name:string,
+    team_id:number
 }
 
 
@@ -163,7 +165,7 @@ interface Team {
                                                 <UserRoundCog/> 
                                                 Manage Scopes
                                             </Button>
-                                             <Button @click="modals.manageMembers.show = true" variant="ghost" size="sm" class="justify-start text-xs">
+                                             <Button @click="router.push({path:`/team/members/manage/${team.team_id}`})" variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
                                                 Manage Members
                                             </Button>
@@ -186,63 +188,6 @@ interface Team {
             <span>Pagination Here</span>
         </div>
     </div>
-
-     <Dialog v-model:open="modals.manageMembers.show">
-        <!-- <DialogTrigger /> -->
-        <DialogContent class="font-poppins sm:max-w-[500px] md:max-w-[1000px] lg:max-w-[1200px]">
-
-            <DialogHeader>
-                <DialogTitle class="">Team Name: Manage Members</DialogTitle>
-                <DialogDescription>This form is for managing the members of the team. Add/Remove Members of the Team as well as roles of each member</DialogDescription>
-            </DialogHeader>
-
-            <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
-                <div class="w-full flex flex-col justify-start items-center">
-                    <span class="w-full font-semibold">Team Members</span>
-                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Member Name</TableHead>
-                                <TableHead>Member Role</TableHead>
-                                <TableHead></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>Member 1</TableCell>
-                                <TableCell>Team Leader</TableCell>
-                                <TableCell class="w-full flex justify-end items-center gap-2">
-                                   <Button variant="destructive" size="sm" class="justify-start text-xs">Remove</Button>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>Member 1</TableCell>
-                                <TableCell>Team Leader</TableCell>
-                                <TableCell class="w-full flex justify-end items-center gap-2">
-                                   <Button variant="destructive" size="sm" class="justify-start text-xs">Remove</Button>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>Member 1</TableCell>
-                                <TableCell>Team Leader</TableCell>
-                                <TableCell class="w-full flex justify-end items-center gap-2">
-                                   <Button variant="destructive" size="sm" class="justify-start text-xs">Remove</Button>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </div>
-            </div>
-
-            <DialogFooter>
-                <!-- <Button @click="closeCreateHrhModal" variant="outline" class="cursor-pointer bg-red-500 text-white"
-                    size="sm">Cancel</Button>
-                <Button @click="createHrhUser" variant="outline" class="cursor-pointer bg-emerald-500 text-white"
-                    size="sm">Create</Button> -->
-            </DialogFooter>
-
-        </DialogContent>
-    </Dialog>
     
 
 </template>

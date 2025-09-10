@@ -36,6 +36,16 @@ Route::group([
     Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);
 });
 
+
+// Team
+Route::group([
+    'prefix' => 'team'
+], function () {
+    Route::post('/create', [TeamController::class, 'create']);
+    Route::get('/list', [TeamController::class, 'list']);
+    Route::get('/find', [TeamController::class, 'getTeam']);
+});
+
 Route::group([
     'prefix' => 'indicator',
     'middleware' => 'auth:sanctum'
