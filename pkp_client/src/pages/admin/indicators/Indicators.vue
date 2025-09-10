@@ -43,7 +43,8 @@ import { toast } from "vue-sonner";
 const router = useRouter();
 const indicators = ref<Indicator[]>([]);
 const currentList = ref<Indicator[]>([]);
-const programs = ref<Program[]>([]);
+const programs = ref<Program[]>([]); 
+const disaggregations = ref<Disaggregation[]>([]); 
 const selectedProgram = ref<Program | undefined>()
 const indicatorCode = ref();
 let searchKeyword = ref("");
@@ -97,6 +98,11 @@ const program = ref<Program>({
     program_code: "",
     program_status: true,
 });
+interface Disaggregation {
+    disaggregation_id: number;
+    disaggregation_code: number;
+    disaggregation_name: string;    
+}
 function search() {
     const searchTerm = searchKeyword.value.toLowerCase();
     const searchedData = indicators.value.filter(indicator => {
@@ -241,7 +247,7 @@ function handleCreate() {
             .then((response) => {
                 console.log(response.data);
                 isCreateModalOpen.value = false;
-                router.push({ path: "/indicators" });
+                router.push({ path: "/admin/indicators" });
                 toast("Record created successfully!", {
                     description: response.data.message,
                     action: {
@@ -347,9 +353,21 @@ const fetchPrograms = () => {
             console.error("Error fetching programs:", error);
         });
 };
+const fetchDisaggregations = () => {
+    axios
+        .get("/disaggregation/list")
+        .then((response) => {
+            disaggregations.value = response.data.data;
+            console.log("disaggregations here", disaggregations.value);
+        })
+        .catch((error) => {
+            console.error("Error fetching programs:", error);
+        });
+};
 onMounted(() => {
     fetchList();
     fetchPrograms();
+    fetchDisaggregations();
 });
 </script>
 <template>
@@ -383,13 +401,19 @@ onMounted(() => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="indicator in currentList">
-                            <TableCell>{{ indicator.indicator_id }}</TableCell>
-                            <TableCell>{{ indicator.program_id }}</TableCell>
-                            <TableCell>{{ indicator.indicator_code }}</TableCell>
-                            <TableCell>{{ indicator.indicator_name }}</TableCell>
-                            <TableCell>{{ indicator.indicator_description }}</TableCell>
-                            <TableCell>{{ showIndicatorScope(indicator.indicator_scope) }}</TableCell>
+                        <TableRow v-for="indicator in currentList" class="table-fixed w-full">
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                indicator.indicator_id }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                indicator.program_id }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                indicator.indicator_code }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                indicator.indicator_name }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                indicator.indicator_description }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
+                                showIndicatorScope(indicator.indicator_scope) }}</TableCell>
                             <TableCell :class=determineStatusColor(indicator.indicator_status)>{{
                                 showStatusLabel(indicator.indicator_status) }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
@@ -433,7 +457,7 @@ onMounted(() => {
     </div>
     <Dialog v-model:open="isCreateModalOpen">
         <DialogTrigger />
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[50rem] lg:max-w-[50rem]">
+        <DialogContent>
             <DialogHeader>
                 <DialogTitle class="">Create an Indicator</DialogTitle>
                 <DialogDescription>You can create an indicator here. </DialogDescription>
@@ -443,7 +467,7 @@ onMounted(() => {
                 <form @submit.prevent="handleCreate" class="flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label for="indicator_name">Select a Program</label>
-                        <Combobox v-model="selectedProgram" by="program_id">
+                        <Combobox v-model="selectedProgram" by="program_id" class="w-100">
                             <ComboboxAnchor>
                                 <div class="relative w-full items-center">
                                     <ComboboxInput class="pl-1 max-w-xl"
@@ -476,24 +500,27 @@ onMounted(() => {
                         <Input type="text" id="indicator_description" placeholder="Description"
                             v-model="indicator.indicator_description" />
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_scope">Indicator Scope:</label>
-                        <RadioGroup default-value="1" id="indicator_scope" v-model="indicator.indicator_scope">
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r2" value="1" />
-                                <Label for="1">Individual</Label>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r3" value="2" />
-                                <Label for="2">Household</Label>
-                            </div>
-                        </RadioGroup>
+                    <div class='w-100 flex'>
+                        <div class="w-100 flex-1 flex flex-col gap-2 border">
+                            <label for="indicator_scope">Indicator Scope:</label>
+                            <RadioGroup default-value="1" id="indicator_scope" v-model="indicator.indicator_scope">
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r2" value="1" />
+                                    <Label for="1">Individual</Label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r3" value="2" />
+                                    <Label for="2">Household</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div class="w-100 flex-1 flex flex-col gap-2 border">
+                            <label for="indicator_code">Indicator Code:</label>
+                            <Input type="text" id="indicator_code" placeholder="leave blank to auto generated"
+                                v-model="indicator.indicator_code" />
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_code">Indicator Code:</label>
-                        <Input type="text" id="indicator_code" placeholder="leave blank to auto generated"
-                            v-model="indicator.indicator_code" />
-                    </div>
+
                 </form>
             </div>
 
