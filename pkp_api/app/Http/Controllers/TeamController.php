@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Team\SaveMemberRequest;
 use App\Models\Team;
+use App\Models\TeamMember;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -47,7 +49,16 @@ class TeamController extends Controller
             'team' => $team
         ]);
     }
+    
+     public function saveMember(SaveMemberRequest $request): JsonResponse
+     {
+        $validated = $request->validated();
+        $teamMember = TeamMember::create($validated);
 
+        return response()->json([
+            'message' => 'Successfully Added Member'
+        ]);
+    }
     
 
 }

@@ -47,6 +47,7 @@ Route::group([
     Route::post('/create', [TeamController::class, 'create']);
     Route::get('/list', [TeamController::class, 'list']);
     Route::get('/find', [TeamController::class, 'getTeam']);
+    Route::post('/member/create', [TeamController::class, 'saveMember']);
 });
 
 //Indicators
