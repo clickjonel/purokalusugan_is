@@ -32,7 +32,7 @@ class HrhUserSeeder extends Seeder
                 'suffix' => $hrh->suffix ?? null,
                 'nickname' => $hrh->nickname,
                 'account_status' => $hrh->account_status,
-                'user_level' => $hrh->user_level
+                'user_level' => 5
             ]);
         });
         // dd($hrh);

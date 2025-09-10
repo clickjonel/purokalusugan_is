@@ -13,10 +13,30 @@ import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
 
 var searchKeyword = ref('')
 
+const teams = ref<Team[]>([]);
+
 
 onMounted(() => {
-
+    fetchTeams()
 })
+
+function fetchTeams(){
+    axios.get<{ teams: Team[] }>('/team/list')
+    .then((response) => {
+        teams.value = response.data.teams
+        console.log(teams.value)
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+    .finally(() => {
+
+    })
+}
+
+interface Team {
+    team_name:string,
+}
 
 
 </script>
@@ -32,7 +52,7 @@ onMounted(() => {
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <!-- <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button> -->
+            <Button variant="default" class="cursor-pointer" size="sm">Create</Button>
         </div>
 
         <!-- table -->
@@ -48,11 +68,10 @@ onMounted(() => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <!-- <TableRow v-for="hrh in hrhList">
-                            <TableCell>{{ hrh.first_name }}</TableCell>
-                            <TableCell>{{ hrh.middle_name }}</TableCell>
-                            <TableCell>{{ hrh.last_name }}</TableCell>
-                            <TableCell>{{ hrh.nickname }}</TableCell>
+                        <TableRow v-for="team in teams">
+                            <TableCell>{{ team.team_name }}</TableCell>
+                            <TableCell> </TableCell>
+                            <TableCell> </TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -62,27 +81,27 @@ onMounted(() => {
                                     </PopoverTrigger>
                                     <PopoverContent class="w-45 p-2">
                                         <div class="flex flex-col">
-                                            <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
-                                                Assign Team
+                                               Edit
                                             </Button>
-                                            <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
-                                                Update Details
+                                                Manage Scopes
                                             </Button>
-                                             <Button @click="openAssignHrhModal(hrh)" variant="ghost" size="sm" class="justify-start text-xs">
+                                             <Button variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
-                                                Update Credentials
+                                                Manage Members
                                             </Button>
-                                            <Button @click="confirmDeactivateHrh(hrh.hrh_user_id)" variant="ghost" size="sm" class="justify-start text-xs text-red-600">
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">
                                                 <UserLock /> 
-                                                Deactivate
+                                                Disable
                                             </Button>
                                         </div>
                                     </PopoverContent>
                                 </Popover>
                             </TableCell>
-                        </TableRow> -->
+                        </TableRow>
                     </TableBody>
                 </Table>
             </div>

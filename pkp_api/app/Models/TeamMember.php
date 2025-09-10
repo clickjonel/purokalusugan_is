@@ -12,6 +12,7 @@ class TeamMember extends Model
 
     protected $fillable = [
         'hrh_id',
-        'team_id'
+        'team_id',
+        'member_role'
     ];
 }
