@@ -5,6 +5,7 @@ use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpDisaggregationController;
 use App\Http\Controllers\PkpEventsController;
 use App\Http\Controllers\PkpIndicatorController;
+use App\Http\Controllers\PkpIndicatorDisaggregationController;
 use App\Http\Controllers\PkpIndicatorValuesController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\PkpRegionController;
@@ -82,13 +83,22 @@ Route::group([
     Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']);    
 });
 Route::group([
-    'prefix' => 'indicator_value',
+    'prefix' => 'indicator/value',
     // 'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpIndicatorValuesController::class, 'createIndicatorValue']);
     Route::get('/list', [PkpIndicatorValuesController::class, 'getIndicatorValues']);
     Route::put('/update', [PkpIndicatorValuesController::class, 'updateIndicatorValue']);
     Route::delete('/delete', [PkpIndicatorValuesController::class, 'deleteIndicatorValue']);    
+});
+Route::group([
+    'prefix' => 'indicator/disaggregation',
+    // 'middleware' => 'auth:sanctum'
+], function () {
+    Route::post('/create', [PkpIndicatorDisaggregationController::class, 'createIndicatorDisaggregation']);
+    Route::get('/list', [PkpIndicatorDisaggregationController::class, 'getIndicatorDiasaggregation']);
+    Route::put('/update', [PkpIndicatorDisaggregationController::class, 'updateIndicatorDisaggregation']);
+    Route::delete('/delete', [PkpIndicatorDisaggregationController::class, 'deleteIndicatorDisaggregation']);
 });
 //Team
 Route::group([
