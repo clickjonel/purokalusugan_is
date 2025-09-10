@@ -46,6 +46,7 @@ Route::group([
 ], function () {
     Route::post('/create', [TeamController::class, 'create']);
     Route::get('/list', [TeamController::class, 'list']);
+    Route::get('/find', [TeamController::class, 'getTeam']);
 });
 
 //Indicators

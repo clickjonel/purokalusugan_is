@@ -18,7 +18,8 @@ class HrhUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $hrh = DB::connection('dohis')->table('dohis_hrh_user')->get();
+        $hrh = DB::connection('dohis')->table('pkp_user')->get();
+        $hrh_server = DB::connection('dohis-server')->table('dohis_hrh_profile')->limit(20)->get();
 
         $hrh->each(function ($hrh) {
             Hrh::create([
@@ -35,6 +36,23 @@ class HrhUserSeeder extends Seeder
                 'user_level' => 5
             ]);
         });
-        // dd($hrh);
+        
+        
+        $hrh_server->each(function ($hrh) {
+            Hrh::create([
+                'user_code' => $hrh->user_code,
+                // 'image' => null,
+                'username' => $hrh->email_address,
+                'password' => bcrypt('12345'),
+                'first_name' => $hrh->first_name,
+                'middle_name' => $hrh->middle_name ?? null,
+                'last_name' => $hrh->last_name,
+                'suffix' => $hrh->suffix ?? null,
+                'nickname' => $hrh->nickname,
+                'account_status' => 'Active',
+                'user_level' => 5
+            ]);
+        });
+
     }
 }

@@ -9,6 +9,7 @@ import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
 import Teams from '@/pages/admin/team/Teams.vue'
 import Sites from '@/pages/admin/sites/Sites.vue'
+import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
 
 
 const router = createRouter({
@@ -18,6 +19,11 @@ const router = createRouter({
       path: '/',
       name: 'Login',
       component: Login,
+    },
+    {
+      path: '/team/members/manage/:id',
+      name: 'Manage Team Members',
+      component: ManageMembers,
     },
     {
       path: '/site',

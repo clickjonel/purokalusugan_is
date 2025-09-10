@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('pkpulse')->create('pkp_hrh_user', function (Blueprint $table) {
+        Schema::connection('pkpulse')->create('pkp_user', function (Blueprint $table) {
             $table->id('pk_user_id');
             $table->string('user_code');
             // $table->string('image')->nullable();
