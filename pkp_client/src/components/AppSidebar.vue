@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router"
 import { useAuthStore } from "@/store/authStore";
-import { Home, Search, Settings, Users } from "lucide-vue-next"
+import { Home, Map, Search, Settings, Users } from "lucide-vue-next"
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from "@/components/ui/button"
-import { SquareActivity, HousePlus,AlertTriangle,UsersRound,Calendar  } from 'lucide-vue-next';
+import { SquareActivity, HousePlus, AlertTriangle, UsersRound, Calendar } from 'lucide-vue-next';
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 
 // Menu items.
@@ -57,6 +57,11 @@ const items = [
     title: "Teams",
     url: "/admin/teams",
     icon: UsersRound,
+  },
+  {
+    title: "PK Sites",
+    url: "/admin/sites",
+    icon: Map,
   },
   {
     title: "Settings",

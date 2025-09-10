@@ -226,7 +226,7 @@ function prevPage() {
 </script>
 
 <template>
-  <div class="p-4 space-y-4">
+  <div class="p-4 space-y-4 w-full">
     <div class="p-4 space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold">PKP Sites</h2>
