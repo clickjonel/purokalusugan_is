@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\HrhController;
+use App\Http\Controllers\PkpEventsController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\PkpRegionController;
@@ -20,12 +21,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Route::post('/program/create', [ProgramsController::class, 'create']);
-// Route::get('/programs', [ProgramsController::class, 'list']);
-
 Route::post('/login', [AuthenticationController::class, 'login']);
 
-//Programs
 Route::group([
     'prefix' => 'program',
     'middleware' => 'auth:sanctum'
@@ -38,7 +35,6 @@ Route::group([
     Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);
 });
 
-//Indicators
 Route::group([
     'prefix' => 'indicator',
     'middleware' => 'auth:sanctum'
@@ -49,6 +45,16 @@ Route::group([
     Route::put('/update', [PkpIndicatorController::class, 'updateIndicator']);
     Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
     Route::put('/status', [PkpIndicatorController::class, 'updateStatusOfProgram']);
+});
+
+Route::group([
+    'prefix' => 'event',
+    'middleware' => 'auth:sanctum'
+], function () {
+    Route::post('/create', [PkpEventsController::class, 'createEvent']);
+    Route::get('/list', [PkpEventsController::class, 'getEvents']);
+    Route::put('/update', [PkpEventsController::class, 'updateEvent']);
+    Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
 });
 
 //Team

@@ -17,12 +17,12 @@ return new class extends Migration
             $table->date('event_date');
             $table->string('event_venue');
             $table->decimal('event_budget');
+            $table->decimal('event_actual_budget');
             $table->string('event_fund_source');
             $table->string('event_proponent');
             $table->string('event_partner');
             $table->string('event_scope');
-            $table->boolean('is_pk_site');
-            $table->bigInteger('barangay_id');
+            $table->boolean('is_pk_site');            
             $table->timestamps();
         });
     }

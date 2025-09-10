@@ -18,8 +18,7 @@ class Pkp_events extends Model
         'event_proponent',
         'event_partner',
         'event_scope',
-        'is_pk_site',
-        'barangay_id'
+        'is_pk_site'        
     ];
     protected $primaryKey = 'event_id';
 }
