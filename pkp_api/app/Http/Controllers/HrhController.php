@@ -12,12 +12,12 @@ class HrhController extends Controller
 {
     use HRHTrait;
 
-    public function createHrhUser(CreateHrhRequest $request):JsonResponse
+    public function createHrhUser(CreateHrhRequest $request): JsonResponse
     {
-        $validatedData=$request->validated();
+        $validatedData = $request->validated();
         $hrh = Hrh::create([
-            'user_code' => "DOH".uniqid(),
-            'image' => null,
+            'user_code' => "DOH" . uniqid(),
+            // 'image' => null,
             'username' => $this->formatUsername($validatedData['first_name'], $validatedData['middle_name'] ?? null, $validatedData['last_name']),
             'password' => bcrypt('12345'),
             'first_name' => $validatedData['first_name'],
@@ -29,20 +29,19 @@ class HrhController extends Controller
             'account_status' => 'unassigned',
         ]);
 
-         return response()->json([
+        return response()->json([
             'message' => 'Created HRH successfully',
-            'data'=>$hrh
+            'data' => $hrh
         ], 201);
     }
 
-    public function getHrhList(Request $request):JsonResponse
+    public function getHrhList(Request $request): JsonResponse
     {
-        $list = Hrh::orderBy('pk_user_id','DESC')->get();
+        $list = Hrh::orderBy('pk_user_id', 'DESC')->get();
 
-         return response()->json([
+        return response()->json([
             'message' => 'Fetched HRH List successfully',
-            'list'=>$list
+            'list' => $list
         ], 200);
     }
-
 }

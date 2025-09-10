@@ -3,6 +3,7 @@ import { ref, watch, computed, nextTick } from 'vue'
 import ProvinceCombobox from '@/components/ui/select/barangay_selection/ProvinceCombobox.vue'
 import MunicipalityCombobox from './MunicipalityCombobox.vue'
 import BarangayCombobox from './BarangayCombobox.vue'
+import axios from "@/axios/axios"
 import {
   Drawer,
   DrawerTrigger,
@@ -121,6 +122,37 @@ function resetSelections() {
   selectedBarangayId.value = undefined
   selectedBarangayName.value = undefined
 }
+watch(
+  () => props.modelValue,
+  async (newId) => {
+    if (!newId) return
+
+    try {
+      // fetch barangay with municipality + province
+      const res = await axios.get("/barangay/find", {
+        params: { barangay_id: newId },
+      })
+      const barangay = res.data.data
+
+      selectedBarangayId.value = barangay.barangay_id
+      selectedBarangayName.value = barangay.barangay_name
+
+      selectedMunicipality.value = {
+        municipality_id: barangay.municipality.municipality_id,
+        municipality_name: barangay.municipality.municipality_name,
+      }
+
+      selectedProvince.value = {
+        province_id: barangay.municipality.province.province_id,
+        province_name: barangay.municipality.province.province_name,
+      }
+    } catch (e) {
+      console.error("Failed to preload barangay", e)
+    }
+  },
+  { immediate: true } // runs on mount
+)
+console.log(selectedBarangayId.value)
 </script>
 
 <template>

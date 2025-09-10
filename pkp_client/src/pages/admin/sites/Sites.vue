@@ -17,17 +17,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { ChevronRight } from "lucide-vue-next"
 import BarangaySelector from "@/components/ui/select/barangay_selection/BarangaySelector.vue"
 import { toast } from "vue-sonner"
+import SelectContent from '@/components/ui/select/SelectContent.vue'
+import SelectTrigger from '@/components/ui/select/SelectTrigger.vue'
+import Select from '@/components/ui/select/Select.vue'
+import SelectValue from '@/components/ui/select/SelectValue.vue'
+import SelectItem from '@/components/ui/select/SelectItem.vue'
 
 
 interface PkpSite {
   site_id?: number
   barangay_id: number
-  barangay: {
-    barangay_id: number
-    barangay_name: string
-  }
   latitude: number
   longitude: number
   site_status: number
@@ -35,18 +45,39 @@ interface PkpSite {
   target_sition: number
   no_household?: number | null
   population?: number | null
+
+  barangay: {
+    barangay_id: number
+    barangay_name: string
+    municipality: {
+      municipality_id: number
+      municipality_name: string
+      province: {
+        province_id: number
+        province_name: string
+      }
+    }
+  }
 }
 
-// ✅ Validation schema
+
+const siteStatusLabels: Record<number, string> = {
+  1: "Preparation Phase",
+  2: "Action Planning Done",
+  3: "With organized PKT",
+  4: "Implementing PK",
+  5: "Monitored PK Implementation",
+}
+
 const formSchema = toTypedSchema(z.object({
-  barangay_id: z.number().min(1, "Barangay is required"),
-  latitude: z.number().min(-90).max(90, "Latitude must be between -90 and 90"),
-  longitude: z.number().min(-180).max(180, "Longitude must be between -180 and 180"),
-  site_status: z.number().int(),
-  target_sition: z.number().int(),
-  target_purok: z.number().int(),
-  no_household: z.number().nullable().optional(),
-  population: z.number().nullable().optional(),
+  barangay_id: z.coerce.number().min(1, "Barangay is required"),
+  latitude: z.coerce.number().min(-90).max(90, "Latitude must be between -90 and 90"),
+  longitude: z.coerce.number().min(-180).max(180, "Longitude must be between -180 and 180"),
+  site_status: z.coerce.number().int(),
+  target_sition: z.coerce.number().int(),
+  target_purok: z.coerce.number().int(),
+  no_household: z.coerce.number().nullable().optional(),
+  population: z.coerce.number().nullable().optional(),
 }))
 
 // State
@@ -67,7 +98,7 @@ onMounted(() => {
   loadSites()
 })
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm } = useForm<PkpSite>({
   validationSchema: formSchema,
   initialValues: {
     barangay_id: 0,
@@ -81,6 +112,9 @@ const { handleSubmit, resetForm } = useForm({
   },
 })
 
+
+
+
 function openCreate() {
   isEditing.value = false
   editingId.value = null
@@ -91,7 +125,14 @@ function openCreate() {
 function editSite(site: PkpSite) {
   isEditing.value = true
   editingId.value = site.site_id ?? null
-  resetForm({ values: site })
+
+  resetForm({
+    values: {
+      ...site,
+      barangay_id: site.barangay_id,
+    },
+  })
+
   isDialogOpen.value = true
 }
 
@@ -119,6 +160,7 @@ async function removeSite(id?: number) {
   await axios.delete(`/site/delete`)
   await loadSites()
 }
+
 </script>
 
 <template>
@@ -131,39 +173,43 @@ async function removeSite(id?: number) {
     <!-- Sites Table -->
     <Card>
       <CardContent>
-        <table class="w-full table-auto">
-          <thead>
-            <tr class="text-left text-sm text-slate-600">
-              <th>ID</th>
-              <th>Barangay</th>
-              <th>Lat</th>
-              <th>Lng</th>
-              <th>Status</th>
-              <th>Target Purok</th>
-              <th>Target Sition</th>
-              <th>Households</th>
-              <th>Population</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="site in sites" :key="site.site_id" class="border-t">
-              <td class="py-2">{{ site.site_id }}</td>
-              <td class="py-2">{{ site.barangay.barangay_name }}</td>
-              <td class="py-2">{{ site.latitude }}</td>
-              <td class="py-2">{{ site.longitude }}</td>
-              <td class="py-2">{{ site.site_status }}</td>
-              <td class="py-2">{{ site.target_purok }}</td>
-              <td class="py-2">{{ site.target_sition }}</td>
-              <td class="py-2">{{ site.no_household ?? "-" }}</td>
-              <td class="py-2">{{ site.population ?? "-" }}</td>
-              <td class="py-2 text-right">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Province</TableHead>
+              <TableHead>Municipality</TableHead>
+              <TableHead>Barangay</TableHead>
+              <TableHead>Lat</TableHead>
+              <TableHead>Lng</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Purok</TableHead>
+              <TableHead>Sition</TableHead>
+              <TableHead>Households</TableHead>
+              <TableHead>Population</TableHead>
+              <TableHead class="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="site in sites" :key="site.site_id">
+              <TableCell>{{ site.site_id }}</TableCell>
+              <TableCell>{{ site.barangay.municipality.province.province_name }}</TableCell>
+              <TableCell>{{ site.barangay.municipality.municipality_name }}</TableCell>
+              <TableCell>{{ site.barangay.barangay_name }}</TableCell>
+              <TableCell>{{ site.latitude }}</TableCell>
+              <TableCell>{{ site.longitude }}</TableCell>
+              <TableCell>{{ siteStatusLabels[site.site_status] }}</TableCell>
+              <TableCell>{{ site.target_purok }}</TableCell>
+              <TableCell>{{ site.target_sition }}</TableCell>
+              <TableCell>{{ site.no_household ?? "-" }}</TableCell>
+              <TableCell>{{ site.population ?? "-" }}</TableCell>
+              <TableCell class="text-right space-x-2">
                 <Button size="sm" variant="ghost" @click="editSite(site)">Edit</Button>
                 <Button size="sm" variant="destructive" @click="removeSite(site.site_id)">Delete</Button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
 
@@ -176,15 +222,16 @@ async function removeSite(id?: number) {
 
         <form class="w-2/3 space-y-6" @submit.prevent="onSubmit">
           <!-- Barangay -->
-          <FormField name="barangay_id" v-slot="{ componentField }">
+          <FormField name="barangay_id" v-slot="{ field }">
             <FormItem>
               <FormLabel>Barangay</FormLabel>
               <FormControl>
-                <BarangaySelector v-bind="componentField" />
+                <BarangaySelector :model-value="field.value" @update:model-value="field.onChange" />
               </FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
+
 
           <!-- Latitude -->
           <FormField name="latitude" v-slot="{ componentField }">
@@ -213,7 +260,18 @@ async function removeSite(id?: number) {
             <FormItem>
               <FormLabel>Site Status</FormLabel>
               <FormControl>
-                <Input type="number" v-bind="componentField" />
+                <Select v-bind="componentField">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem :value="1">Preparation Phase</SelectItem>
+                    <SelectItem :value="2">Action Planning Done</SelectItem>
+                    <SelectItem :value="3">With organized PKT</SelectItem>
+                    <SelectItem :value="4">Implementing PK</SelectItem>
+                    <SelectItem :value="5">Monitored PK Implementation</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>

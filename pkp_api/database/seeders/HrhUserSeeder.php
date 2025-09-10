@@ -19,11 +19,11 @@ class HrhUserSeeder extends Seeder
     public function run(): void
     {
         $hrh = DB::connection('dohis')->table('dohis_hrh_user')->get();
-        
-        $hrh->each(function ($hrh){
+
+        $hrh->each(function ($hrh) {
             Hrh::create([
                 'user_code' => $hrh->user_code,
-                'image' => null,
+                // 'image' => null,
                 'username' => $hrh->username,
                 'password' => $hrh->password,
                 'first_name' => $hrh->first_name,
