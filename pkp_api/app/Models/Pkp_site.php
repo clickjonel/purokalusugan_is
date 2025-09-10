@@ -20,7 +20,7 @@ class Pkp_site extends Model
         'no_purok',
         'no_sitio',
         'target_purok',
-        'target_sition',
+        'target_sitio',
         'no_household',
         'population',
     ];
@@ -31,7 +31,7 @@ class Pkp_site extends Model
         'no_purok' => 'integer',
         'no_sitio' => 'integer',
         'target_purok' => 'integer',
-        'target_sition' => 'integer',
+        'target_sitio' => 'integer',
         'no_household' => 'integer',
         'population' => 'integer',
     ];

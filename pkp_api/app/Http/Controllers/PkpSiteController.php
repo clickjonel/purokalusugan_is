@@ -19,7 +19,7 @@ class PkpSiteController extends Controller
             'no_purok' => 'nullable|integer',
             'no_sitio' => 'nullable|integer',
             'target_purok' => 'nullable|integer',
-            'target_sition' => 'nullable|integer',
+            'target_sitio' => 'nullable|integer',
             'no_household' => 'nullable|integer',
             'population' => 'nullable|integer',
         ]);
@@ -73,7 +73,7 @@ class PkpSiteController extends Controller
             'no_purok' => 'nullable|integer',
             'no_sitio' => 'nullable|integer',
             'target_purok' => 'nullable|integer',
-            'target_sition' => 'nullable|integer',
+            'target_sitio' => 'nullable|integer',
             'no_household' => 'nullable|integer',
             'population' => 'nullable|integer',
         ]);
