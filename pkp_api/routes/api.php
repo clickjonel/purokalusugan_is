@@ -68,11 +68,15 @@ Route::group([
 
 //PKP Province
 Route::group([
+
     'prefix' => 'province',
 ], function () {
     Route::get('/list', [PkpProvinceController::class, 'getProvinces']);
     Route::get('/find', [PkpProvinceController::class, 'getProvince']);
+    Route::get('/region/find', [PkpProvinceController::class, 'getProvincesByRegionId']);
 });
+
+
 
 //PKP Municipality
 Route::group([
@@ -80,6 +84,8 @@ Route::group([
 ], function () {
     Route::get('/list', [PkpMunicipalityController::class, 'getMunicipalities']);
     Route::get('/find', [PkpMunicipalityController::class, 'getMunicipality']);
+    Route::get('/region/find', [PkpMunicipalityController::class, 'getMunicipalitiesByRegionId']);
+    Route::get('/province/find', [PkpMunicipalityController::class, 'getMunicipalitiesByProvinceId']);
 });
 
 //PKP Barangay
@@ -88,4 +94,7 @@ Route::group([
 ], function () {
     Route::get('/list', [PkpBarangayController::class, 'getBarangays']);
     Route::get('/find', [PkpBarangayController::class, 'getBarangay']);
+    Route::get('/region/find', [PkpBarangayController::class, 'getBarangaysByRegionId']);
+    Route::get('/province/find', [PkpBarangayController::class, 'getBarangaysByProvinceId']);
+    Route::get('/municipality/find', [PkpBarangayController::class, 'getBarangaysByMunicipalityId']);
 });

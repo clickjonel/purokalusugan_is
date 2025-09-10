@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+
 use App\Models\Pkp_region;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -12,7 +13,7 @@ class PkpRegionSeeder extends Seeder
      */
     public function run(): void
     {
-        $data =[
+        $data = [
             [
                 'region_name' => 'Region I (Ilocos Region)',
                 'uid' => 1,
@@ -92,7 +93,7 @@ class PkpRegionSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'region_name' => 'Cordillera Administrative Region',
+                'region_name' => 'Cordillera Administrative Region (CAR)',
                 'uid' => 1,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -115,7 +116,7 @@ class PkpRegionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ]
-            ];
-            Pkp_region::insert($data);
+        ];
+        Pkp_region::insert($data);
     }
 }
