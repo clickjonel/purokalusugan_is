@@ -15,4 +15,22 @@ class TeamMember extends Model
         'team_id',
         'member_role'
     ];
+
+    protected $appends = ['member_role_name'];
+
+    public function getMemberRoleNameAttribute()
+    {
+        return $this->member_role === 1 ? 'Team Leader' : 'Team Member';
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class,'team_id','team_id');
+    }
+
+    public function hrh()
+    {
+        return $this->belongsTo(Hrh::class,'hrh_id','pk_user_id');
+    }
+
 }
