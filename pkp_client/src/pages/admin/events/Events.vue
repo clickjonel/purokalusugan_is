@@ -374,6 +374,19 @@ onMounted(() => {
                         <label for="event_scope">Scope:</label>
                         <Input type="text" id="event_scope" placeholder = "Area(s) covered" v-model="event.event_scope" />
                     </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="is_pk_site">Is this a PK Site?:</label>
+                        <RadioGroup id="is_pk_site" v-model="event.event_type">
+                            <div class="flex items-center space-x-2">
+                                <RadioGroupItem id="r1" :value="1" />
+                                <Label for="r1">Small Scale</Label>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <RadioGroupItem id="r2" :value="2" />
+                                <Label for="r2">Large Scale</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
                 </form>
             </div>
 
