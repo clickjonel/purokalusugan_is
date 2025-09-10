@@ -24,16 +24,10 @@ const router = createRouter({
       name: 'place',
       component: PlaceSelection,
     },
-
     {
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
-    },
-    {
-      path: '/indicators',
-      name: 'Indicators',
-      component: Indicators,
     },
     {
       path: '/admin',
@@ -85,24 +79,24 @@ const router = createRouter({
             ]
           }
         },
-        // {
-        //   path: 'indicators',
-        //   name: 'indicators',
-        //   component: Indicators,
-        //   meta: {
-        //     requiresAuth: true,
-        //     breadcrumbs: [
-        //       {
-        //         name: 'Admin',
-        //         link: '/admin'
-        //       },
-        //       {
-        //         name: 'Indicators',
-        //         link: '/admin/indicators'
-        //       }
-        //     ]
-        //   }
-        // },
+        {
+          path: 'indicators',
+          name: 'indicators',
+          component: Indicators,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Indicators',
+                link: '/admin/indicators'
+              }
+            ]
+          }
+        },
         {
           path: 'hrh',
           name: 'HRH',

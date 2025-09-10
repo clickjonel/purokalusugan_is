@@ -12,7 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pkp_events', function (Blueprint $table) {
-            $table->id();
+            $table->id('event_id');
+            $table->integer('event_type');
+            $table->date('event_date');
+            $table->string('event_venue');
+            $table->decimal('event_budget');
+            $table->string('event_fund_source');
+            $table->string('event_proponent');
+            $table->string('event_partner');
+            $table->string('event_scope');
+            $table->boolean('is_pk_site');
+            $table->bigInteger('barangay_id');
             $table->timestamps();
         });
     }

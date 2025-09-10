@@ -27,7 +27,7 @@ Route::post('/login', [AuthenticationController::class, 'login']);
 //Programs
 Route::group([
     'prefix' => 'program',
-    // 'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [ProgramsController::class, 'createProgram']);
     Route::get('/list', [ProgramsController::class, 'getPrograms']);
@@ -39,7 +39,8 @@ Route::group([
 
 //Indicators
 Route::group([
-    'prefix' => 'indicator'
+    'prefix' => 'indicator',
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpIndicatorController::class, 'createIndicator']);
     Route::get('/list', [PkpIndicatorController::class, 'getIndicators']);
