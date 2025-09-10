@@ -26,12 +26,6 @@ const router = createRouter({
       component: ManageMembers,
     },
     {
-      path: '/site',
-      name: 'site',
-      component: Sites,
-    },
-
-    {
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
@@ -141,6 +135,24 @@ const router = createRouter({
               {
                 name: 'Teams',
                 link: '/admin/teams'
+              }
+            ]
+          }
+        },
+        {
+          path: 'site',
+          name: 'Sites',
+          component: Sites,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Sites',
+                link: '/admin/sites'
               }
             ]
           }

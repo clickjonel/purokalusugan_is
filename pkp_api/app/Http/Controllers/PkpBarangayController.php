@@ -22,12 +22,16 @@ class PkpBarangayController extends Controller
         $validatedData = $request->validate([
             'barangay_id' => 'required|integer|exists:pkp_barangay,barangay_id',
         ]);
-        $data = Pkp_barangay::findOrFail($validatedData['barangay_id']);
+
+        $data = Pkp_barangay::with(['municipality', 'province', 'region'])
+            ->findOrFail($validatedData['barangay_id']);
+
         return response()->json([
             'message' => 'data retrieved successfully',
             'data' => $data
         ], 200);
     }
+
     public function getBarangaysByRegionId(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
@@ -67,5 +71,4 @@ class PkpBarangayController extends Controller
             'data' => $data
         ], 200);
     }
-    
 }
