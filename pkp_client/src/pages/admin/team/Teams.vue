@@ -101,6 +101,8 @@ function saveTeam(){
 interface Team {
     team_name:string,
     team_id:number
+    scopes_count:number
+    members_count:number
 }
 
 
@@ -146,8 +148,8 @@ interface Team {
                     <TableBody>
                         <TableRow v-for="team in teams">
                             <TableCell>{{ team.team_name }}</TableCell>
-                            <TableCell> </TableCell>
-                            <TableCell> </TableCell>
+                            <TableCell>{{ team.scopes_count }}</TableCell>
+                            <TableCell>{{ team.members_count }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>

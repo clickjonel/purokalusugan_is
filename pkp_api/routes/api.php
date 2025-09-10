@@ -48,6 +48,8 @@ Route::group([
     Route::get('/find', [TeamController::class, 'getTeam']);
     Route::post('/member/create', [TeamController::class, 'saveMember']);
     Route::delete('/member/remove', [TeamController::class, 'removeMember']);
+    Route::post('/scope/create', [TeamController::class, 'saveScope']);
+    Route::delete('/scope/remove', [TeamController::class, 'removeScope']);
 });
 
 Route::group([

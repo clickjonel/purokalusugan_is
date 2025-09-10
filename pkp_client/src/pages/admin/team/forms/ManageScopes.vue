@@ -5,23 +5,39 @@
     import { useRoute } from 'vue-router';
     import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
     import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
-    import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
-    import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList } from "@/components/ui/combobox"
+    import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
     import { Search } from "lucide-vue-next"
     import { toast } from 'vue-sonner'
 
     const route = useRoute()
-    const team = ref({
+    const team = ref<Team>({
+        scopes: [],
         team_name: '',
-        scopes: []
+        team_scope_id: 0,
+        barangay: {
+            barangay_id: 0,
+            barangay_name: '',
+            municipality: {
+                municipality_id: 0,
+                municipality_name: '',
+                province: {
+                    province_id: 0,
+                    province_name: ''
+                }
+            },
+            province: {
+                province_id: 0,
+                province_name: ''
+            }
+        }
     })
-    const provinces = ref([])
-    const municipalities = ref([])
-    const barangays = ref([])
+    const provinces = ref<Barangay['province'][]>([])
+    const municipalities = ref<Barangay['municipality'][]>([])
+    const barangays = ref<Barangay[]>([])
 
-    const selectedProvince = ref(null)
-    const selectedMunicipality = ref(null)
-    const selectedBarangay= ref(null)
+    const selectedProvince = ref<Barangay['province'] | null>(null)
+    const selectedMunicipality = ref<Barangay['municipality'] | null>(null)
+    const selectedBarangay = ref<Barangay | null>(null)
 
 
     onMounted(()=>{
@@ -130,7 +146,62 @@
     }
 
     function removeMember(id:number){
-      
+       axios.delete('/team/scope/remove',{
+          data:{
+            team_scope_id:id
+          }
+        })
+         .then((response) => {
+           toast('Successful Action', {
+                description: response.data.message,
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            })
+            fetchTeam()
+        })
+        .catch((error) => {
+             toast('Failed', {
+                description: error.response.data.message,
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            })
+        })
+        .finally(() => {
+
+        })
+    }
+
+    interface Barangay {
+        barangay_id: number
+        barangay_name: string
+        municipality: {
+            municipality_id: number
+            municipality_name: string
+            province: {
+                province_id: number
+                province_name: string
+            }
+        }
+        province: {
+            province_id: number
+            province_name: string
+        }
+    }
+
+    interface Scope {
+        team_scope_id: number
+        barangay: Barangay
+    }
+
+    interface Team {
+        scopes: Scope[],
+        team_name: string
+        team_scope_id: number
+        barangay: Barangay
     }
 
 </script>
@@ -223,10 +294,10 @@
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <!-- <TableRow v-for="member in team?.members">
-                        <TableCell>{{ member.hrh?.full_name}}</TableCell>
-                        <TableCell>{{ member.member_role_name}}</TableCell>
-                        <TableCell> </TableCell>
+                    <TableRow v-for="scope in team?.scopes">
+                        <TableCell>{{ scope.barangay.province.province_name}}</TableCell>
+                        <TableCell>{{ scope.barangay.municipality.municipality_name}}</TableCell>
+                        <TableCell>{{ scope.barangay.barangay_name}}</TableCell>
                         <TableCell class="w-full flex justify-end items-center gap-2">
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -235,12 +306,12 @@
                                 <PopoverContent class="w-100 p-4">
                                      <span>Are you sure you want to remove this Member?</span>
                                     <div class="flex justify-end items-start gap-4 p-4">
-                                        <Button @click="removeMember(member.team_member_id)" variant="destructive" size="sm" class="justify-start text-xs cursor-pointer">Remove</Button>
+                                        <Button @click="removeMember(scope.team_scope_id)" variant="destructive" size="sm" class="justify-start text-xs cursor-pointer">Remove</Button>
                                     </div>
                                 </PopoverContent>
                             </Popover>
                         </TableCell>
-                    </TableRow> -->
+                    </TableRow>
                 </TableBody>
             </Table>
         </div>

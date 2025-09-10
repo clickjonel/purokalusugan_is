@@ -14,4 +14,15 @@ class TeamScope extends Model
         'barangay_id',
         'team_id'
     ];
+
+    public function barangay()
+    {
+        return $this->belongsTo(Pkp_barangay::class,'barangay_id','barangay_id');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class,'team_id','team_id');
+    }
+
 }

@@ -14,7 +14,7 @@ class TeamController extends Controller
 {
     public function list():JsonResponse
     {
-        $teams = Team::with(['members'])->get();
+        $teams = Team::with(['members'])->withCount(['scopes', 'members'])->get();
 
         return response()->json(['teams' => $teams]);
     }
@@ -45,7 +45,14 @@ class TeamController extends Controller
     }
 
     public function getTeam(Request $request){
-        $team = Team::with(['members.team','members.hrh'])->find($request->team_id);
+        $team = Team::with([
+            'scopes',
+            'scopes.barangay.province',
+            'scopes.barangay.municipality',
+            'scopes.team','members.team',
+            'members.hrh'
+            ])
+            ->find($request->team_id);
 
         return response()->json([
             'team' => $team
@@ -73,8 +80,17 @@ class TeamController extends Controller
     }
 
     public function removeMember(Request $request): JsonResponse
-     {
+    {
         $teamMember = TeamMember::find($request->team_member_id)->delete();
+
+        return response()->json([
+            'message' => 'Successfully Removed Member'
+        ]);
+    }
+
+    public function removeScope(Request $request): JsonResponse
+    {
+        $teamScope = TeamScope::find($request->team_scope_id)->delete();
 
         return response()->json([
             'message' => 'Successfully Removed Member'
