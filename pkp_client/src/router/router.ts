@@ -7,8 +7,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
-import PlaceSelection from '@/components/PlaceSelection.vue'
 import Teams from '@/pages/admin/team/Teams.vue'
+import Sites from '@/pages/admin/sites/Sites.vue'
 
 
 const router = createRouter({
@@ -20,9 +20,9 @@ const router = createRouter({
       component: Login,
     },
     {
-      path: '/place',
-      name: 'place',
-      component: PlaceSelection,
+      path: '/site',
+      name: 'site',
+      component: Sites,
     },
 
     {

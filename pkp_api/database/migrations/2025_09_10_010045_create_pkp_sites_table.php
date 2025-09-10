@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('pkpulse')->create('pkp_sites', function (Blueprint $table) {
+        Schema::connection('pkpulse')->create('pkp_site', function (Blueprint $table) {
             $table->id('site_id');
             $table->unsignedBigInteger('barangay_id');
             $table->decimal('latitude', 10, 7);
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pkp_sites');
+        Schema::dropIfExists('pkp_site');
     }
 };

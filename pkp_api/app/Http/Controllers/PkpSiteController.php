@@ -32,7 +32,8 @@ class PkpSiteController extends Controller
     }
     public function getSites(): JsonResponse
     {
-        $sites = Pkp_site::with('barangay')->get();
+        $sites = Pkp_site::with('barangay:barangay_id,barangay_name')->get();
+
         return response()->json([
             'message' => 'Sites retrieved successfully',
             'data' => $sites
@@ -43,7 +44,7 @@ class PkpSiteController extends Controller
         $validatedData = $request->validate([
             'site_id' => 'required|integer|exists:pkp_site,site_id',
         ]);
-        $site = Pkp_site::with('barangay')->findOrFail($validatedData['site_id']);
+        $site =  Pkp_site::with('barangay:barangay_id,barangay_name')->findOrFail($validatedData['site_id']);
         return response()->json([
             'message' => 'Site retrieved successfully',
             'data' => $site
