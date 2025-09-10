@@ -149,7 +149,6 @@ function editSite(site: PkpSite) {
   isEditing.value = true
   editingId.value = site.site_id ?? null
 
-  console.log('siste', site.site_id,)
   resetForm({
     values: {
       ...site,
@@ -190,7 +189,7 @@ async function removeSite(id?: number) {
 
 const searchQuery = ref("")
 const currentPage = ref(1)
-const pageSize = ref(10) // rows per page
+const pageSize = ref(12) // rows per page
 
 // Filter sites by search
 const filteredSites = computed(() => {
