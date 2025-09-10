@@ -11,6 +11,7 @@ import Events from '@/pages/admin/events/Events.vue'
 import Teams from '@/pages/admin/team/Teams.vue'
 import Sites from '@/pages/admin/sites/Sites.vue'
 import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
+import ManageScopes from '@/pages/admin/team/forms/ManageScopes.vue'
 
 
 const router = createRouter({
@@ -25,6 +26,11 @@ const router = createRouter({
       path: '/team/members/manage/:id',
       name: 'Manage Team Members',
       component: ManageMembers,
+    },
+    {
+      path: '/team/scopes/manage/:id',
+      name: 'Manage Team Scope',
+      component: ManageScopes,
     },
     {
       path: '/dashboard',
