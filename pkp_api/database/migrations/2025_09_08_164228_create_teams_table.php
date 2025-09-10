@@ -31,6 +31,7 @@ return new class extends Migration
             $table->id('team_member_id');
             $table->unsignedBigInteger('hrh_id');
             $table->unsignedBigInteger('team_id');
+            $table->integer('member_role')->default(2)->comment('1=>Team Leader, 2=>Team Member');
             $table->timestamps();
         });
 
