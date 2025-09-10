@@ -9,6 +9,7 @@ use App\Http\Controllers\PkpProvinceController;
 use App\Http\Controllers\PkpMunicipalityController;
 use App\Http\Controllers\PkpBarangayController;
 use App\Http\Controllers\GeoJsonController;
+use App\Http\Controllers\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,15 @@ Route::group([
     Route::put('/status', [PkpIndicatorController::class, 'updateStatusOfProgram']);
 });
 
+//Team
+Route::group([
+    'prefix' => 'team'
+], function () {
+    Route::post('/create', [TeamController::class, 'create']);
+    Route::get('/list', [TeamController::class, 'list']);
+});
+
+
 //HRH User
 Route::group([
     'prefix' => 'hrh',
@@ -69,11 +79,15 @@ Route::group([
 
 //PKP Province
 Route::group([
+
     'prefix' => 'province',
 ], function () {
     Route::get('/list', [PkpProvinceController::class, 'getProvinces']);
     Route::get('/find', [PkpProvinceController::class, 'getProvince']);
+    Route::get('/region/find', [PkpProvinceController::class, 'getProvincesByRegionId']);
 });
+
+
 
 //PKP Municipality
 Route::group([
@@ -81,6 +95,8 @@ Route::group([
 ], function () {
     Route::get('/list', [PkpMunicipalityController::class, 'getMunicipalities']);
     Route::get('/find', [PkpMunicipalityController::class, 'getMunicipality']);
+    Route::get('/region/find', [PkpMunicipalityController::class, 'getMunicipalitiesByRegionId']);
+    Route::get('/province/find', [PkpMunicipalityController::class, 'getMunicipalitiesByProvinceId']);
 });
 
 //PKP Barangay
@@ -89,4 +105,18 @@ Route::group([
 ], function () {
     Route::get('/list', [PkpBarangayController::class, 'getBarangays']);
     Route::get('/find', [PkpBarangayController::class, 'getBarangay']);
+    Route::get('/region/find', [PkpBarangayController::class, 'getBarangaysByRegionId']);
+    Route::get('/province/find', [PkpBarangayController::class, 'getBarangaysByProvinceId']);
+    Route::get('/municipality/find', [PkpBarangayController::class, 'getBarangaysByMunicipalityId']);
+});
+
+//PKP SITES
+Route::group([
+    'prefix' => 'site',
+], function () {
+    Route::post('/create', [PkpSiteController::class, 'createSite']);
+    Route::get('/list', [PkpSiteController::class, 'getSites']);
+    Route::get('/find', [PkpSiteController::class, 'getSite']);
+    Route::put('/update', [PkpSiteController::class, 'updateSite']);
+    Route::delete('/delete', [PkpSiteController::class, 'deleteSite']);
 });

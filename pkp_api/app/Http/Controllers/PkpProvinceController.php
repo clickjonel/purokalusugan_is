@@ -27,4 +27,17 @@ class PkpProvinceController extends Controller
             'data' => $data
         ], 200);
     }
+    public function getProvincesByRegionId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'region_id' => 'required|integer|exists:pkp_region,region_id',
+        ]);
+
+        $data = Pkp_province::where('region_id', $validatedData['region_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
 }

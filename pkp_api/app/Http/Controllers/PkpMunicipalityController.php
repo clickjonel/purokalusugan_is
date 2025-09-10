@@ -28,4 +28,30 @@ class PkpMunicipalityController extends Controller
             'data' => $data
         ], 200);
     }
+    public function getMunicipalitiesByRegionId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'region_id' => 'required|integer|exists:pkp_region,region_id',
+        ]);
+
+        $data = Pkp_municipality::where('region_id', $validatedData['region_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
+    public function getMunicipalitiesByProvinceId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'province_id' => 'required|integer|exists:pkp_province,province_id',
+        ]);
+
+        $data = Pkp_municipality::where('province_id', $validatedData['province_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
 }
