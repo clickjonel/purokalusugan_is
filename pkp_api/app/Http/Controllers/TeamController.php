@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Team\SaveMemberRequest;
+use App\Http\Requests\Team\SaveScopeRequest;
 use App\Models\Team;
 use App\Models\TeamMember;
+use App\Models\TeamScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -50,10 +52,20 @@ class TeamController extends Controller
         ]);
     }
     
-     public function saveMember(SaveMemberRequest $request): JsonResponse
-     {
+    public function saveMember(SaveMemberRequest $request): JsonResponse
+    {
         $validated = $request->validated();
         $teamMember = TeamMember::create($validated);
+
+        return response()->json([
+            'message' => 'Successfully Added Member'
+        ]);
+    }
+
+    public function saveScope(SaveScopeRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $teamMember = TeamScope::create($validated);
 
         return response()->json([
             'message' => 'Successfully Added Member'

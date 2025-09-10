@@ -161,7 +161,7 @@ interface Team {
                                                 <UserRoundCog/> 
                                                Edit
                                             </Button>
-                                            <Button variant="ghost" size="sm" class="justify-start text-xs">
+                                            <Button @click="router.push({path:`/team/scopes/manage/${team.team_id}`})" variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
                                                 Manage Scopes
                                             </Button>

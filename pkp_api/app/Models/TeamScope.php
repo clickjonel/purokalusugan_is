@@ -11,7 +11,7 @@ class TeamScope extends Model
     protected $primaryKey = 'team_scope_id';
 
     protected $fillable = [
-        'purok_id',
+        'barangay_id',
         'team_id'
     ];
 }
