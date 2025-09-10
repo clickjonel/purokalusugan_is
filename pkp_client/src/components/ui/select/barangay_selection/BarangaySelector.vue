@@ -67,34 +67,13 @@ const isSelectionComplete = computed(() => {
   return selectedProvince.value && selectedMunicipality.value && selectedBarangayId.value
 })
 
-watch(selectedProvince, (newProvince) => {
-  if (!newProvince) return
 
-  // Reset dependent selections
-  selectedMunicipality.value = undefined
-  selectedBarangayId.value = undefined
-  selectedBarangayName.value = undefined
-}, { flush: 'post' })
-
-watch(selectedMunicipality, (newMunicipality) => {
-  if (!newMunicipality) return
-
-  // Reset barangay selection
-  selectedBarangayId.value = undefined
-  selectedBarangayName.value = undefined
-}, { flush: 'post' })
-
-watch(selectedBarangayId, (newBarangayId) => {
-  emit("update:modelValue", newBarangayId)
-})
 
 async function confirmSelection() {
   if (!isSelectionComplete.value) return
-
   isLoading.value = true
 
   try {
-    // Emit detailed location data
     const locationData: SelectedLocation = {
       province: selectedProvince.value,
       municipality: selectedMunicipality.value,
@@ -104,7 +83,6 @@ async function confirmSelection() {
 
     emit("locationSelected", locationData)
 
-    // Close drawer after a brief delay for better UX
     await nextTick()
     setTimeout(() => {
       open.value = false
@@ -122,37 +100,72 @@ function resetSelections() {
   selectedBarangayId.value = undefined
   selectedBarangayName.value = undefined
 }
+
 watch(
   () => props.modelValue,
-  async (newId) => {
-    if (!newId) return
+  async (newId, oldId) => {
+    if (newId === oldId) return
+
+    console.log('newid', newId)
+
+    if (newId == null) {
+      resetSelections()
+      return
+    }
 
     try {
-      // fetch barangay with municipality + province
-      const res = await axios.get("/barangay/find", {
+      const { data } = await axios.get("/barangay/find", {
         params: { barangay_id: newId },
       })
-      const barangay = res.data.data
 
-      selectedBarangayId.value = barangay.barangay_id
-      selectedBarangayName.value = barangay.barangay_name
+      const barangay = data?.data
+      if (!barangay) throw new Error("No barangay data returned")
 
-      selectedMunicipality.value = {
-        municipality_id: barangay.municipality.municipality_id,
-        municipality_name: barangay.municipality.municipality_name,
+      selectedBarangayId.value = Number(barangay.barangay_id) || undefined
+      selectedBarangayName.value = barangay.barangay_name ?? ""
+
+      if (barangay.municipality) {
+        selectedMunicipality.value = {
+          municipality_id: Number(barangay.municipality.municipality_id),
+          municipality_name: barangay.municipality.municipality_name,
+        }
       }
 
-      selectedProvince.value = {
-        province_id: barangay.municipality.province.province_id,
-        province_name: barangay.municipality.province.province_name,
+      if (barangay.province) {
+        selectedProvince.value = {
+          province_id: Number(barangay.province.province_id),
+          province_name: barangay.province.province_name,
+        }
       }
     } catch (e) {
-      console.error("Failed to preload barangay", e)
+      console.error("Failed to preload barangay:", e)
+      resetSelections()
     }
   },
-  { immediate: true } // runs on mount
+  { immediate: true }
 )
-console.log(selectedBarangayId.value)
+
+watch(selectedProvince, (newProvince) => {
+  if (!newProvince) return
+  selectedMunicipality.value = undefined
+  selectedBarangayId.value = undefined
+  selectedBarangayName.value = undefined
+}, { flush: 'post' })
+
+watch(selectedMunicipality, (newMunicipality) => {
+  if (!newMunicipality) return
+  selectedBarangayId.value = undefined
+  selectedBarangayName.value = undefined
+}, { flush: 'post' })
+
+watch(selectedBarangayId, (newBarangayId) => {
+  if (typeof newBarangayId === "number" && !Number.isNaN(newBarangayId)) {
+    emit("update:modelValue", newBarangayId)
+  }
+  console.log('selectedBarangayId', newBarangayId)
+})
+
+
 </script>
 
 <template>
@@ -160,7 +173,7 @@ console.log(selectedBarangayId.value)
     <Drawer v-model:open="open">
       <DrawerTrigger as-child>
         <Button variant="outline" class="w-full justify-between text-left font-normal" :disabled="disabled"
-          @click="resetSelections" :aria-label="`Open location selector. Current selection: ${buttonText}`">
+          :aria-label="`Open location selector. Current selection: ${buttonText}`">
           <div class="flex items-center gap-2 truncate">
             <MapPin class="h-4 w-4 shrink-0 opacity-50" />
             <span class="truncate">{{ buttonText }}</span>
@@ -169,7 +182,7 @@ console.log(selectedBarangayId.value)
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent class="bg-gray-100 rounded-t-[10px]   max-h-[96%] fixed bottom-0 left-0 right-0">
+      <DrawerContent class="bg-gray-100 rounded-t-[10px] max-h-[96%] fixed bottom-0 left-0 right-0">
         <DrawerHeader class="text-left">
           <DrawerTitle>Select Your Location</DrawerTitle>
           <p class="text-sm text-muted-foreground">
@@ -179,7 +192,6 @@ console.log(selectedBarangayId.value)
 
         <div class="px-4 pb-4">
           <div class="space-y-4 max-w-sm mx-auto">
-            <!-- Enhanced combobox components with better labels -->
             <div class="space-y-2">
               <label class="text-sm font-medium">Province</label>
               <ProvinceCombobox v-model="selectedProvince" :region-id="regionId" aria-label="Select province" />
@@ -195,10 +207,8 @@ console.log(selectedBarangayId.value)
               <label class="text-sm font-medium">Barangay</label>
               <BarangayCombobox v-model="selectedBarangayId" :municipality-id="selectedMunicipality?.municipality_id"
                 :disabled="!selectedMunicipality" aria-label="Select barangay" />
-
             </div>
 
-            <!-- Enhanced selection preview with better styling -->
             <div v-if="isSelectionComplete" class="rounded-lg border bg-muted/50 p-3 text-sm" role="status"
               aria-live="polite">
               <div class="font-medium text-foreground mb-1">Selected Location:</div>

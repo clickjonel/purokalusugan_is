@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\HrhController;
+use App\Http\Controllers\PkpEventsController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\PkpRegionController;
@@ -21,15 +22,11 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Route::post('/program/create', [ProgramsController::class, 'create']);
-// Route::get('/programs', [ProgramsController::class, 'list']);
-
 Route::post('/login', [AuthenticationController::class, 'login']);
 
-//Programs
 Route::group([
     'prefix' => 'program',
-    // 'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [ProgramsController::class, 'createProgram']);
     Route::get('/list', [ProgramsController::class, 'getPrograms']);
@@ -50,9 +47,9 @@ Route::group([
     Route::post('/member/create', [TeamController::class, 'saveMember']);
 });
 
-//Indicators
 Route::group([
-    'prefix' => 'indicator'
+    'prefix' => 'indicator',
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpIndicatorController::class, 'createIndicator']);
     Route::get('/list', [PkpIndicatorController::class, 'getIndicators']);
@@ -61,6 +58,25 @@ Route::group([
     Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
     Route::put('/status', [PkpIndicatorController::class, 'updateStatusOfProgram']);
 });
+
+Route::group([
+    'prefix' => 'event',
+    // 'middleware' => 'auth:sanctum'
+], function () {
+    Route::post('/create', [PkpEventsController::class, 'createEvent']);
+    Route::get('/list', [PkpEventsController::class, 'getEvents']);
+    Route::put('/update', [PkpEventsController::class, 'updateEvent']);
+    Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
+});
+
+//Team
+Route::group([
+    'prefix' => 'team'
+], function () {
+    Route::post('/create', [TeamController::class, 'create']);
+    Route::get('/list', [TeamController::class, 'list']);
+});
+
 
 //HRH User
 Route::group([

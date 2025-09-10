@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, h } from "vue"
+import { ref, onMounted, computed } from "vue"
 import axios from "@/axios/axios"
 import { toTypedSchema } from "@vee-validate/zod"
 import { useForm } from "vee-validate"
@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ChevronRight } from "lucide-vue-next"
 import BarangaySelector from "@/components/ui/select/barangay_selection/BarangaySelector.vue"
 import { toast } from "vue-sonner"
 import SelectContent from '@/components/ui/select/SelectContent.vue'
@@ -33,6 +32,7 @@ import SelectTrigger from '@/components/ui/select/SelectTrigger.vue'
 import Select from '@/components/ui/select/Select.vue'
 import SelectValue from '@/components/ui/select/SelectValue.vue'
 import SelectItem from '@/components/ui/select/SelectItem.vue'
+import { ChevronRight, Edit, Trash2 } from 'lucide-vue-next'
 
 
 interface PkpSite {
@@ -69,16 +69,26 @@ const siteStatusLabels: Record<number, string> = {
   5: "Monitored PK Implementation",
 }
 
-const formSchema = toTypedSchema(z.object({
-  barangay_id: z.coerce.number().min(1, "Barangay is required"),
-  latitude: z.coerce.number().min(-90).max(90, "Latitude must be between -90 and 90"),
-  longitude: z.coerce.number().min(-180).max(180, "Longitude must be between -180 and 180"),
-  site_status: z.coerce.number().int(),
-  target_sition: z.coerce.number().int(),
-  target_purok: z.coerce.number().int(),
-  no_household: z.coerce.number().nullable().optional(),
-  population: z.coerce.number().nullable().optional(),
-}))
+const formSchema = toTypedSchema(
+  z.object({
+    site_id: z.coerce.number().optional(),
+    barangay_id: z.coerce.number().optional(),
+    latitude: z.coerce
+      .number()
+      .min(-90, "Latitude must be between -90 and 90")
+      .max(90, "Latitude must be between -90 and 90"),
+    longitude: z.coerce
+      .number()
+      .min(-180, "Longitude must be between -180 and 180")
+      .max(180, "Longitude must be between -180 and 180"),
+    site_status: z.coerce.number().int(),
+    target_sition: z.coerce.number().int(),
+    target_purok: z.coerce.number().int(),
+    no_household: z.coerce.number().nullable().optional(),
+    population: z.coerce.number().nullable().optional(),
+  })
+)
+
 
 // State
 const sites = ref<PkpSite[]>([])
@@ -97,10 +107,8 @@ async function loadSites() {
 onMounted(() => {
   loadSites()
 })
-
-const { handleSubmit, resetForm } = useForm<PkpSite>({
-  validationSchema: formSchema,
-  initialValues: {
+function defaultPkpSite(): PkpSite {
+  return {
     barangay_id: 0,
     latitude: 0,
     longitude: 0,
@@ -109,16 +117,31 @@ const { handleSubmit, resetForm } = useForm<PkpSite>({
     target_purok: 0,
     no_household: null,
     population: null,
-  },
+    barangay: {
+      barangay_id: 0,
+      barangay_name: "",
+      municipality: {
+        municipality_id: 0,
+        municipality_name: "",
+        province: {
+          province_id: 0,
+          province_name: "",
+        },
+      },
+    },
+  }
+}
+const { handleSubmit, resetForm } = useForm<PkpSite>({
+  validationSchema: formSchema,
+  initialValues: defaultPkpSite(),
 })
-
 
 
 
 function openCreate() {
   isEditing.value = false
   editingId.value = null
-  resetForm()
+  resetForm({ values: defaultPkpSite() })
   isDialogOpen.value = true
 }
 
@@ -126,9 +149,11 @@ function editSite(site: PkpSite) {
   isEditing.value = true
   editingId.value = site.site_id ?? null
 
+  console.log('siste', site.site_id,)
   resetForm({
     values: {
       ...site,
+      site_id: site.site_id,
       barangay_id: site.barangay_id,
     },
   })
@@ -139,6 +164,8 @@ function editSite(site: PkpSite) {
 const saveSite = async (values: PkpSite) => {
   try {
     if (isEditing.value && editingId.value) {
+      console.log('ito yung data', values)
+      //'ito yung data',{"barangay_id": 37494,"latitude": 16.8879,"longitude": 120.6833,"site_status": 1,"target_sition": 0,"target_purok": 0,"no_household": 2,"population": 2500
       await axios.put(`/site/update`, values)
     } else {
       await axios.post("/site/create", values)
@@ -161,57 +188,113 @@ async function removeSite(id?: number) {
   await loadSites()
 }
 
+const searchQuery = ref("")
+const currentPage = ref(1)
+const pageSize = ref(10) // rows per page
+
+// Filter sites by search
+const filteredSites = computed(() => {
+  if (!searchQuery.value) return sites.value
+  return sites.value.filter((site) => {
+    const search = searchQuery.value.toLowerCase()
+    return (
+      site.site_id?.toString().includes(search) ||
+      site.barangay.barangay_name.toLowerCase().includes(search) ||
+      site.barangay.municipality.municipality_name.toLowerCase().includes(search) ||
+      site.barangay.municipality.province.province_name.toLowerCase().includes(search)
+    )
+  })
+})
+
+// Paginate filtered sites
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredSites.value.length / pageSize.value))
+)
+
+const paginatedSites = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredSites.value.slice(start, start + pageSize.value)
+})
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+function prevPage() {
+  if (currentPage.value > 1) currentPage.value--
+}
+
 </script>
 
 <template>
   <div class="p-4 space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold">PKP Sites</h2>
-      <Button @click="openCreate">New Site</Button>
-    </div>
+    <div class="p-4 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">PKP Sites</h2>
+        <div class="flex items-center gap-2">
+          <!-- Search -->
+          <Input v-model="searchQuery" type="text" placeholder="Search..." class="h-8 w-48 text-sm" />
+          <Button @click="openCreate">New Site</Button>
+        </div>
+      </div>
 
-    <!-- Sites Table -->
-    <Card>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Province</TableHead>
-              <TableHead>Municipality</TableHead>
-              <TableHead>Barangay</TableHead>
-              <TableHead>Lat</TableHead>
-              <TableHead>Lng</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Purok</TableHead>
-              <TableHead>Sition</TableHead>
-              <TableHead>Households</TableHead>
-              <TableHead>Population</TableHead>
-              <TableHead class="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow v-for="site in sites" :key="site.site_id">
-              <TableCell>{{ site.site_id }}</TableCell>
-              <TableCell>{{ site.barangay.municipality.province.province_name }}</TableCell>
-              <TableCell>{{ site.barangay.municipality.municipality_name }}</TableCell>
-              <TableCell>{{ site.barangay.barangay_name }}</TableCell>
-              <TableCell>{{ site.latitude }}</TableCell>
-              <TableCell>{{ site.longitude }}</TableCell>
-              <TableCell>{{ siteStatusLabels[site.site_status] }}</TableCell>
-              <TableCell>{{ site.target_purok }}</TableCell>
-              <TableCell>{{ site.target_sition }}</TableCell>
-              <TableCell>{{ site.no_household ?? "-" }}</TableCell>
-              <TableCell>{{ site.population ?? "-" }}</TableCell>
-              <TableCell class="text-right space-x-2">
-                <Button size="sm" variant="ghost" @click="editSite(site)">Edit</Button>
-                <Button size="sm" variant="destructive" @click="removeSite(site.site_id)">Delete</Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+      <!-- Sites Table -->
+      <Card>
+        <CardContent>
+          <Table class="text-sm">
+            <TableHeader>
+              <TableRow class="h-8">
+                <TableHead class="px-2 py-1">ID</TableHead>
+                <TableHead class="px-2 py-1">Province</TableHead>
+                <TableHead class="px-2 py-1">Municipality</TableHead>
+                <TableHead class="px-2 py-1">Barangay</TableHead>
+                <TableHead class="px-2 py-1">Lat</TableHead>
+                <TableHead class="px-2 py-1">Lng</TableHead>
+                <TableHead class="px-2 py-1">Status</TableHead>
+                <TableHead class="px-2 py-1">Purok</TableHead>
+                <TableHead class="px-2 py-1">Sition</TableHead>
+                <TableHead class="px-2 py-1">Households</TableHead>
+                <TableHead class="px-2 py-1">Population</TableHead>
+                <TableHead class="px-2 py-1 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              <TableRow v-for="site in paginatedSites" :key="site.site_id" class="h-8">
+                <TableCell class="px-2 py-1">{{ site.site_id }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.barangay.municipality.province.province_name }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.barangay.municipality.municipality_name }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.barangay.barangay_name }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.latitude }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.longitude }}</TableCell>
+                <TableCell class="px-2 py-1">{{ siteStatusLabels[site.site_status] }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.target_purok }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.target_sition }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.no_household ?? "-" }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.population ?? "-" }}</TableCell>
+
+                <TableCell class="px-2 py-1 text-right flex justify-end gap-1">
+                  <Button size="icon" variant="ghost" @click="editSite(site)" class="h-7 w-7">
+                    <Edit class="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" variant="destructive" @click="removeSite(site.site_id)" class="h-7 w-7">
+                    <Trash2 class="h-3.5 w-3.5" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+
+          <!-- Pagination -->
+          <div class="flex items-center justify-between mt-2 text-sm text-muted-foreground">
+            <span>Page {{ currentPage }} of {{ totalPages }}</span>
+            <div class="flex gap-2">
+              <Button size="sm" variant="outline" @click="prevPage" :disabled="currentPage === 1">Previous</Button>
+              <Button size="sm" variant="outline" @click="nextPage" :disabled="currentPage === totalPages">Next</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
 
     <!-- Dialog / Form -->
     <Dialog v-model:open="isDialogOpen">
@@ -226,7 +309,30 @@ async function removeSite(id?: number) {
             <FormItem>
               <FormLabel>Barangay</FormLabel>
               <FormControl>
-                <BarangaySelector :model-value="field.value" @update:model-value="field.onChange" />
+                <!-- Show summary when editing -->
+                <template v-if="isEditing">
+                  <div class="rounded-lg border bg-muted/50 p-3 text-sm" role="status" aria-live="polite">
+                    <div class="font-medium text-foreground mb-1">Selected Location:</div>
+                    <div class="flex items-center gap-1 text-muted-foreground">
+                      <span class="font-medium">
+                        {{sites.find(s => s.site_id === editingId)?.barangay.municipality.province.province_name}}
+                      </span>
+                      <ChevronRight class="h-3 w-3" />
+                      <span class="font-medium">
+                        {{sites.find(s => s.site_id === editingId)?.barangay.municipality.municipality_name}}
+                      </span>
+                      <ChevronRight class="h-3 w-3" />
+                      <span class="font-medium">
+                        {{sites.find(s => s.site_id === editingId)?.barangay.barangay_name}}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Show selector only when creating -->
+                <template v-else>
+                  <BarangaySelector :model-value="field.value" @update:model-value="field.onChange" />
+                </template>
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -8,8 +8,9 @@ class Pkp_region extends Model
 {
     protected $connection = 'pkpulse';
     protected $table = 'pkp_region';
-    protected $fillable = [        
+    protected $primaryKey = 'region_id';
+    protected $fillable = [
         'region_name',
-        'uid'        
+        'uid'
     ];
 }

@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
+import Events from '@/pages/admin/events/Events.vue'
 import Teams from '@/pages/admin/team/Teams.vue'
 import Sites from '@/pages/admin/sites/Sites.vue'
 import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
@@ -26,20 +27,9 @@ const router = createRouter({
       component: ManageMembers,
     },
     {
-      path: '/site',
-      name: 'site',
-      component: Sites,
-    },
-
-    {
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
-    },
-    {
-      path: '/indicators',
-      name: 'Indicators',
-      component: Indicators,
     },
     {
       path: '/admin',
@@ -91,24 +81,42 @@ const router = createRouter({
             ]
           }
         },
-        // {
-        //   path: 'indicators',
-        //   name: 'indicators',
-        //   component: Indicators,
-        //   meta: {
-        //     requiresAuth: true,
-        //     breadcrumbs: [
-        //       {
-        //         name: 'Admin',
-        //         link: '/admin'
-        //       },
-        //       {
-        //         name: 'Indicators',
-        //         link: '/admin/indicators'
-        //       }
-        //     ]
-        //   }
-        // },
+        {
+          path: 'indicators',
+          name: 'indicators',
+          component: Indicators,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Indicators',
+                link: '/admin/indicators'
+              }
+            ]
+          }
+        },
+        {
+          path: 'events',
+          name: 'events',
+          component: Events,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Events',
+                link: '/admin/events'
+              }
+            ]
+          }
+        },
         {
           path: 'hrh',
           name: 'HRH',
@@ -141,6 +149,24 @@ const router = createRouter({
               {
                 name: 'Teams',
                 link: '/admin/teams'
+              }
+            ]
+          }
+        },
+        {
+          path: 'site',
+          name: 'Sites',
+          component: Sites,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Sites',
+                link: '/admin/sites'
               }
             ]
           }

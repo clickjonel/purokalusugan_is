@@ -8,6 +8,7 @@ class Pkp_municipality extends Model
 {
     protected $connection = 'pkpulse';
     protected $table = 'pkp_municipality';
+    protected $primaryKey = 'municipality_id';
     protected $fillable = [
         'region_id',
         'province_id',
