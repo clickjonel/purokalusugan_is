@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 import Programs from '@/pages/admin/programs/Programs.vue';
 import Indicators from '@/pages/admin/indicators/Indicators.vue'
+import Events from '@/pages/admin/events/Events.vue'
 import Teams from '@/pages/admin/team/Teams.vue'
 import Sites from '@/pages/admin/sites/Sites.vue'
 
@@ -93,6 +94,24 @@ const router = createRouter({
               {
                 name: 'Indicators',
                 link: '/admin/indicators'
+              }
+            ]
+          }
+        },
+        {
+          path: 'events',
+          name: 'events',
+          component: Events,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Events',
+                link: '/admin/events'
               }
             ]
           }

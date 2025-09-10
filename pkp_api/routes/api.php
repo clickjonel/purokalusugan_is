@@ -50,7 +50,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'event',
-    'middleware' => 'auth:sanctum'
+    // 'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpEventsController::class, 'createEvent']);
     Route::get('/list', [PkpEventsController::class, 'getEvents']);
