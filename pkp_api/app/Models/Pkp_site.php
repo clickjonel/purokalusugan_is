@@ -12,6 +12,7 @@ class Pkp_site extends Model
     public $incrementing = true;
     protected $keyType = 'int';
     protected $fillable = [
+        'barangay_name',
         'barangay_id',
         'latitude',
         'longitude',

@@ -1,3 +1,126 @@
+<script setup lang="ts">
+import { ref, onMounted, h } from "vue"
+import axios from "@/axios/axios"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
+import * as z from "zod"
+
+// shadcn-ui
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import BarangaySelector from "@/components/ui/select/barangay_selection/BarangaySelector.vue"
+import { toast } from "vue-sonner"
+
+
+interface PkpSite {
+  site_id?: number
+  barangay_id: number
+  barangay: {
+    barangay_id: number
+    barangay_name: string
+  }
+  latitude: number
+  longitude: number
+  site_status: number
+  target_purok: number
+  target_sition: number
+  no_household?: number | null
+  population?: number | null
+}
+
+// ✅ Validation schema
+const formSchema = toTypedSchema(z.object({
+  barangay_id: z.number().min(1, "Barangay is required"),
+  latitude: z.number().min(-90).max(90, "Latitude must be between -90 and 90"),
+  longitude: z.number().min(-180).max(180, "Longitude must be between -180 and 180"),
+  site_status: z.number().int(),
+  target_sition: z.number().int(),
+  target_purok: z.number().int(),
+  no_household: z.number().nullable().optional(),
+  population: z.number().nullable().optional(),
+}))
+
+// State
+const sites = ref<PkpSite[]>([])
+const isDialogOpen = ref(false)
+const isEditing = ref(false)
+const editingId = ref<number | null>(null)
+
+
+
+async function loadSites() {
+  const res = await axios.get("/site/list")
+  sites.value = res.data.data
+
+}
+
+onMounted(() => {
+  loadSites()
+})
+
+const { handleSubmit, resetForm } = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    barangay_id: 0,
+    latitude: 0,
+    longitude: 0,
+    site_status: 1,
+    target_sition: 0,
+    target_purok: 0,
+    no_household: null,
+    population: null,
+  },
+})
+
+function openCreate() {
+  isEditing.value = false
+  editingId.value = null
+  resetForm()
+  isDialogOpen.value = true
+}
+
+function editSite(site: PkpSite) {
+  isEditing.value = true
+  editingId.value = site.site_id ?? null
+  resetForm({ values: site })
+  isDialogOpen.value = true
+}
+
+const saveSite = async (values: PkpSite) => {
+  try {
+    if (isEditing.value && editingId.value) {
+      await axios.put(`/site/update`, values)
+    } else {
+      await axios.post("/site/create", values)
+    }
+
+    await loadSites()
+    isDialogOpen.value = false
+    toast.success(isEditing.value ? "Site updated." : "New site created.")
+  } catch (e) {
+    console.error("Save failed", e)
+    toast.error("Could not save site.")
+  }
+}
+const onSubmit = handleSubmit(saveSite)
+
+async function removeSite(id?: number) {
+  if (!id) return
+  if (!confirm("Delete this site?")) return
+  await axios.delete(`/site/delete`)
+  await loadSites()
+}
+</script>
+
 <template>
   <div class="p-4 space-y-4">
     <div class="flex items-center justify-between">
@@ -5,17 +128,19 @@
       <Button @click="openCreate">New Site</Button>
     </div>
 
-    <!-- Table -->
+    <!-- Sites Table -->
     <Card>
       <CardContent>
         <table class="w-full table-auto">
           <thead>
             <tr class="text-left text-sm text-slate-600">
-              <th>Site ID</th>
+              <th>ID</th>
               <th>Barangay</th>
               <th>Lat</th>
               <th>Lng</th>
               <th>Status</th>
+              <th>Target Purok</th>
+              <th>Target Sition</th>
               <th>Households</th>
               <th>Population</th>
               <th class="text-right">Actions</th>
@@ -24,12 +149,14 @@
           <tbody>
             <tr v-for="site in sites" :key="site.site_id" class="border-t">
               <td class="py-2">{{ site.site_id }}</td>
-              <td class="py-2">{{ site.barangay_name ?? site.barangay_id }}</td>
+              <td class="py-2">{{ site.barangay.barangay_name }}</td>
               <td class="py-2">{{ site.latitude }}</td>
               <td class="py-2">{{ site.longitude }}</td>
               <td class="py-2">{{ site.site_status }}</td>
-              <td class="py-2">{{ site.no_household ?? '-' }}</td>
-              <td class="py-2">{{ site.population ?? '-' }}</td>
+              <td class="py-2">{{ site.target_purok }}</td>
+              <td class="py-2">{{ site.target_sition }}</td>
+              <td class="py-2">{{ site.no_household ?? "-" }}</td>
+              <td class="py-2">{{ site.population ?? "-" }}</td>
               <td class="py-2 text-right">
                 <Button size="sm" variant="ghost" @click="editSite(site)">Edit</Button>
                 <Button size="sm" variant="destructive" @click="removeSite(site.site_id)">Delete</Button>
@@ -44,229 +171,100 @@
     <Dialog v-model:open="isDialogOpen">
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{{ isEditing ? 'Edit Site' : 'Create Site' }}</DialogTitle>
+          <DialogTitle>{{ isEditing ? "Edit Site" : "Create Site" }}</DialogTitle>
         </DialogHeader>
 
-        <form @submit.prevent="onSubmit">
-          <div class="grid grid-cols-1 gap-3">
-            <FormField>
+        <form class="w-2/3 space-y-6" @submit.prevent="onSubmit">
+          <!-- Barangay -->
+          <FormField name="barangay_id" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Barangay</FormLabel>
+              <FormControl>
+                <BarangaySelector v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <!-- Latitude -->
+          <FormField name="latitude" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Latitude</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.00000001" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <!-- Longitude -->
+          <FormField name="longitude" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Longitude</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.00000001" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <!-- Status -->
+          <FormField name="site_status" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Site Status</FormLabel>
+              <FormControl>
+                <Input type="number" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField name="target_purok" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Target Purok</FormLabel>
+              <FormControl>
+                <Input type="number" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField name="target_sition" v-slot="{ componentField }">
+            <FormItem>
+              <FormLabel>Target Sition</FormLabel>
+              <FormControl>
+                <Input type="number" v-bind="componentField" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <div class="grid grid-cols-2 gap-2">
+            <FormField name="no_household" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>Barangay</FormLabel>
-                <Select v-model="form.barangay_id" :options="barangayOptions" :placeholder="'Select barangay'" />
-                <FormMessage v-if="errors.barangay_id">{{ errors.barangay_id }}</FormMessage>
+                <FormLabel>No. Households</FormLabel>
+                <FormControl>
+                  <Input type="number" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
 
-            <FormField>
+            <FormField name="population" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>Latitude</FormLabel>
-                <Input type="number" step="0.00000001" v-model.number="form.latitude" />
-                <FormMessage v-if="errors.latitude">{{ errors.latitude }}</FormMessage>
+                <FormLabel>Population</FormLabel>
+                <FormControl>
+                  <Input type="number" v-bind="componentField" />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
+          </div>
 
-            <FormField>
-              <FormItem>
-                <FormLabel>Longitude</FormLabel>
-                <Input type="number" step="0.00000001" v-model.number="form.longitude" />
-                <FormMessage v-if="errors.longitude">{{ errors.longitude }}</FormMessage>
-              </FormItem>
-            </FormField>
-
-            <FormField>
-              <FormItem>
-                <FormLabel>Site Status</FormLabel>
-                <Select v-model="form.site_status" :options="statusOptions" />
-              </FormItem>
-            </FormField>
-
-            <div class="grid grid-cols-2 gap-2">
-              <FormField>
-                <FormItem>
-                  <FormLabel>No. Households</FormLabel>
-                  <Input type="number" v-model.number="form.no_household" />
-                </FormItem>
-              </FormField>
-
-              <FormField>
-                <FormItem>
-                  <FormLabel>Population</FormLabel>
-                  <Input type="number" v-model.number="form.population" />
-                </FormItem>
-              </FormField>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-              <Button variant="secondary" @click="closeDialog" type="button">Cancel</Button>
-              <Button type="submit">{{ isEditing ? 'Update' : 'Create' }}</Button>
-            </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" type="button" @click="isDialogOpen = false">Cancel</Button>
+            <Button type="submit">{{ isEditing ? "Update" : "Create" }}</Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import axios from 'axios'
-
-// shadcn-ui components - adapt names to your project's registration
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-
-// Types
-interface PkpSite {
-  site_id?: number
-  barangay_id: number
-  barangay_name?: string | null
-  latitude: number
-  longitude: number
-  site_status: number
-  no_purok?: number | null
-  no_sitio?: number | null
-  target_purok?: number | null
-  target_sition?: number | null
-  no_household?: number | null
-  population?: number | null
-  created_at?: string
-  updated_at?: string
-  deleted_at?: string | null
-}
-
-interface Option { label: string; value: number }
-
-// Local state
-const sites = ref<PkpSite[]>([])
-const barangayOptions = ref<Option[]>([])
-const statusOptions = ref<Option[]>([{ label: 'Inactive', value: 0 }, { label: 'Active', value: 1 }])
-
-const isDialogOpen = ref(false)
-const isEditing = ref(false)
-
-const form = reactive<PkpSite>({
-  barangay_id: 0,
-  latitude: 0,
-  longitude: 0,
-  site_status: 1,
-})
-
-const errors = reactive<Record<string, string | null>>({})
-
-// API endpoints - adapt base URL / endpoints to your backend
-const api = axios.create({ baseURL: '/api' })
-
-async function loadSites() {
-  try {
-    const res = await api.get('/pkp-sites')
-    sites.value = res.data.map((s: any) => ({ ...s }))
-  } catch (e) {
-    console.error('failed to load sites', e)
-  }
-}
-
-async function loadBarangays() {
-  try {
-    const res = await api.get('/pkp-barangays')
-    barangayOptions.value = res.data.map((b: any) => ({ label: b.name || b.barangay_name || (`#${b.barangay_id}`), value: b.barangay_id }))
-  } catch (e) {
-    console.error('failed to load barangays', e)
-  }
-}
-
-onMounted(() => {
-  loadSites()
-  loadBarangays()
-})
-
-function openCreate() {
-  isEditing.value = false
-  resetForm()
-  isDialogOpen.value = true
-}
-
-function editSite(site: PkpSite) {
-  isEditing.value = true
-  Object.assign(form, site)
-  isDialogOpen.value = true
-}
-
-function closeDialog() {
-  isDialogOpen.value = false
-}
-
-function resetForm() {
-  form.site_id = undefined
-  form.barangay_id = 0
-  form.latitude = 0
-  form.longitude = 0
-  form.site_status = 1
-  form.no_household = undefined
-  form.population = undefined
-  Object.keys(errors).forEach(k => errors[k] = null)
-}
-
-function validate() {
-  let ok = true
-  errors.barangay_id = null
-  errors.latitude = null
-  errors.longitude = null
-
-  if (!form.barangay_id || form.barangay_id === 0) { errors.barangay_id = 'Barangay is required'; ok = false }
-  if (typeof form.latitude !== 'number' || isNaN(form.latitude)) { errors.latitude = 'Latitude is required'; ok = false }
-  if (typeof form.longitude !== 'number' || isNaN(form.longitude)) { errors.longitude = 'Longitude is required'; ok = false }
-
-  // latitude range check
-  if (ok) {
-    if (form.latitude < -90 || form.latitude > 90) { errors.latitude = 'Latitude must be between -90 and 90'; ok = false }
-    if (form.longitude < -180 || form.longitude > 180) { errors.longitude = 'Longitude must be between -180 and 180'; ok = false }
-  }
-
-  return ok
-}
-
-async function onSubmit() {
-  if (!validate()) return
-
-  try {
-    if (isEditing.value && form.site_id) {
-      const payload = { ...form }
-      await api.put(`/pkp-sites/${form.site_id}`, payload)
-    } else {
-      const payload = { ...form }
-      await api.post('/pkp-sites', payload)
-    }
-
-    await loadSites()
-    closeDialog()
-  } catch (e) {
-    console.error('save failed', e)
-    // simple error handling example
-    if (axios.isAxiosError(e) && e.response) {
-      const data = e.response.data
-      if (data && typeof data === 'object') {
-        Object.assign(errors, data.errors ?? {})
-      }
-    }
-  }
-}
-
-async function removeSite(id?: number) {
-  if (!id) return
-  if (!confirm('Delete this site?')) return
-  try {
-    await api.delete(`/pkp-sites/${id}`)
-    await loadSites()
-  } catch (e) {
-    console.error('delete failed', e)
-  }
-}
-</script>
-
-<style scoped>
-/* light styling tweaks (Tailwind should handle most) */
-</style>
