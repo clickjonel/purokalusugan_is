@@ -42,7 +42,7 @@ interface PkpSite {
   longitude: number
   site_status: number
   target_purok: number
-  target_sition: number
+  target_sitio: number
   no_household?: number | null
   population?: number | null
 
@@ -82,7 +82,7 @@ const formSchema = toTypedSchema(
       .min(-180, "Longitude must be between -180 and 180")
       .max(180, "Longitude must be between -180 and 180"),
     site_status: z.coerce.number().int(),
-    target_sition: z.coerce.number().int(),
+    target_sitio: z.coerce.number().int(),
     target_purok: z.coerce.number().int(),
     no_household: z.coerce.number().nullable().optional(),
     population: z.coerce.number().nullable().optional(),
@@ -113,7 +113,7 @@ function defaultPkpSite(): PkpSite {
     latitude: 0,
     longitude: 0,
     site_status: 1,
-    target_sition: 0,
+    target_sitio: 0,
     target_purok: 0,
     no_household: null,
     population: null,
@@ -165,7 +165,7 @@ const saveSite = async (values: PkpSite) => {
   try {
     if (isEditing.value && editingId.value) {
       console.log('ito yung data', values)
-      //'ito yung data',{"barangay_id": 37494,"latitude": 16.8879,"longitude": 120.6833,"site_status": 1,"target_sition": 0,"target_purok": 0,"no_household": 2,"population": 2500
+      //'ito yung data',{"barangay_id": 37494,"latitude": 16.8879,"longitude": 120.6833,"site_status": 1,"target_sitio": 0,"target_purok": 0,"no_household": 2,"population": 2500
       await axios.put(`/site/update`, values)
     } else {
       await axios.post("/site/create", values)
@@ -251,7 +251,7 @@ function prevPage() {
                 <TableHead class="px-2 py-1">Lng</TableHead>
                 <TableHead class="px-2 py-1">Status</TableHead>
                 <TableHead class="px-2 py-1">Purok</TableHead>
-                <TableHead class="px-2 py-1">Sition</TableHead>
+                <TableHead class="px-2 py-1">Sitio</TableHead>
                 <TableHead class="px-2 py-1">Households</TableHead>
                 <TableHead class="px-2 py-1">Population</TableHead>
                 <TableHead class="px-2 py-1 text-right">Actions</TableHead>
@@ -268,7 +268,7 @@ function prevPage() {
                 <TableCell class="px-2 py-1">{{ site.longitude }}</TableCell>
                 <TableCell class="px-2 py-1">{{ siteStatusLabels[site.site_status] }}</TableCell>
                 <TableCell class="px-2 py-1">{{ site.target_purok }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.target_sition }}</TableCell>
+                <TableCell class="px-2 py-1">{{ site.target_sitio }}</TableCell>
                 <TableCell class="px-2 py-1">{{ site.no_household ?? "-" }}</TableCell>
                 <TableCell class="px-2 py-1">{{ site.population ?? "-" }}</TableCell>
 
@@ -303,7 +303,7 @@ function prevPage() {
           <DialogTitle>{{ isEditing ? "Edit Site" : "Create Site" }}</DialogTitle>
         </DialogHeader>
 
-        <form class="w-2/3 space-y-6" @submit.prevent="onSubmit">
+        <form class="w-full space-y-6" @submit.prevent="onSubmit">
           <!-- Barangay -->
           <FormField name="barangay_id" v-slot="{ field }">
             <FormItem>
@@ -311,9 +311,10 @@ function prevPage() {
               <FormControl>
                 <!-- Show summary when editing -->
                 <template v-if="isEditing">
-                  <div class="rounded-lg border bg-muted/50 p-3 text-sm" role="status" aria-live="polite">
-                    <div class="font-medium text-foreground mb-1">Selected Location:</div>
-                    <div class="flex items-center gap-1 text-muted-foreground">
+                  <div class="rounded-lg border bg-muted/50 p-3 text-sm flex gap-2 items-center" role="status"
+                    aria-live="polite">
+                    <div class="font-medium text-muted-foreground  ">Selected Location:</div>
+                    <div class="font-bold flex items-center gap-1 ">
                       <span class="font-medium">
                         {{sites.find(s => s.site_id === editingId)?.barangay.municipality.province.province_name}}
                       </span>
@@ -362,20 +363,20 @@ function prevPage() {
           </FormField>
 
           <!-- Status -->
-          <FormField name="site_status" v-slot="{ componentField }">
-            <FormItem>
+          <FormField name="site_status" v-slot="{ componentField }" class="w-full">
+            <FormItem class="w-full">
               <FormLabel>Site Status</FormLabel>
               <FormControl>
                 <Select v-bind="componentField">
-                  <SelectTrigger>
+                  <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem :value="1">Preparation Phase</SelectItem>
-                    <SelectItem :value="2">Action Planning Done</SelectItem>
-                    <SelectItem :value="3">With organized PKT</SelectItem>
-                    <SelectItem :value="4">Implementing PK</SelectItem>
-                    <SelectItem :value="5">Monitored PK Implementation</SelectItem>
+                    <SelectItem :value="1">1 - Preparation Phase</SelectItem>
+                    <SelectItem :value="2">2 - Action Planning Done</SelectItem>
+                    <SelectItem :value="3">3 - With organized PKT</SelectItem>
+                    <SelectItem :value="4">4 - Implementing PK</SelectItem>
+                    <SelectItem :value="5">5 - Monitored PK Implementation</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -391,9 +392,9 @@ function prevPage() {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField name="target_sition" v-slot="{ componentField }">
+          <FormField name="target_sitio" v-slot="{ componentField }">
             <FormItem>
-              <FormLabel>Target Sition</FormLabel>
+              <FormLabel>Target Sitio</FormLabel>
               <FormControl>
                 <Input type="number" v-bind="componentField" />
               </FormControl>
