@@ -74,31 +74,6 @@ Route::group([
     Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
 });
 
-Route::group([
-    'prefix' => 'disaggregation',
-    'middleware' => 'auth:sanctum'
-], function () {
-    Route::post('/create', [PkpDisaggregationController::class, 'createDisaggregation']);
-    Route::get('/list', [PkpDisaggregationController::class, 'getDisaggregations']);
-    Route::put('/update', [PkpDisaggregationController::class, 'updateDisaggregation']);
-    Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']);    
-});
-Route::group([
-    'prefix' => 'indicator_value',
-    // 'middleware' => 'auth:sanctum'
-], function () {
-    Route::post('/create', [PkpIndicatorValuesController::class, 'createIndicatorValue']);
-    Route::get('/list', [PkpIndicatorValuesController::class, 'getIndicatorValues']);
-    Route::put('/update', [PkpIndicatorValuesController::class, 'updateIndicatorValue']);
-    Route::delete('/delete', [PkpIndicatorValuesController::class, 'deleteIndicatorValue']);    
-});
-//Team
-Route::group([
-    'prefix' => 'team'
-], function () {
-    Route::post('/create', [TeamController::class, 'create']);
-    Route::get('/list', [TeamController::class, 'list']);
-});
 
 
 //HRH User
