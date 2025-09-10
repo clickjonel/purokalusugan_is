@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('no_purok')->nullable();
             $table->integer('no_sitio')->nullable();
             $table->integer('target_purok')->nullable();
-            $table->integer('target_sition')->nullable();
+            $table->integer('target_sitio')->nullable();
             $table->integer('no_household')->nullable();
             $table->integer('population')->nullable();
             $table->timestamps();

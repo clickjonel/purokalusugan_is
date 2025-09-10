@@ -154,7 +154,7 @@ const router = createRouter({
           }
         },
         {
-          path: 'site',
+          path: 'sites',
           name: 'Sites',
           component: Sites,
           meta: {

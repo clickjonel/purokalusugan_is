@@ -12,7 +12,7 @@ class TeamController extends Controller
 {
     public function list():JsonResponse
     {
-        $teams = Team::get();
+        $teams = Team::with(['members'])->get();
 
         return response()->json(['teams' => $teams]);
     }
@@ -43,7 +43,7 @@ class TeamController extends Controller
     }
 
     public function getTeam(Request $request){
-        $team = Team::find($request->team_id);
+        $team = Team::with(['members.team','members.hrh'])->find($request->team_id);
 
         return response()->json([
             'team' => $team
@@ -57,6 +57,15 @@ class TeamController extends Controller
 
         return response()->json([
             'message' => 'Successfully Added Member'
+        ]);
+    }
+
+    public function removeMember(Request $request): JsonResponse
+     {
+        $teamMember = TeamMember::find($request->team_member_id)->delete();
+
+        return response()->json([
+            'message' => 'Successfully Removed Member'
         ]);
     }
     

@@ -101,49 +101,6 @@ function resetSelections() {
   selectedBarangayName.value = undefined
 }
 
-watch(
-  () => props.modelValue,
-  async (newId, oldId) => {
-    if (newId === oldId) return
-
-    console.log('newid', newId)
-
-    if (newId == null) {
-      resetSelections()
-      return
-    }
-
-    try {
-      const { data } = await axios.get("/barangay/find", {
-        params: { barangay_id: newId },
-      })
-
-      const barangay = data?.data
-      if (!barangay) throw new Error("No barangay data returned")
-
-      selectedBarangayId.value = Number(barangay.barangay_id) || undefined
-      selectedBarangayName.value = barangay.barangay_name ?? ""
-
-      if (barangay.municipality) {
-        selectedMunicipality.value = {
-          municipality_id: Number(barangay.municipality.municipality_id),
-          municipality_name: barangay.municipality.municipality_name,
-        }
-      }
-
-      if (barangay.province) {
-        selectedProvince.value = {
-          province_id: Number(barangay.province.province_id),
-          province_name: barangay.province.province_name,
-        }
-      }
-    } catch (e) {
-      console.error("Failed to preload barangay:", e)
-      resetSelections()
-    }
-  },
-  { immediate: true }
-)
 
 watch(selectedProvince, (newProvince) => {
   if (!newProvince) return
