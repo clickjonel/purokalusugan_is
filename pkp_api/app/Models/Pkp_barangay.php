@@ -8,6 +8,7 @@ class Pkp_barangay extends Model
 {
     protected $connection = 'pkpulse';
     protected $table = 'pkp_barangay';
+    protected $primaryKey = 'barangay_id';
     protected $fillable = [
         'municipality_id',
         'region_id',
