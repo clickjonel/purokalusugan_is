@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pkp_indicator_disaggregations', function (Blueprint $table) {
             $table->id('indicator_disaggregation_id'); 
             $table->bigInteger('indicator_id'); 
-            $table->bigInteger('disaggration_id'); 
+            $table->bigInteger('disaggregation_id'); 
             $table->timestamps();
         });
     }

@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2 } from "lucide-vue-next";
+import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2, Split } from "lucide-vue-next";
 import {
     Dialog,
     DialogContent,
@@ -43,18 +43,22 @@ import { toast } from "vue-sonner";
 const router = useRouter();
 const indicators = ref<Indicator[]>([]);
 const currentList = ref<Indicator[]>([]);
-const programs = ref<Program[]>([]); 
-const disaggregations = ref<Disaggregation[]>([]); 
+const programs = ref<Program[]>([]);
 const selectedProgram = ref<Program | undefined>()
+const disaggregations = ref<Disaggregation[]>([]);
+const indicatorDisaggregations = ref<IndicatorDisaggregation[]>([]);
+const selectedDisaggregations = ref<number[]>([]);
 const indicatorCode = ref();
 let searchKeyword = ref("");
 let errorDetail = ref("");
 let isCreateModalOpen = ref(false);
 let isDeleteModalOpen = ref(false);
 let idToDelete = ref(0);
+let indicatorId = ref(0);
 let recordStatus = ref("");
 let isEditModalOpen = ref(false);
 let isStatusModalOpen = ref(false);
+let isSelectIndicatorDisaggregationOpen = ref(false);
 let toEdit = ref<Indicator>({
     indicator_id: 0,
     program_id: 0,
@@ -101,8 +105,24 @@ const program = ref<Program>({
 interface Disaggregation {
     disaggregation_id: number;
     disaggregation_code: number;
-    disaggregation_name: string;    
+    disaggregation_name: string;
 }
+interface IndicatorDisaggregation {
+    indicator_disaggregation_id: number;
+    indicator_id: number;
+    disaggregation_id: number;
+}
+
+const toggleSelection = (id: number, checked: boolean) => {
+    if (checked) {
+        if (!selectedDisaggregations.value.includes(id)) {
+            selectedDisaggregations.value.push(id);
+        }
+    } else {
+        selectedDisaggregations.value = selectedDisaggregations.value.filter((item) => item !== id);
+    }
+};
+
 function search() {
     const searchTerm = searchKeyword.value.toLowerCase();
     const searchedData = indicators.value.filter(indicator => {
@@ -141,15 +161,15 @@ function determineStatusColor(status: boolean) {
     return "Unknown"
 }
 function displayProgramName(id: number) {
-    const obtainedProgram=programs.value.filter(program=>id==program.program_id);
+    const obtainedProgram = programs.value.filter(program => id == program.program_id);
     return obtainedProgram[0].program_name;
 }
-function showIndicatorScope(scope:number){
+function showIndicatorScope(scope: number) {
     let result = "";
-    switch(scope){
-        case 1: result = "Individual";break;
-        case 2: result = "Household";break;
-        default: result = "Undefined";break;
+    switch (scope) {
+        case 1: result = "Individual"; break;
+        case 2: result = "Household"; break;
+        default: result = "Undefined"; break;
     }
     return result;
 }
@@ -224,17 +244,17 @@ function confirmEdit() {
             }
         });
 }
-function generateIndicatorCode() {    
+function generateIndicatorCode() {
     const prefix = selectedProgram.value?.program_code;
     const midFix = "IND";
     const dash = "-";
     const date = new Date();
     const year = date.getFullYear().toString().slice(2);
     let postfix = "";
-    let totalIndicatorsPlusOne=indicators.value.length+1;
-    postfix+=String(totalIndicatorsPlusOne).padStart(4,'0');
-    const generatedCode = prefix+dash+midFix+dash+year+dash+postfix;
-    indicatorCode.value=generatedCode;
+    let totalIndicatorsPlusOne = indicators.value.length + 1;
+    postfix += String(totalIndicatorsPlusOne).padStart(4, '0');
+    const generatedCode = prefix + dash + midFix + dash + year + dash + postfix;
+    indicatorCode.value = generatedCode;
 }
 function handleCreate() {
     if (indicator.value.indicator_code == '') {
@@ -279,12 +299,14 @@ function handleCreate() {
             },
         });
     }
-
-
 }
 function handleEdit(record: Indicator) {
     toEdit.value = { ...record };
     isEditModalOpen.value = true;
+}
+function handleSelectIndicatorDisaggregation(indicator_id: number) {
+    indicatorId.value = indicator_id;
+    isSelectIndicatorDisaggregationOpen.value = true;
 }
 function handleStatus(record: Indicator, status: string) {
     if (status == "deactivate") {
@@ -329,6 +351,58 @@ function confirmStatusUpdate() {
             }
         });
 }
+function handleCreateIndicatorDisaggregation() {
+    let object = { indicator_id: 0, disaggration_id: 0 };
+    for (let i = 0; i < selectedDisaggregations.value.length; i++) {
+        let dataToSave = {
+            ...object,
+            indicator_id: indicatorId.value,
+            disaggregation_id: selectedDisaggregations.value[i]
+        }
+        axios
+            .post("/indicator/disaggregation/create", dataToSave)
+            .then((response) => {
+                console.log(response.data);
+                isCreateModalOpen.value = false;
+                router.push({ path: "/admin/indicators" });
+                toast("Record created successfully!", {
+                    description: response.data.message,
+                    action: {
+                        label: "Close",
+                        onClick: () => toast.dismiss(),
+                    },
+                });
+                fetchList();
+            })
+            .catch((error) => {
+                console.error(error.response.data);
+                if (error.response) {
+                    toast("Failed with errors", {
+                        description: explainError(error.response.data.message),
+                        action: {
+                            label: "Close",
+                            onClick: () => toast.dismiss(),
+                        },
+                    });
+                }
+            })
+            .finally(() => { });
+    }
+    isSelectIndicatorDisaggregationOpen.value = false;
+}
+function displayDisaggregationsForThisIndicator(indicator_id: number) {
+    let result = [];
+    const listNeeded = indicatorDisaggregations.value.filter(list => indicator_id === list.indicator_id);
+    for (let i = 0; i < listNeeded.length; i++) {
+        for (let j = 0; j < disaggregations.value.length; j++) {
+            if (disaggregations.value[j].disaggregation_id === listNeeded[i].disaggregation_id) {
+                result.push(disaggregations.value[j].disaggregation_name);
+            }
+        }
+    }
+    return result;
+}
+
 const fetchList = () => {
     axios
         .get("/indicator/list")
@@ -364,10 +438,23 @@ const fetchDisaggregations = () => {
             console.error("Error fetching programs:", error);
         });
 };
+const fetchIndicatorDisaggregations = () => {
+    axios
+        .get("/indicator/disaggregation/list")
+        .then((response) => {
+            indicatorDisaggregations.value = response.data.data;
+            console.log("indicator disaggregations here", indicatorDisaggregations.value);
+        })
+        .catch((error) => {
+            console.error("Error fetching programs:", error);
+        });
+};
+
 onMounted(() => {
     fetchList();
     fetchPrograms();
     fetchDisaggregations();
+    fetchIndicatorDisaggregations();
 });
 </script>
 <template>
@@ -396,6 +483,7 @@ onMounted(() => {
                             <TableHead>Indicator Name</TableHead>
                             <TableHead>Description</TableHead>
                             <TableHead>Scope</TableHead>
+                            <TableHead>Disaggregations</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead class="text-right">Action</TableHead>
                         </TableRow>
@@ -414,6 +502,12 @@ onMounted(() => {
                                 indicator.indicator_description }}</TableCell>
                             <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
                                 showIndicatorScope(indicator.indicator_scope) }}</TableCell>
+                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">                                
+                                <div class="flex flex-col"
+                                    v-for="item in displayDisaggregationsForThisIndicator(indicator.indicator_id)">
+                                    <span>{{ item }}</span>
+                                </div>
+                            </TableCell>
                             <TableCell :class=determineStatusColor(indicator.indicator_status)>{{
                                 showStatusLabel(indicator.indicator_status) }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
@@ -430,6 +524,12 @@ onMounted(() => {
                                                 @click="handleEdit(indicator)">
                                                 <Pencil class="h-[1rem] w-[1rem]" />
                                                 Edit
+                                            </Button>
+                                            <Button @click="handleSelectIndicatorDisaggregation(indicator.indicator_id)"
+                                                variant="ghost"
+                                                class="cursor-pointer text-xs flex justify-start items-center gap-1"
+                                                size="sm">
+                                                <Split class="h-[1rem] w-[1rem]" />Disaggregations
                                             </Button>
                                             <div class="ml-2 flex items-center justify-start">
                                                 <XCircle v-if="indicator.indicator_status" class="h-[1rem] w-[1rem]" />
@@ -501,7 +601,7 @@ onMounted(() => {
                             v-model="indicator.indicator_description" />
                     </div>
                     <div class='w-100 flex'>
-                        <div class="w-100 flex-1 flex flex-col gap-2 border">
+                        <div class="w-100 flex-1 flex flex-col gap-2">
                             <label for="indicator_scope">Indicator Scope:</label>
                             <RadioGroup default-value="1" id="indicator_scope" v-model="indicator.indicator_scope">
                                 <div class="flex items-center space-x-2">
@@ -514,13 +614,13 @@ onMounted(() => {
                                 </div>
                             </RadioGroup>
                         </div>
-                        <div class="w-100 flex-1 flex flex-col gap-2 border">
+                        <div class="w-100 flex-1 flex flex-col gap-2">
                             <label for="indicator_code">Indicator Code:</label>
-                            <Input type="text" id="indicator_code" placeholder="leave blank to auto generated"
-                                v-model="indicator.indicator_code" />
+                            <Input class="bg-slate-200 " type="text" id="indicator_code"
+                                placeholder="leave blank to auto generated" v-model="indicator.indicator_code"
+                                readonly />
                         </div>
                     </div>
-
                 </form>
             </div>
 
@@ -608,7 +708,32 @@ onMounted(() => {
             <DialogFooter>
                 <Button type="button" class="cursor-pointer" @click="isStatusModalOpen = false">Cancel</Button>
                 <Button type="button" class="cursor-pointer text-white" @click="confirmStatusUpdate">{{ recordStatus
-                    }}</Button>
+                }}</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    <Dialog v-model:open="isSelectIndicatorDisaggregationOpen">
+        <DialogContent class="font-poppins w-[30] md:max-w-[30rem] lg:max-w-[50rem]">
+            <DialogHeader>
+                <DialogTitle>Select Disaggregations</DialogTitle>
+                <DialogDescription>Select Disaggregations here</DialogDescription>
+            </DialogHeader>
+            <div class="w-full flex-1">
+                <div class="w-full flex gap-2 flex-wrap">
+                    <div class="flex items-center" v-for="disaggregation in disaggregations"
+                        :key="disaggregation.disaggregation_id">
+                        <Input class="h-4 w-4" type="checkbox" :id="String(disaggregation.disaggregation_id)"
+                            :checked="selectedDisaggregations.includes(disaggregation.disaggregation_id)"
+                            @change="(event: InputEvent) => toggleSelection(disaggregation.disaggregation_id, (event.target as HTMLInputElement).checked)" />
+                        <label>{{ disaggregation.disaggregation_name }}</label>
+                    </div>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button type="button" class="cursor-pointer"
+                    @click="isSelectIndicatorDisaggregationOpen = false">Cancel</Button>
+                <Button type="button" class="cursor-pointer text-white"
+                    @click="handleCreateIndicatorDisaggregation">Submit</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

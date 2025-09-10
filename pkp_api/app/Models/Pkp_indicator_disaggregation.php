@@ -10,7 +10,7 @@ class Pkp_indicator_disaggregation extends Model
     protected $table = 'pkp_indicator_disaggregations';
     protected $fillable = [
         'indicator_id',
-        'disaggration_id'
+        'disaggregation_id'
     ];
     protected $primaryKey = 'indicator_disaggregation_id';
 }

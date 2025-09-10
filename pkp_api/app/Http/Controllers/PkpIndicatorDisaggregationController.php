@@ -12,7 +12,7 @@ class PkpIndicatorDisaggregationController extends Controller
     {
         $validatedData=$request->validate([            
             'indicator_id' => 'integer',
-            'disaggration_id' => 'integer'              
+            'disaggregation_id' => 'integer'              
         ]);
         $data=Pkp_indicator_disaggregation::create($validatedData);
          return response()->json([
