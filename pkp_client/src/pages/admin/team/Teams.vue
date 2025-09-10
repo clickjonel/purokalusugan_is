@@ -5,15 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input'
 import { Search,EllipsisVertical,UserRoundCog,UserLock } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
-import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger } from '@/components/ui/dialog'
-import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
-import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
+import { useRouter } from "vue-router";
 
-
+const router = useRouter()
 var searchKeyword = ref('')
 
 const teams = ref<Team[]>([]);
+
+const popovers = ref({
+    createPopover:{
+        fields:{
+            team_name:'',
+            selectedMembers:[],
+        },
+    }
+})
 
 
 onMounted(() => {
@@ -34,8 +42,65 @@ function fetchTeams(){
     })
 }
 
+// function fetchHRHList(){
+//     axios.get('/hrh/list')
+//     .then((response) => {
+//         hrhList.value = response.data.list
+//         console.log(hrhList.value)
+//     })
+//     .catch((error) => {
+//         console.log(error)
+//     })
+//     .finally(() => {
+
+//     })
+// }
+
+function saveTeam(){
+    if(popovers.value.createPopover.fields.team_name !== ''){
+        axios.post('/team/create', popovers.value.createPopover.fields)
+        .then((response) => {
+            toast('Action Success', {
+                description: response.data.message,
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            })
+            popovers.value.createPopover.fields.team_name = ''
+            fetchTeams()
+        })
+        .catch((error) => {
+            console.log(error)
+            if (error.response) {
+                toast('Failed With Errors', {
+                    description: error.response.data.message,
+                    action: {
+                        label: 'Close',
+                        onClick: () => toast.dismiss(),
+                    },
+                })
+            }
+        })
+        .finally(() => {
+
+        })
+    }
+    else{
+         toast('Validation Error', {
+            description: 'Team Name is Required',
+            action: {
+                label: 'Close',
+                onClick: () => toast.dismiss(),
+            },
+        })
+    }
+}
+
+
 interface Team {
     team_name:string,
+    team_id:number
 }
 
 
@@ -52,7 +117,18 @@ interface Team {
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <Button variant="default" class="cursor-pointer" size="sm">Create</Button>
+
+             <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="default" class="cursor-pointer" size="sm">Create</Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-50 p-2">
+                    <div class="flex flex-col gap-4">
+                        <Input v-model="popovers.createPopover.fields.team_name" type="text" placeholder="Team Name"/>
+                        <Button @click="saveTeam" variant="ghost" size="sm" class="justify-start text-xs bg-slate-300 hover:bg-green-300 cursor-pointer"> Save Team </Button>
+                    </div>
+                </PopoverContent>
+            </Popover>
         </div>
 
         <!-- table -->
@@ -89,7 +165,7 @@ interface Team {
                                                 <UserRoundCog/> 
                                                 Manage Scopes
                                             </Button>
-                                             <Button variant="ghost" size="sm" class="justify-start text-xs">
+                                             <Button @click="router.push({path:`/team/members/manage/${team.team_id}`})" variant="ghost" size="sm" class="justify-start text-xs">
                                                 <UserRoundCog/> 
                                                 Manage Members
                                             </Button>
@@ -112,7 +188,6 @@ interface Team {
             <span>Pagination Here</span>
         </div>
     </div>
-
     
 
 </template>

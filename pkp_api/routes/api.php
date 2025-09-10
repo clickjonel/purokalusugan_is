@@ -10,6 +10,7 @@ use App\Http\Controllers\PkpMunicipalityController;
 use App\Http\Controllers\PkpBarangayController;
 use App\Http\Controllers\GeoJsonController;
 use App\Http\Controllers\PkpSiteController;
+use App\Http\Controllers\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,16 @@ Route::group([
     Route::put('/update', [ProgramsController::class, 'updateProgram']);
     Route::delete('/delete', [ProgramsController::class, 'deleteProgram']);
     Route::put('/status', [ProgramsController::class, 'updateStatusOfProgram']);
+});
+
+
+// Team
+Route::group([
+    'prefix' => 'team'
+], function () {
+    Route::post('/create', [TeamController::class, 'create']);
+    Route::get('/list', [TeamController::class, 'list']);
+    Route::get('/find', [TeamController::class, 'getTeam']);
 });
 
 //Indicators
