@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::connection('pkpulse')->create('pkp_hrh_user', function (Blueprint $table) {
             $table->id('pk_user_id');
             $table->string('user_code');
-            $table->string('image')->nullable();
+            // $table->string('image')->nullable();
             $table->string('username');
             $table->string('password');
             // $table->string('prefix')->nullable();

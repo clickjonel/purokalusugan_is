@@ -12,7 +12,7 @@ class Hrh extends Model
 
     protected $fillable = [
         'user_code',
-        'image',
+        // 'image',
         'username',
         'password',
         'user_level',
@@ -38,5 +38,4 @@ class Hrh extends Model
 
         return $user_levels[$this->user_level] ?? 'Unknown';
     }
-
 }

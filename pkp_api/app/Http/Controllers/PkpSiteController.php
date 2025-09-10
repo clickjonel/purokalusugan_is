@@ -32,24 +32,36 @@ class PkpSiteController extends Controller
     }
     public function getSites(): JsonResponse
     {
-        $sites = Pkp_site::with('barangay:barangay_id,barangay_name')->get();
+        $sites = Pkp_site::with([
+            'barangay:barangay_id,municipality_id,barangay_name',
+            'barangay.municipality:municipality_id,province_id,municipality_name',
+            'barangay.municipality.province:province_id,province_name'
+        ])->get();
 
         return response()->json([
             'message' => 'Sites retrieved successfully',
             'data' => $sites
         ], 200);
     }
+
     public function getSite(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'site_id' => 'required|integer|exists:pkp_site,site_id',
         ]);
-        $site =  Pkp_site::with('barangay:barangay_id,barangay_name')->findOrFail($validatedData['site_id']);
+
+        $site = Pkp_site::with([
+            'barangay:barangay_id,municipality_id,barangay_name',
+            'barangay.municipality:municipality_id,province_id,municipality_name',
+            'barangay.municipality.province:province_id,province_name'
+        ])->findOrFail($validatedData['site_id']);
+
         return response()->json([
             'message' => 'Site retrieved successfully',
             'data' => $site
         ], 200);
     }
+
     public function updateSite(Request $request): JsonResponse
     {
         $validatedData = $request->validate([

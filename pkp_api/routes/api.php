@@ -10,6 +10,7 @@ use App\Http\Controllers\PkpProvinceController;
 use App\Http\Controllers\PkpMunicipalityController;
 use App\Http\Controllers\PkpBarangayController;
 use App\Http\Controllers\GeoJsonController;
+use App\Http\Controllers\PkpSiteController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

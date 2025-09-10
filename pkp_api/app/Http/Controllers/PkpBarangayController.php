@@ -67,4 +67,5 @@ class PkpBarangayController extends Controller
             'data' => $data
         ], 200);
     }
+    
 }
