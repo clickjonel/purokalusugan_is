@@ -62,7 +62,7 @@ let toEdit = ref<Event>({
     event_proponent: '',
     event_partner: '',
     event_scope: '',
-    is_pk_site: true,
+    is_pk_site: 1,
 });
 interface Event {
     event_id: number,
@@ -75,7 +75,7 @@ interface Event {
     event_proponent: string,
     event_partner: string,
     event_scope: string,
-    is_pk_site: boolean
+    is_pk_site: number
 }
 
 const event = ref<Event>({
@@ -89,16 +89,17 @@ const event = ref<Event>({
     event_proponent: '',
     event_partner: '',
     event_scope: '',
-    is_pk_site: true,
+    is_pk_site: 1,
 })
-function showYesOrNo(option:boolean){
-    if(option){
+function showYesOrNo(option: number) {
+
+    if (option) {
         return "Yes"
     }
     return "No";
 }
-function showColor(option:boolean){
-    if(option){
+function showColor(option: number) {
+    if (option) {
         return "text-green-500";
     }
     return "text-red-500";
@@ -161,7 +162,7 @@ function handleCreate() {
         .then((response) => {
             console.log(response.data);
             isCreateModalOpen.value = false;
-            router.push({ path: "/events" });
+            router.push({ path: "/admin/events" });
             toast("Record created successfully!", {
                 description: response.data.message,
                 action: {
@@ -242,7 +243,7 @@ const fetchList = () => {
         });
 };
 onMounted(() => {
-    fetchList();    
+    fetchList();
 });
 </script>
 <template>
@@ -250,7 +251,7 @@ onMounted(() => {
         <!-- header -->
         <div class="w-full flex justify-between items-center p-2 border">
             <div class="relative items-center">
-                <Input v-model="searchKeyword" id="search" type="text" placeholder="Search Indicator Name" class="pl-8"
+                <Input v-model="searchKeyword" id="search" type="text" placeholder="Search Venue..." class="pl-8"
                     @input="search" />
                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
                     <Search class="size-4 text-muted-foreground" />
@@ -291,7 +292,7 @@ onMounted(() => {
                             <TableCell>{{ record.event_proponent }}</TableCell>
                             <TableCell>{{ record.event_partner }}</TableCell>
                             <TableCell>{{ record.event_scope }}</TableCell>
-                            <TableCell :class = "showColor(record.is_pk_site)">
+                            <TableCell :class="showColor(record.is_pk_site)">
                                 {{ showYesOrNo(record.is_pk_site) }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
@@ -325,65 +326,80 @@ onMounted(() => {
     </div>
     <Dialog v-model:open="isCreateModalOpen">
         <DialogTrigger />
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[50rem] lg:max-w-[50rem]">
+        <DialogContent class="font-poppins">
             <DialogHeader>
                 <DialogTitle class="">Create an Event</DialogTitle>
                 <DialogDescription>Enter event details </DialogDescription>
             </DialogHeader>
 
-            <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
+            <div class="flex flex-col justify-start items-start gap-2 p-2">
                 <form @submit.prevent="handleCreate" class="flex flex-col gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label for="event_type">Event Type Scope:</label>
-                        <RadioGroup id="event_type" v-model="event.event_type">
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r1" :value="1" />
-                                <Label for="r1">Small Scale</Label>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r2" :value="2" />
-                                <Label for="r2">Large Scale</Label>
-                            </div>
-                        </RadioGroup>
+                    <div class="w-100 flex">
+                        <div class="flex-1 flex-col gap-2">
+                            <label for="event_type">Event Type Scope:</label>
+                            <RadioGroup id="event_type" v-model="event.event_type">
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r1" :value="1" />
+                                    <Label for="r1">Small Scale</Label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r2" :value="2" />
+                                    <Label for="r2">Large Scale</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_date">Event Date:</label>
+                            <Input type="date" id="event_date" v-model="event.event_date" />
+                        </div>
                     </div>
+
                     <div class="flex flex-col gap-2">
-                        <label for="event_date">Event Date:</label>
-                        <Input type="date" id="event_date" v-model="event.event_date" />
+                        <label for="event_venue">Venue:</label>
+                        <Input type="text" id="event_venue" placeholder="Where is the place?"
+                            v-model="event.event_venue" />
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_scope">Event Venue:</label>
-                        <Input type="text" id="event_date" placeholder = "Where is the place?" v-model="event.event_date" />
+                    <div class="flex">
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_budget">Budget:</label>
+                            <Input type="number" step="any" id="event_budget" v-model="event.event_budget" />
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_actual_budget">Actual Budget:</label>
+                            <Input type="number" step="any" id="event_actual_budget"
+                                v-model="event.event_actual_budget" />
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="event_budget">Budget:</label>
-                        <Input type="number" step ="any" id="event_budget" v-model="event.event_budget" />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="event_actual_budget">Actual Budget:</label>
-                        <Input type="number" step ="any" id="event_actual_budget" v-model="event.event_actual_budget" />
-                    </div>
+
                     <div class="flex flex-col gap-2">
                         <label for="event_fund_source">Fund Source:</label>
-                        <Input type="text" id="event_fund_source" placeholder = "Where did the fund come frome?" v-model="event.event_fund_source" />
+                        <Input type="text" id="event_fund_source" placeholder="Where did the fund come frome?"
+                            v-model="event.event_fund_source" />
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="event_proponent">Proponent(s):</label>
-                        <Input type="text" id="event_proponent" placeholder = "Whos is/are the proponent(s)?" v-model="event.event_proponent" />
+                        <Input type="text" id="event_proponent" placeholder="Whos is/are the proponent(s)?"
+                            v-model="event.event_proponent" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="event_partner">Partner:</label>
+                        <Input type="text" id="event_partner" placeholder="Whos is/are the proponent(s)?"
+                            v-model="event.event_partner" />
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="event_scope">Scope:</label>
-                        <Input type="text" id="event_scope" placeholder = "Area(s) covered" v-model="event.event_scope" />
+                        <Input type="text" id="event_scope" placeholder="Area(s) covered" v-model="event.event_scope" />
                     </div>
                     <div class="flex flex-col gap-2">
                         <label for="is_pk_site">Is this a PK Site?:</label>
-                        <RadioGroup id="is_pk_site" v-model="event.event_type">
+                        <RadioGroup id="is_pk_site" v-model="event.is_pk_site">
                             <div class="flex items-center space-x-2">
                                 <RadioGroupItem id="r1" :value="1" />
-                                <Label for="r1">Small Scale</Label>
+                                <Label for="r1">Yes</Label>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r2" :value="2" />
-                                <Label for="r2">Large Scale</Label>
+                                <RadioGroupItem id="r2" :value="0" />
+                                <Label for="r2">No</Label>
                             </div>
                         </RadioGroup>
                     </div>
@@ -398,59 +414,81 @@ onMounted(() => {
         </DialogContent>
     </Dialog>
 
-    <Dialog v-model:open="isDeleteModalOpen">
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-            <DialogHeader>
-                <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogDescription>Are you sure you want to delete this record?</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-                <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
-                <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white"
-                    @click="confirmDelete">Delete</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
-
     <Dialog v-model:open="isEditModalOpen">
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
+        <DialogContent class="font-poppins w-full">
             <DialogHeader>
                 <DialogTitle>Edit</DialogTitle>
                 <DialogDescription>Update details.</DialogDescription>
             </DialogHeader>
             <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
                 <form @submit.prevent="confirmEdit" class="flex flex-col gap-4">
+                    <div class="w-100 flex">
+                        <div class="flex-1 flex-col gap-2">
+                            <label for="event_type">Event Type Scope:</label>
+                            <RadioGroup id="event_type" v-model="toEdit.event_type">
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r1" :value="1" />
+                                    <Label for="r1">Small Scale</Label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <RadioGroupItem id="r2" :value="2" />
+                                    <Label for="r2">Large Scale</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_date">Event Date:</label>
+                            <Input type="date" id="event_date" v-model="toEdit.event_date" />
+                        </div>
+                    </div>
+
                     <div class="flex flex-col gap-2">
-                        <label for="indicator_code">Indicator Code:</label>
-                        <Input type="text" class="bg-slate-200" id="indicator_code" placeholder="NP-0001"
-                            v-model="toEdit.indicator_code" hidden />
-                        <strong>{{ toEdit.indicator_code }}</strong>
+                        <label for="event_venue">Venue:</label>
+                        <Input type="text" id="event_venue" placeholder="Where is the place?"
+                            v-model="event.event_venue" />
+                    </div>
+                    <div class="flex">
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_budget">Budget:</label>
+                            <Input type="number" step="any" id="event_budget" v-model="toEdit.event_budget" />
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <label for="event_actual_budget">Actual Budget:</label>
+                            <Input type="number" step="any" id="event_actual_budget"
+                                v-model="toEdit.event_actual_budget" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label for="event_fund_source">Fund Source:</label>
+                        <Input type="text" id="event_fund_source" placeholder="Where did the fund come frome?"
+                            v-model="toEdit.event_fund_source" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="program_id">Program:</label>
-                        <Input type="number" class="bg-slate-200" id="program_id" v-model="toEdit.program_id" hidden />
-                        <strong>{{ displayProgramName(toEdit.program_id) }}</strong>
+                        <label for="event_proponent">Proponent(s):</label>
+                        <Input type="text" id="event_proponent" placeholder="Whos is/are the proponent(s)?"
+                            v-model="toEdit.event_proponent" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="indicator_name">Indicator Name:</label>
-                        <Input type="text" id="indicator_name" placeholder="example: Nutrition"
-                            v-model="toEdit.indicator_name" required />
+                        <label for="event_partner">Partner:</label>
+                        <Input type="text" id="event_partner" placeholder="Whos is/are the proponent(s)?"
+                            v-model="toEdit.event_partner" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="indicator_description">Indicator Description:</label>
-                        <Input type="text" id="indicator_description" placeholder="Description"
-                            v-model="toEdit.indicator_description" />
+                        <label for="event_scope">Scope:</label>
+                        <Input type="text" id="event_scope" placeholder="Area(s) covered"
+                            v-model="toEdit.event_scope" />
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label for="indicator_scope">Indicator Scope:</label>
-                        <RadioGroup id="indicator_scope" v-model="toEdit.indicator_scope">
+                        <label for="is_pk_site">Is this a PK Site?:</label>
+                        <RadioGroup id="is_pk_site" v-model="toEdit.is_pk_site">
                             <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r2" :value="1" />
-                                <Label for="r2">Individual</Label>
+                                <RadioGroupItem id="r1" :value="1" />
+                                <Label for="r1">Yes</Label>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r3" :value="2" />
-                                <Label for="r3">Household</Label>
+                                <RadioGroupItem id="r2" :value="0" />
+                                <Label for="r2">No</Label>
                             </div>
                         </RadioGroup>
                     </div>
@@ -461,6 +499,20 @@ onMounted(() => {
                 <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
                 <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white"
                     @click="confirmEdit">Save</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="isDeleteModalOpen">
+        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
+            <DialogHeader>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogDescription>Are you sure you want to delete this record?</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+                <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
+                <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white"
+                    @click="confirmDelete">Delete</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>
