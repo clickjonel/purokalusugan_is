@@ -17,10 +17,10 @@ class AuthenticationController extends Controller
         ]);
 
 
-        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
+        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])){
             $user = Auth::user();
 
-            $token = $user->createToken($user->hrh_user_id)->plainTextToken;
+            $token = $user->createToken($user->pk_user_id)->plainTextToken;
 
             return response()->json([
                 'token' => $token,
@@ -31,7 +31,7 @@ class AuthenticationController extends Controller
 
         return response()->json([
             'status' => false,
-            'message' => 'Invalid Credentials, Please Try Again With Correct Dohis Credentials',
+            'message' => 'Invalid Credentials, Please Try Again With Correct Credentials',
         ], 401);
 
 
