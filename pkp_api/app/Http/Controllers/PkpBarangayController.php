@@ -28,4 +28,43 @@ class PkpBarangayController extends Controller
             'data' => $data
         ], 200);
     }
+    public function getBarangaysByRegionId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'region_id' => 'required|integer|exists:pkp_region,region_id',
+        ]);
+
+        $data = Pkp_barangay::where('region_id', $validatedData['region_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
+    public function getBarangaysByProvinceId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'province_id' => 'required|integer|exists:pkp_province,province_id',
+        ]);
+
+        $data = Pkp_barangay::where('province_id', $validatedData['province_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
+    public function getBarangaysByMunicipalityId(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'municipality_id' => 'required|integer|exists:pkp_municipality,municipality_id',
+        ]);
+
+        $data = Pkp_barangay::where('municipality_id', $validatedData['municipality_id'])->get();
+
+        return response()->json([
+            'message' => 'data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
 }
