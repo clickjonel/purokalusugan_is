@@ -9,6 +9,7 @@ use App\Http\Controllers\PkpProvinceController;
 use App\Http\Controllers\PkpMunicipalityController;
 use App\Http\Controllers\PkpBarangayController;
 use App\Http\Controllers\GeoJsonController;
+use App\Http\Controllers\PkpSiteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -97,4 +98,15 @@ Route::group([
     Route::get('/region/find', [PkpBarangayController::class, 'getBarangaysByRegionId']);
     Route::get('/province/find', [PkpBarangayController::class, 'getBarangaysByProvinceId']);
     Route::get('/municipality/find', [PkpBarangayController::class, 'getBarangaysByMunicipalityId']);
+});
+
+//PKP SITES
+Route::group([
+    'prefix' => 'site',
+], function () {
+    Route::post('/create', [PkpSiteController::class, 'createSite']);
+    Route::get('/list', [PkpSiteController::class, 'getSites']);
+    Route::get('/find', [PkpSiteController::class, 'getSite']);
+    Route::put('/update', [PkpSiteController::class, 'updateSite']);
+    Route::delete('/delete', [PkpSiteController::class, 'deleteSite']);
 });
