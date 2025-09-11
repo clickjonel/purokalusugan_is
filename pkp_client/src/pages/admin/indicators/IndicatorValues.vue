@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import axios from "@/axios/axios";
+import { ref, onMounted } from "vue";
 interface Props {
     eventRecord: Record<string, any>;
 }
@@ -26,6 +28,33 @@ const event={
 
 const dohCARLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRBmB7ueFlIGZ__ES7pCGHygeJHQBBlStvHw&s";
 const dapayPKCARLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz5hW3nF0JRnTCPAgInbSO6xd62V2x-8fJZA&s";
+const indicators = ref<Indicator[]>([]);
+interface Indicator {
+    indicator_id: number,
+    program_id: number,
+    indicator_code: any,
+    indicator_name: string,
+    indicator_description: string,
+    indicator_status: boolean,
+    indicator_scope: number
+}
+
+const fetchIndicators = () => {
+    axios
+        .get("/indicator/list")
+        .then((response) => {
+            indicators.value = response.data.data;
+            console.log("indicators", indicators.value);
+        })
+        .catch((error) => {
+            console.error("Error fetching indicators:", error);
+        });
+};
+
+onMounted(() => {
+    fetchIndicators();
+});
+
 </script>
 <template>
     <div class="flex gap-2 justify-center">
@@ -98,5 +127,9 @@ const dapayPKCARLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz
                 <strong>{{ }}</strong>
             </div>
         </div>
+    </div>
+    <!-- Entry Fields -->
+    <div>
+        
     </div>
 </template>

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Pkp_indicator_values;
 use Illuminate\Database\Seeder;
 
 class PkpIndicatorValuesSeeder extends Seeder
@@ -12,6 +12,7 @@ class PkpIndicatorValuesSeeder extends Seeder
      */
     public function run(): void
     {
+        
         //
     }
 }

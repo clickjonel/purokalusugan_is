@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             PkpMunicipalitySeeder::class,
             PkpBarangaySeeder::class,
             TeamSeeder::class,
-            PkpDisaggregationSeeder::class
+            PkpDisaggregationSeeder::class,
+            PkpIndicatorSeeder::class
         ]);
     }
 }
