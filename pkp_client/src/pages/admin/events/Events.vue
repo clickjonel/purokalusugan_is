@@ -520,7 +520,7 @@ onMounted(() => {
     </Dialog>
     <Dialog v-model:open="isEntryForIndicatorValuesModalOpen">
         <DialogTrigger />
-        <DialogContent class="sm:max-w-screen-xl w-full">
+        <DialogContent class="sm:max-w-screen-xl w-full h-full overflow-y-scroll">
             <DialogHeader>
                 <DialogTitle class="text-center">Event and Indicator Values</DialogTitle>
                 <DialogDescription class="text-center">Event and Indicator Values here</DialogDescription>
