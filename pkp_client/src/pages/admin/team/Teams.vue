@@ -98,11 +98,23 @@ function saveTeam(){
 }
 
 
+interface Scope {
+    barangay?: {
+        barangay_name: string
+    }
+}
+
 interface Team {
-    team_name:string,
-    team_id:number
-    scopes_count:number
-    members_count:number
+    team_name: string,
+    team_id: number,
+    scopes_count: number,
+    members_count: number,
+    scopes: Scope[],
+    members: {
+        hrh: {
+            full_name: string
+        }
+    }
 }
 
 
@@ -148,8 +160,30 @@ interface Team {
                     <TableBody>
                         <TableRow v-for="team in teams">
                             <TableCell>{{ team.team_name }}</TableCell>
-                            <TableCell>{{ team.scopes_count }}</TableCell>
-                            <TableCell>{{ team.members_count }}</TableCell>
+                            <TableCell>
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" class="cursor-pointer text-xs">Barangays Covered  ({{ team.scopes_count }})</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-50 p-2">
+                                        <div class="flex flex-col">
+                                          <span class="text-xs" v-for="scope in team.scopes">{{ scope.barangay?.barangay_name }}</span>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </TableCell>
+                            <TableCell>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" class="cursor-pointer text-xs">Team Members  ({{ team.members_count }})</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent class="w-50 p-2">
+                                        <div class="flex flex-col">
+                                          <span class="text-xs" v-for="member in team.members">{{ member.hrh?.full_name }}</span>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>

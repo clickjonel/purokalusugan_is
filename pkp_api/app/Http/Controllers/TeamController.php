@@ -14,7 +14,7 @@ class TeamController extends Controller
 {
     public function list():JsonResponse
     {
-        $teams = Team::with(['members'])->withCount(['scopes', 'members'])->get();
+        $teams = Team::with(['members.hrh','scopes.barangay'])->withCount(['scopes', 'members'])->get();
 
         return response()->json(['teams' => $teams]);
     }
