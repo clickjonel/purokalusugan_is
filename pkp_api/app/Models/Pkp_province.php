@@ -14,4 +14,9 @@ class Pkp_province extends Model
         'province_name',
         'uid'
     ];
+    public function region()
+    {
+        return $this->belongsTo(Pkp_region::class, 'region_id', 'region_id')
+            ->select('region_id', 'region_name');
+    }
 }

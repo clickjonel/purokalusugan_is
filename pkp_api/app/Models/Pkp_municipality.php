@@ -15,12 +15,17 @@ class Pkp_municipality extends Model
         'municipality_name',
         'uid'
     ];
+
+
     public function region()
     {
-        return $this->belongsTo(Pkp_Region::class, 'region_id', 'region_id');
+        return $this->belongsTo(Pkp_region::class, 'region_id', 'region_id')
+            ->select('region_id', 'region_name');
     }
+
     public function province()
     {
-        return $this->belongsTo(Pkp_Province::class, 'province_id', 'province_id');
+        return $this->belongsTo(Pkp_province::class, 'province_id', 'province_id')
+            ->select('province_id', 'province_name');
     }
 }

@@ -18,14 +18,19 @@ class Pkp_barangay extends Model
     ];
     public function municipality()
     {
-        return $this->belongsTo(Pkp_Municipality::class, 'municipality_id', 'municipality_id');
+        return $this->belongsTo(Pkp_Municipality::class, 'municipality_id', 'municipality_id')
+            ->select('municipality_id', 'municipality_name');
     }
+
     public function region()
     {
-        return $this->belongsTo(Pkp_region::class, 'region_id', 'region_id');
+        return $this->belongsTo(Pkp_region::class, 'region_id', 'region_id')
+            ->select('region_id', 'region_name');
     }
+
     public function province()
     {
-        return $this->belongsTo(Pkp_province::class, 'province_id', 'province_id');
+        return $this->belongsTo(Pkp_province::class, 'province_id', 'province_id')
+            ->select('province_id', 'province_name');
     }
 }
