@@ -163,7 +163,7 @@ interface Team {
                         <TableRow v-for="team in teams">
                             <TableCell>{{ team.team_name }}</TableCell>
                             <TableCell>
-                                 <Popover>
+                                 <Popover v-if="team.scopes_count > 0">
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" size="sm" class="cursor-pointer text-xs">Barangays Covered  ({{ team.scopes_count }})</Button>
                                     </PopoverTrigger>
@@ -173,9 +173,10 @@ interface Team {
                                         </div>
                                     </PopoverContent>
                                 </Popover>
+                                <span v-else>No Barangays Set</span>
                             </TableCell>
                             <TableCell>
-                                <Popover>
+                                <Popover v-if="team.members_count > 0">
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" size="sm" class="cursor-pointer text-xs">Team Members  ({{ team.members_count }})</Button>
                                     </PopoverTrigger>
@@ -185,6 +186,7 @@ interface Team {
                                         </div>
                                     </PopoverContent>
                                 </Popover>
+                                <span v-else>No Members Added</span>
                             </TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
