@@ -111,8 +111,10 @@ interface Team {
     members_count: number,
     scopes: Scope[],
     members: {
-        hrh: {
-            full_name: string
+        member:{
+            hrh: {
+                full_name: string
+            }
         }
     }
 }
