@@ -16,4 +16,14 @@ class Pkp_indicator extends Model
         'indicator_scope'
     ];
     protected $primaryKey = 'indicator_id';
+
+    public function program()
+    {
+        return $this->belongsTo(Programs::class,'program_id','program_id');
+    }
+
+    public function disaggregations()
+    {
+        return $this->hasMany(Pkp_disaggregation::class,'disaggregation_id','disaggregation_id');
+    }
 }

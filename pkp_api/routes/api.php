@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpDisaggregationController;
 use App\Http\Controllers\PkpEventsController;
@@ -171,3 +172,6 @@ Route::group([
     Route::put('/update', [PkpSiteController::class, 'updateSite']);
     Route::delete('/delete', [PkpSiteController::class, 'deleteSite']);
 });
+
+// dashboard
+Route::get('/exec/dashboard', [DashboardController::class, 'getExecDashboardData']);
