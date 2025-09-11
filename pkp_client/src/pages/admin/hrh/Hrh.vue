@@ -9,8 +9,6 @@ import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,Dialog
 import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
 import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
-import SelectBarangay from "@/components/selections/SelectBarangay.vue";
-
 
 interface Hrh {
     user_level: string;
@@ -139,7 +137,7 @@ function confirmDeactivateHrh(id:number){
                             <TableHead>First Name</TableHead>
                             <TableHead>Middle Name</TableHead>
                             <TableHead>Lastname</TableHead>
-                            <TableHead>Nickname</TableHead>
+                            <TableHead>Access Level</TableHead>
                             <TableHead class="text-end">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -148,7 +146,7 @@ function confirmDeactivateHrh(id:number){
                             <TableCell>{{ hrh.first_name }}</TableCell>
                             <TableCell>{{ hrh.middle_name }}</TableCell>
                             <TableCell>{{ hrh.last_name }}</TableCell>
-                            <TableCell>{{ hrh.nickname }}</TableCell>
+                            <TableCell>{{ hrh.user_level_name }}</TableCell>
                             <TableCell class="w-full flex justify-end items-center gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>

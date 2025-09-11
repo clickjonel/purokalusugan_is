@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ProgramsSeeder::class,
-            HrhUserSeeder::class,
+            // HrhUserSeeder::class,
             PkpRegionSeeder::class,
             PkpProvinceSeeder::class,
             PkpMunicipalitySeeder::class,
