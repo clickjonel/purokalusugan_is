@@ -107,6 +107,9 @@ function search() {
 function handleClose() {
     isCreateModalOpen.value = false;
 }
+function handleCloseIndicatorValue(){
+    isEntryForIndicatorValuesModalOpen.value=false;
+}
 function explainError(error: string) {
     if (error.includes("Integrity constraint violation")) {
         errorDetail.value =
@@ -520,19 +523,13 @@ onMounted(() => {
     </Dialog>
     <Dialog v-model:open="isEntryForIndicatorValuesModalOpen">
         <DialogTrigger />
-        <DialogContent class="sm:max-w-screen-xl w-full">
+        <DialogContent class="w-full sm:max-w-screen h-full overflow-y-scroll">
             <DialogHeader>
                 <DialogTitle class="text-center">Event and Indicator Values</DialogTitle>
                 <DialogDescription class="text-center">Event and Indicator Values here</DialogDescription>
             </DialogHeader>
 
-            <IndicatorValues :eventRecord="selectedEventRecord"/>
-
-            <DialogFooter>
-                <Button type="submit" class="cursor-pointer hover:bg-red-500" @click="handleClose()">Cancel</Button>
-                <Button type="submit" class="cursor-pointer hover:bg-emerald-500 hover:text-black"
-                    @click="handleCreate">Submit</Button>
-            </DialogFooter>
+            <IndicatorValues :eventRecord="selectedEventRecord", :handleCloseIndicatorValue="handleCloseIndicatorValue"/>
         </DialogContent>
     </Dialog>
 </template>
