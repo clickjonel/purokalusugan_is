@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
+import IndicatorValues from '@/pages/admin/indicators/IndicatorValues.vue'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2 } from "lucide-vue-next";
+import { Search, EllipsisVertical, Pencil,PlusCircle  } from "lucide-vue-next";
 import {
     Dialog,
     DialogContent,
@@ -26,16 +27,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
-import {
-    Combobox,
-    ComboboxAnchor,
-    ComboboxEmpty,
-    ComboboxGroup,
-    ComboboxInput,
-    ComboboxItem,
-    ComboboxItemIndicator,
-    ComboboxList,
-} from '@/components/ui/combobox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
@@ -50,7 +41,8 @@ let idToDelete = ref(0);
 let isCreateModalOpen = ref(false);
 let isDeleteModalOpen = ref(false);
 let isEditModalOpen = ref(false);
-let isStatusModalOpen = ref(false);
+let isEntryForIndicatorValuesModalOpen = ref(false);
+let selectedEventRecord=ref({});
 let toEdit = ref<Event>({
     event_id: 0,
     event_type: 0,
@@ -121,6 +113,10 @@ function explainError(error: string) {
             "The program code you entered already exists. Please enter another!";
     }
     return errorDetail;
+}
+function onEnterIndicatorValues(record:object){
+    isEntryForIndicatorValuesModalOpen.value = true;
+    selectedEventRecord.value = record;
 }
 
 function confirmDelete() {
@@ -308,6 +304,12 @@ onMounted(() => {
                                                 @click="handleEdit(record)">
                                                 <Pencil class="h-[1rem] w-[1rem]" />
                                                 Edit
+                                            </Button>
+                                            <Button variant="ghost" size="sm"
+                                                class="cursor-pointer text-xs flex justify-start items-center gap-1"
+                                                @click="onEnterIndicatorValues(record)">
+                                                <PlusCircle class="h-[1rem] w-[1rem]" />
+                                                Indicator Values
                                             </Button>
                                         </div>
                                     </PopoverContent>
@@ -513,6 +515,23 @@ onMounted(() => {
                 <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
                 <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white"
                     @click="confirmDelete">Delete</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    <Dialog v-model:open="isEntryForIndicatorValuesModalOpen">
+        <DialogTrigger />
+        <DialogContent class="sm:max-w-screen-xl w-full">
+            <DialogHeader>
+                <DialogTitle class="text-center">Event and Indicator Values</DialogTitle>
+                <DialogDescription class="text-center">Event and Indicator Values here</DialogDescription>
+            </DialogHeader>
+
+            <IndicatorValues :eventRecord="selectedEventRecord"/>
+
+            <DialogFooter>
+                <Button type="submit" class="cursor-pointer hover:bg-red-500" @click="handleClose()">Cancel</Button>
+                <Button type="submit" class="cursor-pointer hover:bg-emerald-500 hover:text-black"
+                    @click="handleCreate">Submit</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>
