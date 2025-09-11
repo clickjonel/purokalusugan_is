@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import axios from "@/axios/axios";
 import { ref, onMounted } from "vue";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/table";
 interface Props {
     eventRecord: Record<string, any>;
+    handleCloseIndicatorValue: () => void;
 }
 const props = defineProps<Props>();
 const data = computed(() => {
@@ -161,29 +163,31 @@ onMounted(() => {
         <div v-for="program in programs" :key="program.program_id">
             <strong class="text-lg">{{ program.program_name }}</strong>
             <!-- loop through the indicators based on programs -->
-             <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Indicator</TableHead>
-                            <TableHead>Male</TableHead>
-                            <TableHead>Female</TableHead>
-                            <TableHead>Not Indicated</TableHead>
-                            <TableHead>Total</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-            <TableRow v-for="indicator in indicators.filter(ind => ind.program_id === program.program_id)"
-                :key="indicator.indicator_id">
-                <TableCell>{{ indicator.indicator_name }}</TableCell>
-                <TableCell><Input type="number"/></TableCell>
-                <TableCell><Input type="number"/></TableCell>
-                <TableCell><Input type="number"/></TableCell>
-            </TableRow>
-            </TableBody>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead class="w-[60%]">Indicator</TableHead>
+                        <TableHead class="w-[10%]">Male</TableHead>
+                        <TableHead class="w-[10%]">Female</TableHead>
+                        <TableHead class="w-[10%]">Not Indicated</TableHead>
+                        <TableHead class="w-[10%]">Total</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow v-for="indicator in indicators.filter(ind => ind.program_id === program.program_id)"
+                        :key="indicator.indicator_id">
+                        <TableCell>{{ indicator.indicator_name }}</TableCell>
+                        <TableCell><Input type="number" /></TableCell><!--Count of Males-->
+                        <TableCell><Input type="number" /></TableCell><!--Count of Females-->
+                        <TableCell><Input type="number" /></TableCell><!--Count of Not Indicated-->
+                        <TableCell><Input type="number" /></TableCell><!--Total of Male, femal and not indicated-->
+                    </TableRow>
+                </TableBody>
             </Table>
-            <!-- then display the input fields for values -->
         </div>
-
-
+        <div class="flex gap-1 justify-end">
+            <Button type="submit" class="cursor-pointer bg-red-500 hover:bg-red-300 hover:text-black"@click="props.handleCloseIndicatorValue()">Close</Button>
+            <Button type="submit" class="cursor-pointer bg-emerald-500 hover:bg-emerald-300 hover:text-black"@click="">Submit</Button>
+        </div>
     </div>
 </template>
