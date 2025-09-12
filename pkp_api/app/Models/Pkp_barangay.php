@@ -33,4 +33,6 @@ class Pkp_barangay extends Model
         return $this->belongsTo(Pkp_province::class, 'province_id', 'province_id')
             ->select('province_id', 'province_name');
     }
+
+    
 }
