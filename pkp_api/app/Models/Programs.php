@@ -14,4 +14,9 @@ class Programs extends Model
         'program_status'
     ];
     protected $primaryKey = 'program_id';
+
+    public function indicators()
+    {
+        return $this->hasMany(Pkp_indicator::class,'program_id','program_id');
+    }
 }
