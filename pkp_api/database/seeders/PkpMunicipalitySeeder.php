@@ -270,7 +270,7 @@ class PkpMunicipalitySeeder extends Seeder
                 'municipality_id' => 141102,
                 'region_id' => 14,
                 'province_id' => 1430,
-                'municipality_name' => 'Baguio City',
+                'municipality_name' => 'City of Baguio (Capital)',
                 'uid' => 1,
                 'created_at' => '2023-07-20 11:23:49',
                 'updated_at' => '2023-07-20 11:23:49',
