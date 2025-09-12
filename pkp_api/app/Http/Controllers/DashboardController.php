@@ -11,13 +11,13 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function getExecDashboardData():JsonResponse
+    public function getExecDashboardData(): JsonResponse
     {
         $programs_count = Programs::count();
         $indicators_count = Pkp_indicator::count();
         $pk_sites_count = Pkp_site::count();
-        $hrh_count = Hrh::where('user_level',5)->count();
-        $indicators = Pkp_indicator::with(['program','disaggregations'])->get();
+        $hrh_count = Hrh::where('user_level', 5)->count();
+        $indicators = Pkp_indicator::with(['program', 'disaggregations'])->get();
 
         return response()->json([
             'data' => [
