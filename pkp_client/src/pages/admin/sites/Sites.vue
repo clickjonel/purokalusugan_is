@@ -47,9 +47,7 @@ const siteStatusLabels: Record<number, string> = {
 }
 
 const sites = ref<PkpSite[]>([])
-const searchQuery = ref('')
-const currentPage = ref(1)
-const pageSize = ref(10) // rows per page
+
 const isDialogOpen = ref(false)
 const isCreateDialogOpen = ref(false) // New ref for create dialog
 const editingSite = ref<PkpSite | null>(null)
@@ -75,6 +73,7 @@ function fetchSites() {
   axios.get<{ data: PkpSite[] }>('/site/list')
     .then((response) => {
       sites.value = response.data.data
+      console.log(response.data.data)
     })
     .catch((error) => {
       console.log(error)
@@ -194,49 +193,14 @@ async function removeSite(id?: number) {
   }
 }
 
-// Filter sites by search
-const filteredSites = computed(() => {
-  if (!searchQuery.value) return sites.value
-  return sites.value.filter((site) => {
-    const search = searchQuery.value.toLowerCase()
-    return (
-      site.site_id?.toString().includes(search) ||
-      site.barangay.barangay_name.toLowerCase().includes(search) ||
-      site.barangay.municipality.municipality_name.toLowerCase().includes(search) ||
-      site.barangay.municipality.province.province_name.toLowerCase().includes(search)
-    )
-  })
-})
 
-// Paginate filtered sites
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredSites.value.length / pageSize.value))
-)
-
-const paginatedSites = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return filteredSites.value.slice(start, start + pageSize.value)
-})
-
-function nextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
-
-function prevPage() {
-  if (currentPage.value > 1) currentPage.value--
-}
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col justify-between items-start gap-2 p-2">
     <!-- header -->
     <div class="w-full flex justify-between items-center p-2 border">
-      <div class="relative items-center">
-        <Input v-model="searchQuery" id="search" type="text" placeholder="Search sites..." class="pl-8" />
-        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-          <Search class="size-4 text-muted-foreground" />
-        </span>
-      </div>
+
       <Button variant="default" class="cursor-pointer" size="sm" @click="isCreateDialogOpen = true">
         Create Site
       </Button>
@@ -260,7 +224,7 @@ function prevPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="site in paginatedSites" :key="site.site_id">
+            <TableRow v-for="site in sites" :key="site.site_id">
               <TableCell>{{ site.site_id }}</TableCell>
               <TableCell>
                 <Popover>
@@ -317,11 +281,7 @@ function prevPage() {
 
     <!-- footer -->
     <div class="w-full h-[50px] flex justify-between items-center border p-2">
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <div class="flex gap-2">
-        <Button size="sm" variant="outline" @click="prevPage" :disabled="currentPage === 1">Previous</Button>
-        <Button size="sm" variant="outline" @click="nextPage" :disabled="currentPage === totalPages">Next</Button>
-      </div>
+      Pagination
     </div>
 
     <!-- Create Dialog -->

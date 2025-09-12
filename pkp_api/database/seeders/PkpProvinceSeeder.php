@@ -65,7 +65,7 @@ class PkpProvinceSeeder extends Seeder
             [
                 'province_id'   => 1430,
                 'region_id'     => 14,
-                'province_name' => 'City of Baguio (Capital)',
+                'province_name' => 'City of Baguio',
                 'uid'           => 1,
                 'created_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),
                 'updated_at'    => Carbon::createFromFormat('d/m/Y H:i:s', '20/7/2023 11:20:56'),

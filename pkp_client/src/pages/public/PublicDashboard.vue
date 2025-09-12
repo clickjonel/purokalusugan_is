@@ -166,7 +166,7 @@ const provinceData: Record<string, { cards: CatchmentOverviewProps[]; sites: Sit
       { code: "MP004", name: "Barangay Paracelis", status: "Active" },
     ],
   },
-  "Baguio City": {
+  "City of Baguio": {
     cards: [
       { title: "Total No. of Barangay", value: 129, subtitle: "" },
       { title: "Total No. of Purok", value: 300, subtitle: "" },
