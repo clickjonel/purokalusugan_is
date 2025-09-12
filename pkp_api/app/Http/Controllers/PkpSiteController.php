@@ -36,7 +36,11 @@ class PkpSiteController extends Controller
             'barangay:barangay_id,municipality_id,barangay_name',
             'barangay.municipality:municipality_id,province_id,municipality_name',
             'barangay.municipality.province:province_id,province_name'
-        ])->get();
+        ])->get()->map(function ($site) {
+            $site->total_no_sitio_purok = ($site->no_sitio ?? 0) + ($site->no_purok ?? 0);
+            $site->total_target_sitio_purok = ($site->target_sitio ?? 0) + ($site->target_purok ?? 0);
+            return $site;
+        });
 
         return response()->json([
             'message' => 'Sites retrieved successfully',
@@ -56,11 +60,15 @@ class PkpSiteController extends Controller
             'barangay.municipality.province:province_id,province_name'
         ])->findOrFail($validatedData['site_id']);
 
+        $site->total_no_sitio_purok = ($site->no_sitio ?? 0) + ($site->no_purok ?? 0);
+        $site->total_target_sitio_purok = ($site->target_sitio ?? 0) + ($site->target_purok ?? 0);
+
         return response()->json([
             'message' => 'Site retrieved successfully',
             'data' => $site
         ], 200);
     }
+
 
     public function updateSite(Request $request): JsonResponse
     {

@@ -1,39 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
-import axios from "@/axios/axios"
-import { toTypedSchema } from "@vee-validate/zod"
-import { useForm } from "vee-validate"
-import * as z from "zod"
-
-// shadcn-ui
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { onMounted, ref, computed } from "vue"
+import axios from '@/axios/axios';
+import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input'
+import { Search, EllipsisVertical, Edit, Trash2, ChevronRight } from "lucide-vue-next"
+import { toast } from 'vue-sonner'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import BarangaySelector from "@/components/ui/select/barangay_selection/BarangaySelector.vue"
-import { toast } from "vue-sonner"
-import SelectContent from '@/components/ui/select/SelectContent.vue'
-import SelectTrigger from '@/components/ui/select/SelectTrigger.vue'
-import Select from '@/components/ui/select/Select.vue'
-import SelectValue from '@/components/ui/select/SelectValue.vue'
-import SelectItem from '@/components/ui/select/SelectItem.vue'
-import { ChevronRight, Edit, Trash2 } from 'lucide-vue-next'
-
 
 interface PkpSite {
   site_id?: number
@@ -41,11 +16,14 @@ interface PkpSite {
   latitude: number
   longitude: number
   site_status: number
+  no_sitio: number
+  no_purok: number
+  total_no_sitio_purok: number
   target_purok: number
   target_sitio: number
-  no_household?: number | null
-  population?: number | null
-
+  total_target_sitio_purok: number
+  no_household?: number
+  population?: number
   barangay: {
     barangay_id: number
     barangay_name: string
@@ -60,7 +38,6 @@ interface PkpSite {
   }
 }
 
-
 const siteStatusLabels: Record<number, string> = {
   1: "Preparation Phase",
   2: "Action Planning Done",
@@ -69,127 +46,153 @@ const siteStatusLabels: Record<number, string> = {
   5: "Monitored PK Implementation",
 }
 
-const formSchema = toTypedSchema(
-  z.object({
-    site_id: z.coerce.number().optional(),
-    barangay_id: z.coerce.number().optional(),
-    latitude: z.coerce
-      .number()
-      .min(-90, "Latitude must be between -90 and 90")
-      .max(90, "Latitude must be between -90 and 90"),
-    longitude: z.coerce
-      .number()
-      .min(-180, "Longitude must be between -180 and 180")
-      .max(180, "Longitude must be between -180 and 180"),
-    site_status: z.coerce.number().int(),
-    target_sitio: z.coerce.number().int(),
-    target_purok: z.coerce.number().int(),
-    no_household: z.coerce.number().nullable().optional(),
-    population: z.coerce.number().nullable().optional(),
-  })
-)
-
-
-// State
 const sites = ref<PkpSite[]>([])
+const searchQuery = ref('')
+const currentPage = ref(1)
+const pageSize = ref(10) // rows per page
 const isDialogOpen = ref(false)
-const isEditing = ref(false)
-const editingId = ref<number | null>(null)
+const isCreateDialogOpen = ref(false) // New ref for create dialog
+const editingSite = ref<PkpSite | null>(null)
 
-
-
-async function loadSites() {
-  const res = await axios.get("/site/list")
-  sites.value = res.data.data
-
-}
+const newSite = ref<Omit<PkpSite, 'site_id' | 'barangay' | 'total_no_sitio_purok' | 'total_target_sitio_purok'>>({
+  barangay_id: 0,
+  latitude: 0,
+  longitude: 0,
+  site_status: 1,
+  no_sitio: 0,
+  no_purok: 0,
+  target_sitio: 0,
+  target_purok: 0,
+  no_household: 0,
+  population: 0,
+})
 
 onMounted(() => {
-  loadSites()
+  fetchSites()
 })
-function defaultPkpSite(): PkpSite {
-  return {
-    barangay_id: 0,
-    latitude: 0,
-    longitude: 0,
-    site_status: 1,
-    target_sitio: 0,
-    target_purok: 0,
-    no_household: null,
-    population: null,
-    barangay: {
-      barangay_id: 0,
-      barangay_name: "",
-      municipality: {
-        municipality_id: 0,
-        municipality_name: "",
-        province: {
-          province_id: 0,
-          province_name: "",
-        },
+
+function fetchSites() {
+  axios.get<{ data: PkpSite[] }>('/site/list')
+    .then((response) => {
+      sites.value = response.data.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+function saveSite() {
+  if (newSite.value.barangay_id === 0) {
+    toast('Validation Error', {
+      description: 'Barangay is Required',
+      action: {
+        label: 'Close',
+        onClick: () => toast.dismiss(),
       },
-    },
+    })
+    return
   }
+
+  // Calculate total fields
+  const siteData = {
+    ...newSite.value,
+    total_no_sitio_purok: newSite.value.no_sitio + newSite.value.no_purok,
+    total_target_sitio_purok: newSite.value.target_sitio + newSite.value.target_purok
+  }
+
+  axios.post('/site/create', siteData)
+    .then((response) => {
+      toast('Action Success', {
+        description: response.data.message,
+        action: {
+          label: 'Close',
+          onClick: () => toast.dismiss(),
+        },
+      })
+      // Reset form fields
+      newSite.value = {
+        barangay_id: 0,
+        latitude: 0,
+        longitude: 0,
+        site_status: 1,
+        no_sitio: 0,
+        no_purok: 0,
+        target_sitio: 0,
+        target_purok: 0,
+        no_household: 0,
+        population: 0,
+      }
+      // Close the dialog
+      isCreateDialogOpen.value = false
+      fetchSites()
+    })
+    .catch((error) => {
+      console.log(error)
+      if (error.response) {
+        toast('Failed With Errors', {
+          description: error.response.data.message,
+          action: {
+            label: 'Close',
+            onClick: () => toast.dismiss(),
+          },
+        })
+      }
+    })
 }
-const { handleSubmit, resetForm } = useForm<PkpSite>({
-  validationSchema: formSchema,
-  initialValues: defaultPkpSite(),
-})
 
-
-
-function openCreate() {
-  isEditing.value = false
-  editingId.value = null
-  resetForm({ values: defaultPkpSite() })
+function openEditDialog(site: PkpSite) {
+  editingSite.value = JSON.parse(JSON.stringify(site))
   isDialogOpen.value = true
 }
 
-function editSite(site: PkpSite) {
-  isEditing.value = true
-  editingId.value = site.site_id ?? null
+function updateSite() {
+  if (!editingSite.value?.site_id) return
 
-  resetForm({
-    values: {
-      ...site,
-      site_id: site.site_id,
-      barangay_id: site.barangay_id,
-    },
-  })
-
-  isDialogOpen.value = true
-}
-
-const saveSite = async (values: PkpSite) => {
-  try {
-    if (isEditing.value && editingId.value) {
-      console.log('ito yung data', values)
-      //'ito yung data',{"barangay_id": 37494,"latitude": 16.8879,"longitude": 120.6833,"site_status": 1,"target_sitio": 0,"target_purok": 0,"no_household": 2,"population": 2500
-      await axios.put(`/site/update`, values)
-    } else {
-      await axios.post("/site/create", values)
-    }
-
-    await loadSites()
-    isDialogOpen.value = false
-    toast.success(isEditing.value ? "Site updated." : "New site created.")
-  } catch (e) {
-    console.error("Save failed", e)
-    toast.error("Could not save site.")
+  // Calculate total fields
+  const siteData = {
+    ...editingSite.value,
+    total_no_sitio_purok: editingSite.value.no_sitio + editingSite.value.no_purok,
+    total_target_sitio_purok: editingSite.value.target_sitio + editingSite.value.target_purok
   }
+
+  axios.put('/site/update', siteData)
+    .then((response) => {
+      toast('Action Success', {
+        description: response.data.message,
+        action: {
+          label: 'Close',
+          onClick: () => toast.dismiss(),
+        },
+      })
+      isDialogOpen.value = false
+      fetchSites()
+    })
+    .catch((error) => {
+      console.log(error)
+      if (error.response) {
+        toast('Failed With Errors', {
+          description: error.response.data.message,
+          action: {
+            label: 'Close',
+            onClick: () => toast.dismiss(),
+          },
+        })
+      }
+    })
 }
-const onSubmit = handleSubmit(saveSite)
 
 async function removeSite(id?: number) {
   if (!id) return
   if (!confirm("Delete this site?")) return
-  await axios.delete(`/site/delete`)
-  await loadSites()
+  try {
+    await axios.delete(`/site/delete`, { data: { site_id: id } })
+    await fetchSites()
+    toast.success("Site deleted.")
+  } catch (e) {
+    console.error("Delete failed", e)
+    toast.error("Could not delete site.")
+  }
 }
-
-const searchQuery = ref("")
-const currentPage = ref(1)
-const pageSize = ref(12) // rows per page
 
 // Filter sites by search
 const filteredSites = computed(() => {
@@ -218,216 +221,249 @@ const paginatedSites = computed(() => {
 function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
+
 function prevPage() {
   if (currentPage.value > 1) currentPage.value--
 }
-
 </script>
 
 <template>
-  <div class="p-4 space-y-4 w-full">
-    <div class="p-4 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-semibold">PKP Sites</h2>
-        <div class="flex items-center gap-2">
-          <!-- Search -->
-          <Input v-model="searchQuery" type="text" placeholder="Search..." class="h-8 w-48 text-sm" />
-          <Button @click="openCreate">New Site</Button>
-        </div>
+  <div class="w-full h-full flex flex-col justify-between items-start gap-2 p-2">
+    <!-- header -->
+    <div class="w-full flex justify-between items-center p-2 border">
+      <div class="relative items-center">
+        <Input v-model="searchQuery" id="search" type="text" placeholder="Search sites..." class="pl-8" />
+        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+          <Search class="size-4 text-muted-foreground" />
+        </span>
       </div>
-
-      <!-- Sites Table -->
-      <Card>
-        <CardContent>
-          <Table class="text-sm">
-            <TableHeader>
-              <TableRow class="h-8">
-                <TableHead class="px-2 py-1">ID</TableHead>
-                <TableHead class="px-2 py-1">Province</TableHead>
-                <TableHead class="px-2 py-1">Municipality</TableHead>
-                <TableHead class="px-2 py-1">Barangay</TableHead>
-                <TableHead class="px-2 py-1">Lat</TableHead>
-                <TableHead class="px-2 py-1">Lng</TableHead>
-                <TableHead class="px-2 py-1">Status</TableHead>
-                <TableHead class="px-2 py-1">Purok</TableHead>
-                <TableHead class="px-2 py-1">Sitio</TableHead>
-                <TableHead class="px-2 py-1">Households</TableHead>
-                <TableHead class="px-2 py-1">Population</TableHead>
-                <TableHead class="px-2 py-1 text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              <TableRow v-for="site in paginatedSites" :key="site.site_id" class="h-8">
-                <TableCell class="px-2 py-1">{{ site.site_id }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.barangay.municipality.province.province_name }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.barangay.municipality.municipality_name }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.barangay.barangay_name }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.latitude }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.longitude }}</TableCell>
-                <TableCell class="px-2 py-1">{{ siteStatusLabels[site.site_status] }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.target_purok }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.target_sitio }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.no_household ?? "-" }}</TableCell>
-                <TableCell class="px-2 py-1">{{ site.population ?? "-" }}</TableCell>
-
-                <TableCell class="px-2 py-1 text-right flex justify-end gap-1">
-                  <Button size="icon" variant="ghost" @click="editSite(site)" class="h-7 w-7">
-                    <Edit class="h-3.5 w-3.5" />
-                  </Button>
-                  <Button size="icon" variant="destructive" @click="removeSite(site.site_id)" class="h-7 w-7">
-                    <Trash2 class="h-3.5 w-3.5" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-
-          <!-- Pagination -->
-          <div class="flex items-center justify-between mt-2 text-sm text-muted-foreground">
-            <span>Page {{ currentPage }} of {{ totalPages }}</span>
-            <div class="flex gap-2">
-              <Button size="sm" variant="outline" @click="prevPage" :disabled="currentPage === 1">Previous</Button>
-              <Button size="sm" variant="outline" @click="nextPage" :disabled="currentPage === totalPages">Next</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Button variant="default" class="cursor-pointer" size="sm" @click="isCreateDialogOpen = true">
+        Create Site
+      </Button>
     </div>
 
-    <!-- Dialog / Form -->
-    <Dialog v-model:open="isDialogOpen">
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{{ isEditing ? "Edit Site" : "Create Site" }}</DialogTitle>
-        </DialogHeader>
-
-        <form class="w-full space-y-6" @submit.prevent="onSubmit">
-          <!-- Barangay -->
-          <FormField name="barangay_id" v-slot="{ field }">
-            <FormItem>
-              <FormLabel>Barangay</FormLabel>
-              <FormControl>
-                <!-- Show summary when editing -->
-                <template v-if="isEditing">
-                  <div class="rounded-lg border bg-muted/50 p-3 text-sm flex gap-2 items-center" role="status"
-                    aria-live="polite">
-                    <div class="font-medium text-muted-foreground  ">Selected Location:</div>
-                    <div class="font-bold flex items-center gap-1 ">
-                      <span class="font-medium">
-                        {{sites.find(s => s.site_id === editingId)?.barangay.municipality.province.province_name}}
-                      </span>
-                      <ChevronRight class="h-3 w-3" />
-                      <span class="font-medium">
-                        {{sites.find(s => s.site_id === editingId)?.barangay.municipality.municipality_name}}
-                      </span>
-                      <ChevronRight class="h-3 w-3" />
-                      <span class="font-medium">
-                        {{sites.find(s => s.site_id === editingId)?.barangay.barangay_name}}
-                      </span>
+    <!-- table -->
+    <div class="w-full h-full flex flex-col justify-start items-start border">
+      <div class="w-full h-[600px] overflow-y-scroll">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Coordinates (Lat/Long)</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Sitio/Purok</TableHead>
+              <TableHead>Targets</TableHead>
+              <TableHead>Population</TableHead>
+              <TableHead>Households</TableHead>
+              <TableHead class="text-end">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="site in paginatedSites" :key="site.site_id">
+              <TableCell>{{ site.site_id }}</TableCell>
+              <TableCell>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm"
+                      class="cursor-pointer text-xs font-normal justify-start p-0 h-auto">
+                      {{ site.barangay.municipality.province.province_name }}, {{
+                        site.barangay.municipality.municipality_name }}, {{
+                        site.barangay.barangay_name }}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-50 p-2">
+                    <div class="flex flex-col">
+                      <span class="text-xs">{{ site.barangay.barangay_name }}</span>
+                      <span class="text-xs">{{ site.barangay.municipality.municipality_name }}, {{
+                        site.barangay.municipality.province.province_name }}</span>
                     </div>
-                  </div>
-                </template>
+                  </PopoverContent>
+                </Popover>
+              </TableCell>
+              <TableCell>{{ site.latitude }}, {{ site.longitude }}</TableCell>
+              <TableCell>{{ site.site_status }} ({{ siteStatusLabels[site.site_status] }})</TableCell>
+              <TableCell>{{ site.total_no_sitio_purok }} ({{ site.no_purok }} Purok, {{ site.no_sitio }} Sitio)
+              </TableCell>
+              <TableCell>{{ site.total_target_sitio_purok }} ({{ site.target_purok }} Purok, {{ site.target_sitio }}
+                Sitio)</TableCell>
+              <TableCell>{{ site.population ?? '-' }}</TableCell>
+              <TableCell>{{ site.no_household ?? '-' }}</TableCell>
+              <TableCell class="w-full flex justify-end items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon" class="cursor-pointer">
+                      <EllipsisVertical class="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-45 p-2">
+                    <div class="flex flex-col">
+                      <Button variant="ghost" size="sm" class="justify-start text-xs" @click="openEditDialog(site)">
+                        <Edit class="mr-2 h-4 w-4" /> Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600"
+                        @click="removeSite(site.site_id)">
+                        <Trash2 class="mr-2 h-4 w-4" /> Delete
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    </div>
 
-                <!-- Show selector only when creating -->
-                <template v-else>
-                  <BarangaySelector :model-value="field.value" @update:model-value="field.onChange" />
-                </template>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
+    <!-- footer -->
+    <div class="w-full h-[50px] flex justify-between items-center border p-2">
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <div class="flex gap-2">
+        <Button size="sm" variant="outline" @click="prevPage" :disabled="currentPage === 1">Previous</Button>
+        <Button size="sm" variant="outline" @click="nextPage" :disabled="currentPage === totalPages">Next</Button>
+      </div>
+    </div>
 
-
-          <!-- Latitude -->
-          <FormField name="latitude" v-slot="{ componentField }">
-            <FormItem>
-              <FormLabel>Latitude</FormLabel>
-              <FormControl>
-                <Input type="number" step="0.00000001" v-bind="componentField" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <!-- Longitude -->
-          <FormField name="longitude" v-slot="{ componentField }">
-            <FormItem>
-              <FormLabel>Longitude</FormLabel>
-              <FormControl>
-                <Input type="number" step="0.00000001" v-bind="componentField" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <!-- Status -->
-          <FormField name="site_status" v-slot="{ componentField }" class="w-full">
-            <FormItem class="w-full">
-              <FormLabel>Site Status</FormLabel>
-              <FormControl>
-                <Select v-bind="componentField">
-                  <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem :value="1">1 - Preparation Phase</SelectItem>
-                    <SelectItem :value="2">2 - Action Planning Done</SelectItem>
-                    <SelectItem :value="3">3 - With organized PKT</SelectItem>
-                    <SelectItem :value="4">4 - Implementing PK</SelectItem>
-                    <SelectItem :value="5">5 - Monitored PK Implementation</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField name="target_purok" v-slot="{ componentField }">
-            <FormItem>
-              <FormLabel>Target Purok</FormLabel>
-              <FormControl>
-                <Input type="number" v-bind="componentField" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField name="target_sitio" v-slot="{ componentField }">
-            <FormItem>
-              <FormLabel>Target Sitio</FormLabel>
-              <FormControl>
-                <Input type="number" v-bind="componentField" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <div class="grid grid-cols-2 gap-2">
-            <FormField name="no_household" v-slot="{ componentField }">
-              <FormItem>
-                <FormLabel>No. Households</FormLabel>
-                <FormControl>
-                  <Input type="number" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField name="population" v-slot="{ componentField }">
-              <FormItem>
-                <FormLabel>Population</FormLabel>
-                <FormControl>
-                  <Input type="number" v-bind="componentField" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+    <!-- Create Dialog -->
+    <Dialog v-model:open="isCreateDialogOpen">
+      <DialogContent class="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Create New Site</DialogTitle>
+        </DialogHeader>
+        <div class="space-y-4 py-4">
+          <div class="space-y-2">
+            <div>
+              <label class="text-sm font-medium">Barangay</label>
+              <BarangaySelector v-model="newSite.barangay_id" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-sm font-medium">Latitude</label>
+                <Input type="number" step="0.00000001" v-model="newSite.latitude" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">Longitude</label>
+                <Input type="number" step="0.00000001" v-model="newSite.longitude" />
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-medium">Site Status</label>
+              <select v-model="newSite.site_status" class="w-full p-2 border rounded">
+                <option v-for="(label, value) in siteStatusLabels" :value="Number(value)">{{ value }} - {{ label }}
+                </option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-sm font-medium">No. Purok</label>
+                <Input type="number" v-model="newSite.no_purok" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">No. Sitio</label>
+                <Input type="number" v-model="newSite.no_sitio" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-sm font-medium">Target Purok</label>
+                <Input type="number" v-model="newSite.target_purok" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">Target Sitio</label>
+                <Input type="number" v-model="newSite.target_sitio" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-sm font-medium">No. Households</label>
+                <Input type="number" v-model="newSite.no_household" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">Population</label>
+                <Input type="number" v-model="newSite.population" />
+              </div>
+            </div>
           </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <Button variant="secondary" type="button" @click="isCreateDialogOpen = false">Cancel</Button>
+          <Button @click="saveSite">Create Site</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
 
-          <div class="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" type="button" @click="isDialogOpen = false">Cancel</Button>
-            <Button type="submit">{{ isEditing ? "Update" : "Create" }}</Button>
+    <!-- Edit Dialog -->
+    <Dialog v-model:open="isDialogOpen">
+      <DialogContent class="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Edit Site</DialogTitle>
+        </DialogHeader>
+        <div class="space-y-4 py-4">
+          <div>
+            <label class="text-sm font-medium">Barangay</label>
+            <div class="rounded-lg border bg-muted/50 p-3 text-sm flex gap-2 items-center">
+              <div class="font-medium text-muted-foreground">Selected Location:</div>
+              <div class="font-bold flex items-center gap-1">
+                <span v-if="editingSite?.barangay">{{ editingSite.barangay.municipality.province.province_name }}</span>
+                <ChevronRight v-if="editingSite?.barangay" class="h-3 w-3" />
+                <span v-if="editingSite?.barangay">{{ editingSite.barangay.municipality.municipality_name }}</span>
+                <ChevronRight v-if="editingSite?.barangay" class="h-3 w-3" />
+                <span v-if="editingSite?.barangay">{{ editingSite.barangay.barangay_name }}</span>
+              </div>
+            </div>
           </div>
-        </form>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-medium">Latitude</label>
+              <Input type="number" step="0.00000001" v-model="editingSite!.latitude" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Longitude</label>
+              <Input type="number" step="0.00000001" v-model="editingSite!.longitude" />
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-medium">Site Status</label>
+            <select v-model="editingSite!.site_status" class="w-full p-2 border rounded">
+              <option v-for="(label, value) in siteStatusLabels" :value="Number(value)">{{ value }} - {{ label }}
+              </option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-medium">No. Purok</label>
+              <Input type="number" v-model="editingSite!.no_purok" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">No. Sitio</label>
+              <Input type="number" v-model="editingSite!.no_sitio" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-medium">Target Purok</label>
+              <Input type="number" v-model="editingSite!.target_purok" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Target Sitio</label>
+              <Input type="number" v-model="editingSite!.target_sitio" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-medium">No. Households</label>
+              <Input type="number" v-model="editingSite!.no_household" />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Population</label>
+              <Input type="number" v-model="editingSite!.population" />
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <Button variant="secondary" type="button" @click="isDialogOpen = false">Cancel</Button>
+          <Button @click="updateSite">Save changes</Button>
+        </div>
       </DialogContent>
     </Dialog>
   </div>
