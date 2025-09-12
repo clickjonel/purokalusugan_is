@@ -18,6 +18,7 @@ class DashboardController extends Controller
         $pk_sites_count = Pkp_site::count();
         $hrh_count = Hrh::where('user_level', 5)->count();
         $indicators = Pkp_indicator::with(['program', 'disaggregations'])->get();
+        $programs = Programs::withCount(['indicators'])->get();
 
         return response()->json([
             'data' => [
@@ -26,6 +27,7 @@ class DashboardController extends Controller
                 'pk_sites_count' => $pk_sites_count,
                 'hrh_count' => $hrh_count,
                 'indicators' => $indicators,
+                'programs' => $programs
             ]
         ]);
     }

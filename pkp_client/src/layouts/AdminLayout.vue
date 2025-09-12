@@ -61,7 +61,7 @@ const breadcrumbs = computed(() => Array.isArray(route.meta?.breadcrumbs) ? rout
 
         </div>
 
-        <div class="w-full h-full flex flex-col justify-start items-start bg-sidebar rounded-md shadow-md">
+        <div class="w-full h-full flex flex-col justify-start items-start bg-sidebar rounded-md shadow-md border overflow-y-auto">
 
           <router-view></router-view>
 

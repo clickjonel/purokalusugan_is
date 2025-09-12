@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { onMounted, ref } from 'vue';
     import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from "@/components/ui/card";
-    import { HousePlus,TriangleAlert  } from 'lucide-vue-next';
+    import { HousePlus,TriangleAlert,MapPinCheck,Users    } from 'lucide-vue-next';
     import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table';
     import axios from '@/axios/axios';
 
@@ -63,7 +63,7 @@
                     <CardTitle>
                         <div class="w-full flex justify-between items-center">
                             <span>PK Sites</span>
-                            <span>icon</span>
+                            <MapPinCheck  :size="14"/>
                         </div>
                 </CardTitle>
                     <CardDescription>Total PK Sites</CardDescription>
@@ -78,7 +78,7 @@
                     <CardTitle>
                         <div class="w-full flex justify-between items-center">
                             <span>HRH</span>
-                            <span>icon</span>
+                           <Users  :size="14"/>
                         </div>
                 </CardTitle>
                     <CardDescription>Total HRH</CardDescription>
@@ -87,30 +87,30 @@
                     <span class="text-5xl font-black">{{ dashboardData.hrh_count }}</span>
                 </CardContent>
             </Card>
+
         </div>
 
-        <div class="w-full h-[570px] flex flex-col justify-start items-start">
+        <div class="w-full flex flex-col justify-start items-start p-4">
+            <span class="text-lg uppercase font-semibold p-2 ml-3">Programs</span>
+            <div class="w-full grid grid-cols-4 gap-4">
+                <Card v-for="program in dashboardData.programs" class="w-full">
+                    <CardHeader>
+                        <CardTitle>
+                            <div class="w-full flex justify-between items-center">
+                                {{ program.program_name }}
+                            </div>
+                    </CardTitle>
+                        <CardDescription>Indicators</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <span class="text-2xl font-semibold">{{ program.indicators_count }}</span>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+
+        <div class="w-full flex flex-col justify-start items-start">
             <span class="text-lg uppercase font-semibold p-2 ml-3">Program Indicators</span>
-            <!-- <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Program</TableHead>
-                        <TableHead>Indicator</TableHead>
-                        <TableHead>Scope</TableHead>
-                        <TableHead>Disaggregation</TableHead>
-                        <TableHead>Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow v-for="indicator in dashboardData.indicators">
-                        <TableCell>{{ indicator.program.program_name }}</TableCell>
-                        <TableCell>{{ indicator.indicator_name }}</TableCell>
-                        <TableCell>{{ indicator.indicator_scope }}</TableCell>
-                        <TableCell>{{ indicator.disaggregation }}</TableCell>
-                        <TableCell>{{ indicator.indicator_status }}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table> -->
             <div class="w-full flex flex-col justify-start items-start p-4">
                 <div class="w-full flex justify-start items-stretch divide-x border-t border-x divide-black border-black text-center uppercase font-semibold">
                     <span class="w-[15%] p-2">Program</span>
@@ -128,6 +128,7 @@
                 </div>
             </div>
         </div>
+        
 
     </div>
 </template>

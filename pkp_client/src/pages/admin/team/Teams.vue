@@ -181,7 +181,7 @@ interface Team {
                                         <Button variant="outline" size="sm" class="cursor-pointer text-xs">Team Members  ({{ team.members_count }})</Button>
                                     </PopoverTrigger>
                                     <PopoverContent class="w-50 p-2">
-                                        <div class="flex flex-col">
+                                        <div class="flex flex-col justify-start items-start">
                                           <span class="text-xs" v-for="member in team.members">{{ member.hrh?.full_name }}</span>
                                         </div>
                                     </PopoverContent>
