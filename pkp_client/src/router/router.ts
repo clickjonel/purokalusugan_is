@@ -12,6 +12,7 @@ import Teams from '@/pages/admin/team/Teams.vue'
 import Sites from '@/pages/admin/sites/Sites.vue'
 import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
 import ManageScopes from '@/pages/admin/team/forms/ManageScopes.vue'
+import CreateEventForm from '@/pages/admin/events/forms/CreateEventForm.vue'
 
 
 const router = createRouter({
@@ -31,6 +32,14 @@ const router = createRouter({
       path: '/team/scopes/manage/:id',
       name: 'Manage Team Scope',
       component: ManageScopes,
+    },
+    {
+      path: '/event/create',
+      name: 'Create Event',
+      component: CreateEventForm,
+      meta:{
+        requiresAuth:true
+      }
     },
     {
       path: '/dashboard',

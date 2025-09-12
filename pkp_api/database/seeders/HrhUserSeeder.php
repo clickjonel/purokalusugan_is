@@ -38,21 +38,21 @@ class HrhUserSeeder extends Seeder
         });
         
         
-        // $hrh_server->each(function ($hrh) {
-        //     Hrh::create([
-        //         'user_code' => $hrh->user_code,
-        //         // 'image' => null,
-        //         'username' => $hrh->email_address,
-        //         'password' => bcrypt('12345'),
-        //         'first_name' => $hrh->first_name,
-        //         'middle_name' => $hrh->middle_name ?? null,
-        //         'last_name' => $hrh->last_name,
-        //         'suffix' => $hrh->suffix ?? null,
-        //         'nickname' => $hrh->nickname,
-        //         'account_status' => 'Active',
-        //         'user_level' => 5
-        //     ]);
-        // });
+        $hrh_server->each(function ($hrh) {
+            Hrh::create([
+                'user_code' => $hrh->user_code,
+                // 'image' => null,
+                'username' => $hrh->email_address,
+                'password' => bcrypt('12345'),
+                'first_name' => $hrh->first_name,
+                'middle_name' => $hrh->middle_name ?? null,
+                'last_name' => $hrh->last_name,
+                'suffix' => $hrh->suffix ?? null,
+                'nickname' => $hrh->nickname,
+                'account_status' => 'Active',
+                'user_level' => 5
+            ]);
+        });
 
     }
 }

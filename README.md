@@ -163,3 +163,8 @@ Body:
 "indicator_status": 1,
 "indicator_scope": 1
 }
+
+
+
+<!-- Draw.io Link -->
+https://app.diagrams.net/?libs=general;er#G1IC6LEJfM4oKEx13VJU4z0VXAA9Z-30ec#%7B%22pageId%22%3A%22R2lEEEUBdFMjLlhIrx00%22%7D

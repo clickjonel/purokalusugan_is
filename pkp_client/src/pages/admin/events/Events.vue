@@ -329,6 +329,7 @@ onMounted(() => {
             <span>Pagination Here</span>
         </div>
     </div>
+    
     <Dialog v-model:open="isCreateModalOpen">
         <DialogTrigger />
         <DialogContent class="font-poppins">
