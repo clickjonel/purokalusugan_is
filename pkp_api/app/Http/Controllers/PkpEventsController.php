@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Event\CreateEventRequest;
 use App\Models\Pkp_events;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,12 +29,11 @@ class PkpEventsController extends Controller
             'data'=>$data
         ], 201);
     }
-    public function getEvents(): JsonResponse
+    public function list(): JsonResponse
     {
-        $data = Pkp_events::all();
+        $list = Pkp_events::with(['programs','barangays'])->get();
         return response()->json([
-            'message' => 'Data retrieved successfully',
-            'data' => $data
+            'data' => $list
         ], 200);
     }
 
@@ -66,6 +66,20 @@ class PkpEventsController extends Controller
         Pkp_events::findOrFail($validatedData['event_id'])->delete();        
         return response()->json([
             'message' => 'Deleted successfully'
+        ], 200);
+    }
+
+    public function saveEvent(CreateEventRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        $event = Pkp_events::create($validated);
+
+        $event->programs()->sync($validated['programs']);
+        $event->barangays()->sync($validated['barangays']);
+
+        return response()->json([
+            'message' => 'Created Successfully'
         ], 200);
     }
 }

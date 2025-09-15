@@ -71,9 +71,10 @@ Route::group([
     'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpEventsController::class, 'createEvent']);
-    Route::get('/list', [PkpEventsController::class, 'getEvents']);
+    Route::get('/list', [PkpEventsController::class, 'list']);
     Route::put('/update', [PkpEventsController::class, 'updateEvent']);
     Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
+    Route::post('/save', [PkpEventsController::class, 'saveEvent']);    
 });
 
 Route::group([
