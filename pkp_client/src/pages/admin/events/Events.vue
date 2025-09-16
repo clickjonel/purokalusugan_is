@@ -3,17 +3,15 @@ import { onMounted, ref } from "vue"
 import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input'
-import { Search,EllipsisVertical,UserRoundCog,UserLock } from "lucide-vue-next"
+import { Search,EllipsisVertical } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
-import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger } from '@/components/ui/dialog'
 import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
-import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from "@/components/ui/select"
 import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
 import { useRouter } from  'vue-router';
-import { PaginationPrev } from "reka-ui";
+import { Badge } from '@/components/ui/badge'
 
 const router = useRouter()
-const events = ref([])
+const events = ref<Event[]>([])
 
 const pagination = ref({
     page:0,
@@ -31,6 +29,7 @@ function fetchEvents() {
     axios.get('/event/list')
         .then((response) => {
             events.value = response.data.data
+            pagination.value.total = response.data.total
             console.log(events.value)
         })
         .catch((error) => {
@@ -39,6 +38,17 @@ function fetchEvents() {
         .finally(() => {
 
         })
+}
+
+interface Event {
+    event_name:string,
+    event_type:number,
+    event_budget:number,
+    event_actual_budget:number,
+    event_type_name:string,
+    event_venue:string,
+    event_fund_source:string,
+    event_id:number
 }
 
 
@@ -74,14 +84,17 @@ function fetchEvents() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="event in events">
+                        <TableRow v-for="event in events" class="font-light">
                             <TableCell>{{ event.event_name }}</TableCell>
                             <TableCell>{{ event.event_venue }}</TableCell>
                             <TableCell>{{ event.event_type_name }}</TableCell>
                             <TableCell>{{ event.event_budget }} / {{ event.event_actual_budget }}</TableCell>
                             <TableCell>{{ event.event_fund_source }}</TableCell>
-                            <TableCell>
-                                partners,barangay participants,programs
+                            <TableCell class="flex gap-1">
+                                <Badge class="bg-sky-900 font-light">Partners</Badge>
+                                <Badge class="bg-sky-900 font-light">Proponents</Badge>
+                                <Badge class="bg-sky-900 font-light">Barangays</Badge>
+                                <Badge class="bg-sky-900 font-light">Programs</Badge>
                             </TableCell>
                             <TableCell class="text-end">
                                 <Popover>
@@ -95,6 +108,7 @@ function fetchEvents() {
                                             <Button variant="ghost" size="sm" class="justify-start text-xs">Edit</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Barangays</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Programs</Button>
+                                            <Button @click="router.push({path:`/event/populate/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Populate Indicators</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">Delete</Button>
                                         </div>
                                     </PopoverContent>
@@ -108,7 +122,7 @@ function fetchEvents() {
 
         <!-- footer -->
         <div class="w-full h-[50px] flex justify-center items-center border p-2">
-            <span>Pagination Here</span>
+           
         </div>
     </div>
 

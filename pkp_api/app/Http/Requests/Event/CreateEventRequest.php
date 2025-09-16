@@ -30,7 +30,8 @@ class CreateEventRequest extends FormRequest
             'event_proponents' => 'required|string',
             'event_partners' => 'required|string',
             'programs' => 'required|array',
-            'event_date' => 'required|date_format:Y-m-d',
+            'event_date_start' => 'required|date_format:Y-m-d',
+            'event_date_end' => 'required|date_format:Y-m-d',
             'barangays' => 'required|array',
             'event_type' => 'required|numeric|in:1,2',   
         ];

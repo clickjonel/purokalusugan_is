@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('indicator_disaggregation_id'); 
             $table->bigInteger('indicator_id'); 
             $table->bigInteger('disaggregation_id'); 
-            $table->timestamps();
+            // $table->timestamps();
         });
     }
 

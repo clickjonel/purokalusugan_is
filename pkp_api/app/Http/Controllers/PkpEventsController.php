@@ -33,7 +33,8 @@ class PkpEventsController extends Controller
     {
         $list = Pkp_events::with(['programs','barangays'])->get();
         return response()->json([
-            'data' => $list
+            'data' => $list,
+            'total' => $list->count()
         ], 200);
     }
 
@@ -82,4 +83,14 @@ class PkpEventsController extends Controller
             'message' => 'Created Successfully'
         ], 200);
     }
+
+    public function fetchEvent(Request $request):JsonResponse
+    {
+        $event = Pkp_events::with(['programs.indicators','barangays'])->find($request->event_id);
+
+        return response()->json([
+            'event' => $event
+        ], 200);
+    }
+
 }

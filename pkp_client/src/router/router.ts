@@ -13,6 +13,7 @@ import Sites from '@/pages/admin/sites/Sites.vue'
 import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
 import ManageScopes from '@/pages/admin/team/forms/ManageScopes.vue'
 import CreateEventForm from '@/pages/admin/events/forms/CreateEventForm.vue'
+import PopulateEventProgramIndicators from '@/pages/admin/events/forms/PopulateEventProgramIndicators.vue'
 
 
 const router = createRouter({
@@ -37,6 +38,14 @@ const router = createRouter({
       path: '/event/create',
       name: 'Create Event',
       component: CreateEventForm,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/event/populate/:id',
+      name: 'Populate Event',
+      component: PopulateEventProgramIndicators,
       meta:{
         requiresAuth:true
       }

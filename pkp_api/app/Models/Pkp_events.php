@@ -16,12 +16,15 @@ class Pkp_events extends Model
         'event_fund_source',
         'event_proponents',
         'event_partners',
-        'event_date',
+        'event_date_start',
+        'event_date_end',
         'event_type',       
     ];
     protected $primaryKey = 'event_id';
     protected $appends = [
-        'event_type_name'
+        'event_type_name',
+        'event_proponent_array',
+        'event_partner_array'
     ];
 
 
@@ -29,6 +32,17 @@ class Pkp_events extends Model
     {
         return $this->event_type === 1 ? 'Small Scale Event' : 'Large Scale Event';
     }
+
+    public function getEventProponentArrayAttribute()
+    {
+        return explode(',',$this->event_proponents);
+    }
+
+    public function getEventPartnerArrayAttribute()
+    {
+        return explode(',',$this->event_partners);
+    }
+
     public function programs()
     {
         return $this->belongsToMany(Programs::class, 'pkp_event_programs', 'event_id', 'program_id');

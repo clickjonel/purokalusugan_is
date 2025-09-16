@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id('event_id');
             $table->string('event_name');
             $table->integer('event_type');
-            $table->date('event_date');
+            $table->date('event_date_start');
+            $table->date('event_date_end');
             $table->string('event_venue');
-            $table->decimal('event_budget');
-            $table->decimal('event_actual_budget');
+            $table->decimal('event_budget', 65, 2);
+            $table->decimal('event_actual_budget', 65, 2);
             $table->string('event_fund_source');
             $table->string('event_proponents');
             $table->string('event_partners');           

@@ -11,6 +11,7 @@
     import { toast } from 'vue-sonner'
     import { format } from 'date-fns';
     import { useRouter } from "vue-router";
+    import MultipleSelectProgams from "@/components/selections/MultipleSelectProgams.vue";
 
     const router = useRouter()
     const event = ref<Event>({
@@ -21,7 +22,8 @@
         event_fund_source:'',
         event_proponents:'',
         event_partners:'',
-        event_date:undefined,
+        event_date_start:undefined,
+        event_date_end:undefined,
         programs:[],
         barangays:[],
         event_type:undefined
@@ -30,12 +32,6 @@
     const provinces = ref<Province[]>([])
     const municipalities = ref<Municipality[]>([])
     const barangays = ref<Barangay[]>([])
-    const programs = ref<Program[]>([])
-
-    const selectedProgram = ref<Program>({
-        program_name:'',
-        program_id:0
-    })
 
     const selectedProvince = ref()
     const selectedMunicipality = ref()
@@ -43,7 +39,6 @@
 
     onMounted(()=>{
         fetchProvinces()
-        fetchPrograms()
     })
 
     function fetchProvinces(){
@@ -93,34 +88,6 @@
         })
     }
 
-    function fetchPrograms(){
-        axios.get('/program/list')
-        .then((response) => {
-            programs.value = response.data.data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-        .finally(() => {
-
-        })
-    }
-
-    function pushToPrograms(){
-       if(event.value.programs.some(program => program.program_id === selectedProgram.value.program_id)){
-            toast('Duplicate', {
-                description: 'Program Already Added to list.',
-                action: {
-                    label: 'Close',
-                    onClick: () => toast.dismiss(),
-                },
-            })
-       }
-       else{
-            event.value.programs.push(selectedProgram.value)
-            selectedProgram.value = { program_name: '', program_id: 0 }
-       }   
-    }
 
     function pushToBarangays(){
         if(event.value.barangays.some(brgy => brgy.barangay_id === selectedBarangay.value.barangay_id)){
@@ -170,7 +137,8 @@
     }
 
     function formatEvent(){
-        const formattedDate = event.value.event_date ? format(event.value.event_date, 'yyyy-MM-dd') : undefined 
+        const formattedDateStart = event.value.event_date_start ? format(event.value.event_date_start, 'yyyy-MM-dd') : undefined 
+        const formattedDateEnd = event.value.event_date_end ? format(event.value.event_date_end, 'yyyy-MM-dd') : undefined 
         const formattedEvent:FormattedEvent = {
             event_name: event.value.event_name,
             event_venue: event.value.event_venue,
@@ -180,7 +148,8 @@
             event_proponents: event.value.event_proponents,
             event_partners: event.value.event_partners,
             programs: event.value.programs.map(program => program.program_id),
-            event_date: formattedDate as string,
+            event_date_start: formattedDateStart as string,
+            event_date_end: formattedDateEnd as string,
             barangays: event.value.barangays.map(barangay => barangay.barangay_id),
             event_type: event.value.event_type as number
         }
@@ -198,7 +167,8 @@
         event_proponents:string
         event_partners:string
         programs:Program[]
-        event_date:undefined
+        event_date_start:undefined
+        event_date_end:undefined
         barangays:Barangay[]
         event_type:number|undefined
     }
@@ -212,7 +182,8 @@
         event_proponents:string
         event_partners:string
         programs:number[]
-        event_date:string
+        event_date_start:string
+        event_date_end:string
         barangays:number[]
         event_type:number
     }
@@ -265,7 +236,7 @@
                         <div class="w-full flex justify-between items-center gap-4">
                             
                             <Select v-model="event.event_type">
-                                <SelectTrigger class="w-1/2">
+                                <SelectTrigger class="w-1/3">
                                     <SelectValue placeholder="Select Event Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -279,19 +250,33 @@
 
                             <Popover>
                                 <PopoverTrigger as-child>
-                                    <Button class="w-1/2"
+                                    <Button class="w-1/3"
                                         variant="outline">
                                         <CalendarIcon class="mr-2 h-4 w-4" />
-                                        {{ event.event_date ?? 'Event Date' }}
+                                        {{ event.event_date_start ?? 'Event Date Start' }}
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0">
-                                    <Calendar v-model="event.event_date" initial-focus />
+                                    <Calendar v-model="event.event_date_start" initial-focus />
                                 </PopoverContent>
                             </Popover>
+
+                            <Popover>
+                                <PopoverTrigger as-child>
+                                    <Button class="w-1/3"
+                                        variant="outline">
+                                        <CalendarIcon class="mr-2 h-4 w-4" />
+                                        {{ event.event_date_end ?? 'Event Date End' }}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent class="w-auto p-0">
+                                    <Calendar v-model="event.event_date_end" initial-focus />
+                                </PopoverContent>
+                            </Popover>
+
                         </div>
 
-                        <div class="w-full flex flex-col justify-start items-start">
+                        <!-- <div class="w-full flex flex-col justify-start items-start">
                             <div class="w-full flex justify-between items-center">
                                 <span class="font-semibold uppercase">Added Programs</span>
                                 <Popover>
@@ -319,7 +304,9 @@
                             <div class="w-full flex flex-col justify-start items-start ml-4">
                                 <span v-for="program in event.programs" class="font-light">{{ program.program_name }}</span>
                             </div>
-                        </div>
+                        </div> -->
+
+                        <MultipleSelectProgams v-model="event.programs"/>
 
                         <div class="w-full flex flex-col justify-start items-start">
                             <div class="w-full flex justify-between items-center">
@@ -383,5 +370,5 @@
             </Card>
         </div>
     </div>
-
+    
 </template>
