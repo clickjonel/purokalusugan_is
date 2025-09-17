@@ -14,6 +14,7 @@ import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
 import ManageScopes from '@/pages/admin/team/forms/ManageScopes.vue'
 import CreateEventForm from '@/pages/admin/events/forms/CreateEventForm.vue'
 import PopulateEventProgramIndicators from '@/pages/admin/events/forms/PopulateEventProgramIndicators.vue'
+import Disaggregations from '@/pages/admin/disaggregations/Disaggregations.vue'
 
 
 const router = createRouter({
@@ -119,6 +120,24 @@ const router = createRouter({
               {
                 name: 'Indicators',
                 link: '/admin/indicators'
+              }
+            ]
+          }
+        },
+        {
+          path: 'disaggregations',
+          name: 'disaggregations',
+          component: Disaggregations,
+          meta: {
+            requiresAuth: true,
+            breadcrumbs: [
+              {
+                name: 'Admin',
+                link: '/admin'
+              },
+              {
+                name: 'Disaggregations',
+                link: '/admin/disaggregations'
               }
             ]
           }

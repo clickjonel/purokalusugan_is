@@ -37,10 +37,14 @@ const event = {
     is_pk_site: data.value.is_pk_site
 }
 
+
+
 const dohCARLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRBmB7ueFlIGZ__ES7pCGHygeJHQBBlStvHw&s";
 const dapayPKCARLogo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTz5hW3nF0JRnTCPAgInbSO6xd62V2x-8fJZA&s";
 const programs = ref<Program[]>([]);
 const indicators = ref<Indicator[]>([]);
+let  indicatorValueToSave = ref();
+
 interface Program {
     program_id: number;
     program_name: string;
@@ -177,7 +181,7 @@ onMounted(() => {
                     <TableRow v-for="indicator in indicators.filter(ind => ind.program_id === program.program_id)"
                         :key="indicator.indicator_id">
                         <TableCell>{{ indicator.indicator_name }}</TableCell>
-                        <TableCell><Input type="number" /></TableCell><!--Count of Males-->
+                        <TableCell><Input type="number" v-model="indicator.indicator_id"/></TableCell><!--Count of Males-->
                         <TableCell><Input type="number" /></TableCell><!--Count of Females-->
                         <TableCell><Input type="number" /></TableCell><!--Count of Not Indicated-->
                         <TableCell><Input type="number" /></TableCell><!--Total of Male, femal and not indicated-->

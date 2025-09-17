@@ -15,4 +15,11 @@ class Pkp_indicator_values extends Model
         'remarks'
     ];
     protected $primaryKey = 'indicator_value_id';
+
+    public function joinEvent(){
+        return $this->hasOne(Pkp_events::class,"event_id","event_id");
+    }
+    // public function joinIndicatorDisaggregation(){
+
+    // }
 }
