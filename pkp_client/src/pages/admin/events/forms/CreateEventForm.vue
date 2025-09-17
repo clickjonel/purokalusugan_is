@@ -12,6 +12,7 @@
     import { format } from 'date-fns';
     import { useRouter } from "vue-router";
     import MultipleSelectProgams from "@/components/selections/MultipleSelectProgams.vue";
+    import MultipleSelectBarangay from "@/components/selections/MultipleSelectBarangay.vue";
 
     const router = useRouter()
     const event = ref<Event>({
@@ -307,8 +308,9 @@
                         </div> -->
 
                         <MultipleSelectProgams v-model="event.programs"/>
+                        <MultipleSelectBarangay v-model="event.barangays"/>
 
-                        <div class="w-full flex flex-col justify-start items-start">
+                        <!-- <div class="w-full flex flex-col justify-start items-start">
                             <div class="w-full flex justify-between items-center">
                                 <span class="font-semibold uppercase">Added Barangays</span>
                                 <Popover>
@@ -360,7 +362,7 @@
                             <div class="w-full flex flex-col justify-start items-start ml-4">
                                 <span v-for="barangay in event.barangays" class="font-light">{{ barangay.barangay_name }}</span>
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </CardContent>
