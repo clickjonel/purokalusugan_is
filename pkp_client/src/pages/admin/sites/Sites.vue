@@ -69,6 +69,18 @@ onMounted(() => {
   fetchSites()
 })
 
+function determineStatusColor(color:number){
+  let appliedColor = "";
+  switch(color){
+    case 1: appliedColor = "bg-blue-200 text-blue-800";break;
+    case 2: appliedColor = "bg-yellow-200 text-yellow-800";break;
+    case 3: appliedColor = "bg-orange-200 text-orange-800";break;
+    case 4: appliedColor = "bg-green-200 text-green-800";break;
+    case 5: appliedColor = "bg-green-400 text-green-900";break;
+    default: appliedColor = "bg-black";break;
+  }
+  return appliedColor;
+}
 function fetchSites() {
   axios.get<{ data: PkpSite[] }>('/site/list')
     .then((response) => {
@@ -213,19 +225,25 @@ async function removeSite(id?: number) {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
+              <TableHead>Province</TableHead>
+              <TableHead>Municipality</TableHead>
+              <TableHead>Barangay</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Coordinates (Lat/Long)</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead>Sitio/Purok</TableHead>
               <TableHead>Targets</TableHead>
               <TableHead>Population</TableHead>
-              <TableHead>Households</TableHead>
+              <TableHead>Households</TableHead>              
+              <TableHead>Status</TableHead>
               <TableHead class="text-end">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow v-for="site in sites" :key="site.site_id">
               <TableCell>{{ site.site_id }}</TableCell>
+              <TableCell>{{ site.barangay.municipality.province.province_name }}</TableCell>
+              <TableCell>{{ site.barangay.municipality.municipality_name }}</TableCell>
+              <TableCell>{{ site.barangay.barangay_name }}</TableCell>
               <TableCell>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -246,13 +264,13 @@ async function removeSite(id?: number) {
                 </Popover>
               </TableCell>
               <TableCell>{{ site.latitude }}, {{ site.longitude }}</TableCell>
-              <TableCell>{{ site.site_status }} ({{ siteStatusLabels[site.site_status] }})</TableCell>
               <TableCell>{{ site.total_no_sitio_purok }} ({{ site.no_purok }} Purok, {{ site.no_sitio }} Sitio)
               </TableCell>
               <TableCell>{{ site.total_target_sitio_purok }} ({{ site.target_purok }} Purok, {{ site.target_sitio }}
                 Sitio)</TableCell>
-              <TableCell>{{ site.population ?? '-' }}</TableCell>
-              <TableCell>{{ site.no_household ?? '-' }}</TableCell>
+                <TableCell>{{ site.population ?? '-' }}</TableCell>
+                <TableCell>{{ site.no_household ?? '-' }}</TableCell>              
+                <TableCell :class="determineStatusColor(site.site_status)">{{ site.site_status }} ({{ siteStatusLabels[site.site_status] }})</TableCell>
               <TableCell class="w-full flex justify-end items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
