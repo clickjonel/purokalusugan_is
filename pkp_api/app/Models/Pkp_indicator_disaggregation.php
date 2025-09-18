@@ -12,6 +12,9 @@ class Pkp_indicator_disaggregation extends Model
         'indicator_id',
         'disaggregation_id'
     ];
+
+    public $timestamps = false;
+    
     protected $primaryKey = 'indicator_disaggregation_id';
    public function indicator()
     {

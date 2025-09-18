@@ -61,9 +61,11 @@ Route::group([
     Route::post('/create', [PkpIndicatorController::class, 'createIndicator']);
     Route::get('/list', [PkpIndicatorController::class, 'getIndicators']);
     Route::get('/find', [PkpIndicatorController::class, 'getIndicator']);
-    Route::put('/update', [PkpIndicatorController::class, 'updateIndicator']);
+    Route::post('/update', [PkpIndicatorController::class, 'updateIndicator']);
     Route::delete('/delete', [PkpIndicatorController::class, 'deleteIndicator']);
     Route::put('/status', [PkpIndicatorController::class, 'updateStatusOfProgram']);
+    Route::delete('/disaggregation/remove', [PkpIndicatorController::class, 'removeDisaggregationOnIndicator']);
+    Route::post('/disaggregation/add', [PkpIndicatorController::class, 'addIndicatorDisaggregations']);
 });
 
 Route::group([
@@ -85,8 +87,10 @@ Route::group([
     Route::post('/create', [PkpDisaggregationController::class, 'createDisaggregation']);
     Route::get('/list', [PkpDisaggregationController::class, 'getDisaggregations']);
     Route::put('/update', [PkpDisaggregationController::class, 'updateDisaggregation']);
-    Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']);    
+    Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']); 
+    Route::get('search/name',[PkpDisaggregationController::class,'searchDisaggregationByName']);
 });
+
 Route::group([
     'prefix' => 'indicator/value',
     // 'middleware' => 'auth:sanctum'

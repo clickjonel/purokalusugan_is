@@ -1,548 +1,191 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import axios from "@/axios/axios";
+import { onMounted, ref } from "vue"
+import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2, Split } from "lucide-vue-next";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-    Combobox,
-    ComboboxAnchor,
-    ComboboxEmpty,
-    ComboboxGroup,
-    ComboboxInput,
-    ComboboxItem,
-    ComboboxItemIndicator,
-    ComboboxList,
-} from '@/components/ui/combobox'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input'
+import { Search,EllipsisVertical,UserRoundCog,UserLock } from "lucide-vue-next"
+import { toast } from 'vue-sonner'
+import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
+import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger } from '@/components/ui/dialog'
+import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from '@/components/ui/card'
+import SelectProgram from "@/components/selections/SelectProgram.vue";
 import { useRouter } from "vue-router";
-import { toast } from "vue-sonner";
+import SelectIndicatorScope from "@/components/selections/SelectIndicatorScope.vue";
 
-const router = useRouter();
+const router = useRouter()
+var searchKeyword = ref('')
+
 const indicators = ref<Indicator[]>([]);
-const currentList = ref<Indicator[]>([]);
-const programs = ref<Program[]>([]);
-const selectedProgram = ref<Program | undefined>()
-const disaggregations = ref<Disaggregation[]>([]);
-const indicatorDisaggregations = ref<IndicatorDisaggregation[]>([]);
-const selectedDisaggregations = ref<number[]>([]);
-const indicatorCode = ref();
-let searchKeyword = ref("");
-let errorDetail = ref("");
-let isCreateModalOpen = ref(false);
-let isDeleteModalOpen = ref(false);
-let idToDelete = ref(0);
-let indicatorId = ref(0);
-let recordStatus = ref("");
-let isEditModalOpen = ref(false);
-let isStatusModalOpen = ref(false);
-let isSelectIndicatorDisaggregationOpen = ref(false);
-let toEdit = ref<Indicator>({
-    indicator_id: 0,
-    program_id: 0,
-    indicator_code: "",
-    indicator_name: "",
-    indicator_description: "",
-    indicator_status: true,
-    indicator_scope: 0
-});
 
-interface Indicator {
-    indicator_id: number,
-    program_id: number,
-    indicator_code: any,
-    indicator_name: string,
-    indicator_description: string,
-    indicator_status: boolean,
-    indicator_scope: number
-}
-
-const indicator = ref<Indicator>({
-    indicator_id: 0,
-    program_id: 0,
-    indicator_code: "",
-    indicator_name: "",
-    indicator_description: "",
-    indicator_status: true,
-    indicator_scope: 0
+const modal = ref({
+    create:{
+        show:false
+    }
 })
 
-interface Program {
-    program_id: number;
-    program_name: string;
-    program_code: any;
-    program_status: boolean;
-}
 
-const program = ref<Program>({
-    program_id: 0,
-    program_name: "",
-    program_code: "",
-    program_status: true,
+const indicator = ref<{
+    program: Program | null;
+    indicator_name: string;
+    indicator_scope: string;
+    indicator_description: string;
+    indicator_status: string | number;
+    indicator_code: string;
+}>({
+    program: null,
+    indicator_name: '',
+    indicator_scope: '',
+    indicator_description: '',
+    indicator_status: '',
+    indicator_code: ''
 });
-interface Disaggregation {
-    disaggregation_id: number;
-    disaggregation_code: number;
-    disaggregation_name: string;
-}
-interface IndicatorDisaggregation {
-    indicator_disaggregation_id: number;
-    indicator_id: number;
-    disaggregation_id: number;
-}
 
-const toggleSelection = (id: number, checked: boolean) => {
-    if (checked) {
-        if (!selectedDisaggregations.value.includes(id)) {
-            selectedDisaggregations.value.push(id);
-        }
-    } else {
-        selectedDisaggregations.value = selectedDisaggregations.value.filter((item) => item !== id);
-    }
-};
-
-function search() {
-    const searchTerm = searchKeyword.value.toLowerCase();
-    const searchedData = indicators.value.filter(indicator => {
-        const name = indicator.indicator_name.toLowerCase();
-        return name.includes(searchTerm);
-    });
-    currentList.value = searchedData;
-}
-function handleClose() {
-    isCreateModalOpen.value = false;
-}
-
-function explainError(error: string) {
-    if (error.includes("Integrity constraint violation")) {
-        errorDetail.value =
-            "The program code you entered already exists. Please enter another!";
-    }
-    return errorDetail;
-}
-function showStatusLabel(status: boolean) {
-    if (status == true) {
-        return "Active"
-    }
-    if (status == false) {
-        return "Inactive"
-    }
-    return "Unknown"
-}
-function determineStatusColor(status: boolean) {
-    if (status == true) {
-        return "text-green-700"
-    }
-    if (status == false) {
-        return "text-red-800"
-    }
-    return "Unknown"
-}
-function displayProgramName(id: number) {
-    const obtainedProgram = programs.value.filter(program => id == program.program_id);
-    return obtainedProgram[0].program_name;
-}
-function showIndicatorScope(scope: number) {
-    let result = "";
-    switch (scope) {
-        case 1: result = "Individual"; break;
-        case 2: result = "Household"; break;
-        default: result = "Undefined"; break;
-    }
-    return result;
-}
-function confirmDelete() {
-    axios
-        .delete("/indicator/delete", {
-            data: {
-                program_id: idToDelete.value,
-            },
-        })
-        .then((response) => {
-            console.log(response.data);
-            toast("record deleted successfully!", {
-                description: response.data.message,
-                action: {
-                    label: "Close",
-                    onClick: () => toast.dismiss(),
-                },
-            });
-            fetchList();
-            isDeleteModalOpen.value = false;
-        })
-        .catch((error) => {
-            console.error(error.response.data);
-            if (error.response) {
-                toast("Failed to delete record", {
-                    description: error.response.data.message,
-                    action: {
-                        label: "Close",
-                        onClick: () => toast.dismiss(),
-                    },
-                });
-            }
-            isDeleteModalOpen.value = false;
-        });
-}
-
-function confirmEdit() {
-    console.log('toEdit', toEdit)
-    axios
-        .put("/indicator/update", {
-            indicator_id: toEdit.value.indicator_id,
-            program_id: toEdit.value.program_id,
-            indicator_code: toEdit.value.indicator_code,
-            indicator_name: toEdit.value.indicator_name,
-            indicator_description: toEdit.value.indicator_description,
-            indicator_status: toEdit.value.indicator_status,
-            indicator_scope: toEdit.value.indicator_scope,
-        })
-        .then((response) => {
-            console.log(response.data);
-            toast("Record updated successfully!", {
-                description: response.data.message,
-                action: {
-                    label: "Close",
-                    onClick: () => toast.dismiss(),
-                },
-            });
-            fetchList();
-            isEditModalOpen.value = false;
-        })
-        .catch((error) => {
-            console.error(error.response.data);
-            if (error.response) {
-                toast("Failed to update program", {
-                    description: error.response.data.message,
-                    action: {
-                        label: "Close",
-                        onClick: () => toast.dismiss(),
-                    },
-                });
-            }
-        });
-}
-function generateIndicatorCode() {
-    const prefix = selectedProgram.value?.program_code;
-    const midFix = "IND";
-    const dash = "-";
-    const date = new Date();
-    const year = date.getFullYear().toString().slice(2);
-    let postfix = "";
-    let totalIndicatorsPlusOne = indicators.value.length + 1;
-    postfix += String(totalIndicatorsPlusOne).padStart(4, '0');
-    const generatedCode = prefix + dash + midFix + dash + year + dash + postfix;
-    indicatorCode.value = generatedCode;
-}
-function handleCreate() {
-    if (indicator.value.indicator_code == '') {
-        indicator.value.indicator_code = indicatorCode;
-    }
-    if (selectedProgram.value) {
-        indicator.value.program_id = selectedProgram.value.program_id;
-        axios
-            .post("/indicator/create", indicator.value)
-            .then((response) => {
-                console.log(response.data);
-                isCreateModalOpen.value = false;
-                router.push({ path: "/admin/indicators" });
-                toast("Record created successfully!", {
-                    description: response.data.message,
-                    action: {
-                        label: "Close",
-                        onClick: () => toast.dismiss(),
-                    },
-                });
-                fetchList();
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-                if (error.response) {
-                    toast("Failed with errors", {
-                        description: explainError(error.response.data.message),
-                        action: {
-                            label: "Close",
-                            onClick: () => toast.dismiss(),
-                        },
-                    });
-                }
-            })
-            .finally(() => { });
-    } else {
-        toast("Failed with errors", {
-            description: "Please select a program",
-            action: {
-                label: "Close",
-                onClick: () => toast.dismiss(),
-            },
-        });
-    }
-}
-function handleEdit(record: Indicator) {
-    toEdit.value = { ...record };
-    isEditModalOpen.value = true;
-}
-function handleSelectIndicatorDisaggregation(indicator_id: number) {
-    indicatorId.value = indicator_id;
-    isSelectIndicatorDisaggregationOpen.value = true;
-}
-function handleStatus(record: Indicator, status: string) {
-    if (status == "deactivate") {
-        toEdit.value = { ...record, indicator_status: false }
-        recordStatus.value = "Deactivate";
-    }
-    if (status == "activate") {
-        toEdit.value = { ...record, indicator_status: true }
-        recordStatus.value = "Activate";
-    }
-    isStatusModalOpen.value = true;
-    console.log('details here', toEdit)
-}
-function confirmStatusUpdate() {
-    axios
-        .put("/indicator/status", {
-            indicator_id: toEdit.value.indicator_id,
-            indicator_status: toEdit.value.indicator_status,
-        })
-        .then((response) => {
-            console.log(response.data);
-            toast("Record updated successfully!", {
-                description: response.data.message,
-                action: {
-                    label: "Close",
-                    onClick: () => toast.dismiss(),
-                },
-            });
-            fetchList();
-            isStatusModalOpen.value = false;
-        })
-        .catch((error) => {
-            console.error(error.response.data);
-            if (error.response) {
-                toast("Failed to update record", {
-                    description: error.response.data.message,
-                    action: {
-                        label: "Close",
-                        onClick: () => toast.dismiss(),
-                    },
-                });
-            }
-        });
-}
-function handleCreateIndicatorDisaggregation() {
-    let object = { indicator_id: 0, disaggration_id: 0 };
-    for (let i = 0; i < selectedDisaggregations.value.length; i++) {
-        let dataToSave = {
-            ...object,
-            indicator_id: indicatorId.value,
-            disaggregation_id: selectedDisaggregations.value[i]
-        }
-        axios
-            .post("/indicator/disaggregation/create", dataToSave)
-            .then((response) => {
-                console.log(response.data);
-                isCreateModalOpen.value = false;
-                router.push({ path: "/admin/indicators" });
-                toast("Record created successfully!", {
-                    description: response.data.message,
-                    action: {
-                        label: "Close",
-                        onClick: () => toast.dismiss(),
-                    },
-                });
-                fetchList();
-            })
-            .catch((error) => {
-                console.error(error.response.data);
-                if (error.response) {
-                    toast("Failed with errors", {
-                        description: explainError(error.response.data.message),
-                        action: {
-                            label: "Close",
-                            onClick: () => toast.dismiss(),
-                        },
-                    });
-                }
-            })
-            .finally(() => { });
-    }
-    isSelectIndicatorDisaggregationOpen.value = false;
-}
-function displayDisaggregationsForThisIndicator(indicator_id: number) {
-    let result = [];
-    const listNeeded = indicatorDisaggregations.value.filter(list => indicator_id === list.indicator_id);
-    for (let i = 0; i < listNeeded.length; i++) {
-        for (let j = 0; j < disaggregations.value.length; j++) {
-            if (disaggregations.value[j].disaggregation_id === listNeeded[i].disaggregation_id) {
-                result.push(disaggregations.value[j].disaggregation_name);
-            }
-        }
-    }
-    return result;
-}
-
-const fetchList = () => {
-    axios
-        .get("/indicator/list")
-        .then((response) => {
-            indicators.value = response.data.data;
-            currentList.value = response.data.data;
-            console.log("indicators", indicators.value);
-        })
-        .catch((error) => {
-            console.error("Error fetching indicators:", error);
-        });
-};
-
-const fetchPrograms = () => {
-    axios
-        .get("/program/list")
-        .then((response) => {
-            programs.value = response.data.data;
-            console.log("programs here", programs.value);
-        })
-        .catch((error) => {
-            console.error("Error fetching programs:", error);
-        });
-};
-const fetchDisaggregations = () => {
-    axios
-        .get("/disaggregation/list")
-        .then((response) => {
-            disaggregations.value = response.data.data;
-            console.log("disaggregations here", disaggregations.value);
-        })
-        .catch((error) => {
-            console.error("Error fetching programs:", error);
-        });
-};
-const fetchIndicatorDisaggregations = () => {
-    axios
-        .get("/indicator/disaggregation/list")
-        .then((response) => {
-            indicatorDisaggregations.value = response.data.data;
-            console.log("indicator disaggregations here", indicatorDisaggregations.value);
-        })
-        .catch((error) => {
-            console.error("Error fetching programs:", error);
-        });
-};
 
 onMounted(() => {
-    fetchList();
-    fetchPrograms();
-    fetchDisaggregations();
-    fetchIndicatorDisaggregations();
-});
+    fetchIndicators()
+})
+
+function fetchIndicators(){
+    axios.get('/indicator/list')
+    .then((response) => {
+        indicators.value = response.data.data
+        console.log(indicators.value)
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+    .finally(() => {
+
+    })
+}
+
+function saveIndicator(){
+    const formattedIndicator = formatIndicator()
+    axios.post('/indicator/create',formattedIndicator)
+    .then((response) => {
+        toast('Action Successfull', {
+            description: response.data.message,
+            action: {
+                label: 'Close',
+                onClick: () => toast.dismiss(),
+            },
+        })
+        fetchIndicators()
+    })
+    .catch((error) => {
+        if (error.response) {
+            toast('Failed With Errors', {
+                description: error.response.data.message,
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            })
+        }
+    })
+    .finally(() => {
+
+    })
+}
+
+function formatIndicator(){
+    const formattedIndicator:IndicatorFormatted = {
+        program_id:indicator.value.program?.program_id,
+        indicator_name:indicator.value.indicator_name,
+        indicator_scope:Number(indicator.value.indicator_scope),
+        indicator_description:indicator.value.indicator_description,
+        indicator_status:Number(indicator.value.indicator_status),
+        indicator_code:indicator.value.indicator_code
+    }
+
+    return formattedIndicator;
+}
+
+
+interface Indicator {
+    program:Program|null
+    indicator_id:number
+    disaggregations:Disaggregation[]
+    indicator_name:string
+    indicator_scope:number|string
+    indicator_description:string
+    indicator_status:number
+    indicator_code:string
+    indicator_scope_name:string
+    indicator_status_name:string
+}
+
+interface IndicatorFormatted {
+    program_id:number|undefined
+    indicator_name:string
+    indicator_scope:number
+    indicator_description:string
+    indicator_status:number
+    indicator_code:string
+}
+
+interface Program {
+    program_name:string
+    program_id:number
+}
+
+interface Disaggregation {
+    disaggregation_name:string
+    disaggregation_id:number
+}
+
+
 </script>
+
+
 <template>
     <div class="w-full h-full flex flex-col justify-between items-start gap-2 p-2">
         <!-- header -->
         <div class="w-full flex justify-between items-center p-2 border">
             <div class="relative items-center">
-                <Input v-model="searchKeyword" id="search" type="text" placeholder="Search Indicator Name" class="pl-8"
-                    @input="search" />
+                <Input v-model="searchKeyword" type="text" placeholder="Search Keyword" class="pl-8"/>
                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <Button @click="isCreateModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create</Button>
+
+            <Button @click="modal.create.show = true" variant="default" size="sm" class="cursor-pointer"> Create Indicator </Button>
         </div>
 
         <!-- table -->
         <div class="w-full h-full flex flex-col jusitfy-start items-start border">
-            <div class="w-full h-[600px] overflow-y-scroll">
-                <Table>
+            <div class="w-full h-[640px] overflow-y-scroll">
+                <Table class="w-full">
                     <TableHeader>
-                        <TableRow>
-                            <TableHead>Id</TableHead>
-                            <TableHead>Program Id</TableHead>
-                            <TableHead>Indicator Code</TableHead>
+                        <TableRow class="divide-x">
                             <TableHead>Indicator Name</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Scope</TableHead>
+                            <TableHead>Program</TableHead>
+                            <TableHead>Indicator Scope</TableHead>
+                            <TableHead>Indicator Status</TableHead>
                             <TableHead>Disaggregations</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead class="text-right">Action</TableHead>
+                            <TableHead class="text-left">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="indicator in currentList" class="table-fixed w-full">
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                indicator.indicator_id }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                indicator.program_id }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                indicator.indicator_code }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                indicator.indicator_name }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                indicator.indicator_description }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">{{
-                                showIndicatorScope(indicator.indicator_scope) }}</TableCell>
-                            <TableCell class="max-w-[150px] text-wrap break-words whitespace-normal">                                
-                                <div class="flex flex-col"
-                                    v-for="item in displayDisaggregationsForThisIndicator(indicator.indicator_id)">
-                                    <span>{{ item }}</span>
+                        <TableRow v-for="indicator in indicators" class="text-xs divide-x">
+                            <TableCell class="max-w-[100px] whitespace-normal break-words">{{indicator.indicator_name }}</TableCell>
+                            <TableCell class="max-w-[100px] whitespace-normal break-words">{{indicator.program?.program_name }}</TableCell>
+                            <TableCell class="max-w-[100px] whitespace-normal break-words">{{indicator.indicator_scope_name }}</TableCell>
+                            <TableCell class="max-w-[100px] whitespace-normal break-words">{{indicator.indicator_status_name }}</TableCell>
+                            <TableCell class="max-w-[100px] whitespace-normal break-words">
+                                <div class="flex flex-col gap-1">
+                                    <span
+                                        v-for="disaggregation in indicator.disaggregations"
+                                        :key="disaggregation.disaggregation_id"
+                                        class="break-all text-xs"
+                                    >
+                                        {{ disaggregation.disaggregation_name }}
+                                    </span>
                                 </div>
                             </TableCell>
-                            <TableCell :class=determineStatusColor(indicator.indicator_status)>{{
-                                showStatusLabel(indicator.indicator_status) }}</TableCell>
-                            <TableCell class="w-full flex justify-end items-center gap-2">
-                                <Popover>
-                                    <PopoverTrigger>
-                                        <Button variant="ghost" size="icon" class="cursor-pointer">
-                                            <EllipsisVertical class="h-4 w-4" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        <div class="flex flex-col gap-1">
-                                            <Button variant="ghost" size="sm"
-                                                class="cursor-pointer text-xs flex justify-start items-center gap-1"
-                                                @click="handleEdit(indicator)">
-                                                <Pencil class="h-[1rem] w-[1rem]" />
-                                                Edit
-                                            </Button>
-                                            <Button @click="handleSelectIndicatorDisaggregation(indicator.indicator_id)"
-                                                variant="ghost"
-                                                class="cursor-pointer text-xs flex justify-start items-center gap-1"
-                                                size="sm">
-                                                <Split class="h-[1rem] w-[1rem]" />Disaggregations
-                                            </Button>
-                                            <div class="ml-2 flex items-center justify-start">
-                                                <XCircle v-if="indicator.indicator_status" class="h-[1rem] w-[1rem]" />
-                                                <CheckCircle2 v-else class="h-[1rem] w-[1rem]" />
-                                                <Button variant="ghost" size="sm"
-                                                    :class="determineStatusColor(!indicator.indicator_status)"
-                                                    @click="handleStatus(indicator, indicator.indicator_status ? 'deactivate' : 'activate')">
-                                                    {{ indicator.indicator_status ? 'Deactivate' : 'Activate' }}
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
+                            <TableCell class="flex justify-start">
+                               <Button @click="router.push({path:`/indicator/update/${indicator.indicator_id}`})" variant="outline" size="sm" class="justify-start text-xs text-center cursor-pointer hover:bg-sky-200">Edit Indicator</Button>
                             </TableCell>
                         </TableRow>
                     </TableBody>
@@ -555,186 +198,44 @@ onMounted(() => {
             <span>Pagination Here</span>
         </div>
     </div>
-    <Dialog v-model:open="isCreateModalOpen">
-        <DialogTrigger />
-        <DialogContent>
+
+    <Dialog v-model:open="modal.create.show">
+        <DialogContent class="font-poppins sm:max-w-[500px] md:max-w-[1000px] lg:max-w-[1000px]">
             <DialogHeader>
-                <DialogTitle class="">Create an Indicator</DialogTitle>
-                <DialogDescription>You can create an indicator here. </DialogDescription>
+                <DialogTitle class=""></DialogTitle>
+                <DialogDescription></DialogDescription>
             </DialogHeader>
 
             <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
-                <form @submit.prevent="handleCreate" class="flex flex-col gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_name">Select a Program</label>
-                        <Combobox v-model="selectedProgram" by="program_id" class="w-100">
-                            <ComboboxAnchor>
-                                <div class="relative w-full items-center">
-                                    <ComboboxInput class="pl-1 max-w-xl"
-                                        :display-value="(val) => val?.program_name ?? ''"
-                                        placeholder="Select program..." />
-                                </div>
-                            </ComboboxAnchor>
+                <Card class="w-full">
+                    <CardHeader>
+                        <CardTitle>Create Indicator</CardTitle>
+                        <CardDescription>Fill up the form then click Save Indicator. All fields are required.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="w-full flex flex-col justify-start items-start gap-4 p-4 font-poppins">
 
-                            <ComboboxList>
-                                <ComboboxEmpty>No program found.</ComboboxEmpty>
-                                <ComboboxGroup class="h-60 overflow-y-scroll">
-                                    <ComboboxItem v-for="program in programs" :key="program.program_id"
-                                        :value="program">
-                                        {{ program.program_name }}
-                                        <ComboboxItemIndicator>
-                                            <Check class="ml-auto size-4" />
-                                        </ComboboxItemIndicator>
-                                    </ComboboxItem>
-                                </ComboboxGroup>
-                            </ComboboxList>
-                        </Combobox>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_name">Indicator Name:</label>
-                        <Input type="text" id="indicator_name" placeholder="example: Nutrition"
-                            @input="generateIndicatorCode()" v-model="indicator.indicator_name" required />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_description">Indicator Description:</label>
-                        <Input type="text" id="indicator_description" placeholder="Description"
-                            v-model="indicator.indicator_description" />
-                    </div>
-                    <div class='w-100 flex'>
-                        <div class="w-100 flex-1 flex flex-col gap-2">
-                            <label for="indicator_scope">Indicator Scope:</label>
-                            <RadioGroup default-value="1" id="indicator_scope" v-model="indicator.indicator_scope">
-                                <div class="flex items-center space-x-2">
-                                    <RadioGroupItem id="r2" value="1" />
-                                    <Label for="1">Individual</Label>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <RadioGroupItem id="r3" value="2" />
-                                    <Label for="2">Household</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                        <div class="w-100 flex-1 flex flex-col gap-2">
-                            <label for="indicator_code">Indicator Code:</label>
-                            <Input class="bg-slate-200 " type="text" id="indicator_code"
-                                placeholder="leave blank to auto generated" v-model="indicator.indicator_code"
-                                readonly />
-                        </div>
-                    </div>
-                </form>
-            </div>
+                            <SelectProgram v-model="indicator.program"/>
 
-            <DialogFooter>
-                <Button type="submit" class="cursor-pointer hover:bg-red-500" @click="handleClose()">Cancel</Button>
-                <Button type="submit" class="cursor-pointer hover:bg-emerald-500 hover:text-black"
-                    @click="handleCreate">Submit</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
-
-    <Dialog v-model:open="isDeleteModalOpen">
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-            <DialogHeader>
-                <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogDescription>Are you sure you want to delete this record?</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-                <Button type="button" class="cursor-pointer" @click="isDeleteModalOpen = false">Cancel</Button>
-                <Button type="button" class="cursor-pointer bg-red-500 hover:bg-red-700 text-white"
-                    @click="confirmDelete">Delete</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
-
-    <Dialog v-model:open="isEditModalOpen">
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-            <DialogHeader>
-                <DialogTitle>Edit</DialogTitle>
-                <DialogDescription>Update details.</DialogDescription>
-            </DialogHeader>
-            <div class="w-full flex flex-col justify-start items-start gap-2 p-2">
-                <form @submit.prevent="confirmEdit" class="flex flex-col gap-4">
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_code">Indicator Code:</label>
-                        <Input type="text" class="bg-slate-200" id="indicator_code" placeholder="NP-0001"
-                            v-model="toEdit.indicator_code" hidden />
-                        <strong>{{ toEdit.indicator_code }}</strong>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="program_id">Program:</label>
-                        <Input type="number" class="bg-slate-200" id="program_id" v-model="toEdit.program_id" hidden />
-                        <strong>{{ displayProgramName(toEdit.program_id) }}</strong>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_name">Indicator Name:</label>
-                        <Input type="text" id="indicator_name" placeholder="example: Nutrition"
-                            v-model="toEdit.indicator_name" required />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_description">Indicator Description:</label>
-                        <Input type="text" id="indicator_description" placeholder="Description"
-                            v-model="toEdit.indicator_description" />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label for="indicator_scope">Indicator Scope:</label>
-                        <RadioGroup id="indicator_scope" v-model="toEdit.indicator_scope">
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r2" :value="1" />
-                                <Label for="r2">Individual</Label>
+                            <div class="w-full flex flex-col justify-start items-start gap-4">
+                                <Input v-model="indicator.indicator_name" type="text" placeholder="Indicator Name" class=""/>
+                                <Input v-model="indicator.indicator_description" type="text" placeholder="Indicator Description" class=""/>
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <RadioGroupItem id="r3" :value="2" />
-                                <Label for="r3">Household</Label>
-                            </div>
-                        </RadioGroup>
-                    </div>
-                    <!-- Add more fields as needed -->
-                </form>
-            </div>
-            <DialogFooter>
-                <Button type="button" class="cursor-pointer" @click="isEditModalOpen = false">Cancel</Button>
-                <Button type="button" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white"
-                    @click="confirmEdit">Save</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
 
-    <Dialog v-model:open="isStatusModalOpen">
-        <DialogContent class="font-poppins w-[20rem] md:max-w-[20rem] lg:max-w-[50rem]">
-            <DialogHeader>
-                <DialogTitle>Confirm Changes</DialogTitle>
-                <DialogDescription>Are you sure you want to {{ recordStatus }} this program?</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-                <Button type="button" class="cursor-pointer" @click="isStatusModalOpen = false">Cancel</Button>
-                <Button type="button" class="cursor-pointer text-white" @click="confirmStatusUpdate">{{ recordStatus
-                }}</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
-    <Dialog v-model:open="isSelectIndicatorDisaggregationOpen">
-        <DialogContent class="font-poppins w-[30] md:max-w-[30rem] lg:max-w-[50rem]">
-            <DialogHeader>
-                <DialogTitle>Select Disaggregations</DialogTitle>
-                <DialogDescription>Select Disaggregations here</DialogDescription>
-            </DialogHeader>
-            <div class="w-full flex-1">
-                <div class="w-full flex gap-2 flex-wrap">
-                    <div class="flex items-center" v-for="disaggregation in disaggregations"
-                        :key="disaggregation.disaggregation_id">
-                        <Input class="h-4 w-4" type="checkbox" :id="String(disaggregation.disaggregation_id)"
-                            :checked="selectedDisaggregations.includes(disaggregation.disaggregation_id)"
-                            @change="(event: InputEvent) => toggleSelection(disaggregation.disaggregation_id, (event.target as HTMLInputElement).checked)" />
-                        <label>{{ disaggregation.disaggregation_name }}</label>
-                    </div>
-                </div>
+                            <div class="w-full flex flex-col justify-start items-start gap-4">
+                                <SelectIndicatorScope v-model="indicator.indicator_scope"/>
+                            </div>
+
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button @click="saveIndicator" variant="default" class="cursor-pointer" size="sm">Create Indicator</Button>
+                    </CardFooter>
+                </Card>
             </div>
-            <DialogFooter>
-                <Button type="button" class="cursor-pointer"
-                    @click="isSelectIndicatorDisaggregationOpen = false">Cancel</Button>
-                <Button type="button" class="cursor-pointer text-white"
-                    @click="handleCreateIndicatorDisaggregation">Submit</Button>
-            </DialogFooter>
+
         </DialogContent>
     </Dialog>
+    
+
 </template>

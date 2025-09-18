@@ -53,4 +53,13 @@ class PkpDisaggregationController extends Controller
             'message' => 'Deleted successfully'
         ], 200);
     }
+
+    public function searchDisaggregationByName(Request $request): JsonResponse
+    {
+        $disaggregations = Pkp_disaggregation::where('disaggregation_name','LIKE',$request->disaggregation_name);
+
+        return response()->json([
+            'data' => $disaggregations
+        ]);
+    }
 }

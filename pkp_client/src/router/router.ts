@@ -14,7 +14,11 @@ import ManageMembers from '@/pages/admin/team/forms/ManageMembers.vue'
 import ManageScopes from '@/pages/admin/team/forms/ManageScopes.vue'
 import CreateEventForm from '@/pages/admin/events/forms/CreateEventForm.vue'
 import PopulateEventProgramIndicators from '@/pages/admin/events/forms/PopulateEventProgramIndicators.vue'
+<<<<<<< Updated upstream
 import Disaggregations from '@/pages/admin/disaggregations/Disaggregations.vue'
+=======
+import UpdateIndicator from '@/pages/admin/indicators/forms/UpdateIndicator.vue'
+>>>>>>> Stashed changes
 
 
 const router = createRouter({
@@ -47,6 +51,14 @@ const router = createRouter({
       path: '/event/populate/:id',
       name: 'Populate Event',
       component: PopulateEventProgramIndicators,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/indicator/update/:id',
+      name: 'Update Indicator',
+      component: UpdateIndicator,
       meta:{
         requiresAuth:true
       }

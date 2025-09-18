@@ -111,9 +111,7 @@
                                             <div v-for="indicator in program.indicators" class="w-full flex flex-col justify-start items-start gap-2 p-2">
                                                 <span class="text-xs">{{ indicator.indicator_name }}</span>
                                                 <div class="w-full flex justify-between items-center gap-2">
-                                                    <Input type="number" placeholder="Male"/>
-                                                    <Input type="number" placeholder="Female"/>
-                                                    <Input type="number" placeholder="4PS"/>
+                                                    <Input v-for="disaggregate in indicator.disaggregations" type="number" :placeholder="disaggregate.disaggregation_name"/>
                                                 </div>
                                             </div>
                                         </div>

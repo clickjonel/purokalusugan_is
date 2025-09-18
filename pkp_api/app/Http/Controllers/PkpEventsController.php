@@ -86,7 +86,7 @@ class PkpEventsController extends Controller
 
     public function fetchEvent(Request $request):JsonResponse
     {
-        $event = Pkp_events::with(['programs.indicators','barangays'])->find($request->event_id);
+        $event = Pkp_events::with(['programs.indicators.disaggregations','barangays'])->find($request->event_id);
 
         return response()->json([
             'event' => $event

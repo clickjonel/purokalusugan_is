@@ -17,6 +17,21 @@ class Pkp_indicator extends Model
     ];
     protected $primaryKey = 'indicator_id';
 
+    protected $appends = [
+        'indicator_scope_name',
+        'indicator_status_name',
+    ];
+
+    public function getIndicatorScopeNameAttribute()
+    {
+        return $this->indicator_scope === 1 ? 'Individual' : 'Household';
+    }
+
+    public function getIndicatorStatusNameAttribute()
+    {
+        return $this->indicator_status === 1 ? 'Active' : 'Deactivated';
+    }
+
     public function program()
     {
         return $this->belongsTo(Programs::class,'program_id','program_id');
@@ -24,6 +39,6 @@ class Pkp_indicator extends Model
 
     public function disaggregations()
     {
-        return $this->hasMany(Pkp_disaggregation::class,'disaggregation_id','disaggregation_id');
+       return $this->belongsToMany(Pkp_disaggregation::class, 'pkp_indicator_disaggregations', 'disaggregation_id', 'indicator_disaggregation_id');
     }
 }
