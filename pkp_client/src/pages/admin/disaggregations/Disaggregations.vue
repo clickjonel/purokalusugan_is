@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical, Pencil, XCircle, CheckCircle2 } from "lucide-vue-next";
+import { Search, EllipsisVertical, Pencil} from "lucide-vue-next";
 import {
     Dialog,
     DialogContent,
