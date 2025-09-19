@@ -12,7 +12,8 @@ class Pkp_indicator_values extends Model
         'event_id',
         'indicator_disaggregation_id',
         'value',
-        'remarks'
+        'remarks',
+        'barangay_id'
     ];
     protected $primaryKey = 'indicator_value_id';
 

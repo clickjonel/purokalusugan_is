@@ -18,24 +18,30 @@ class PkpDisaggregationSeeder extends Seeder
         $data = [
             [
                 'disaggregation_code' => 'DIS-25-01',
-                'disaggregation_name' => 'Male',
+                'disaggregation_name' => 'Total',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'disaggregation_code' => 'DIS-25-02',
-                'disaggregation_name' => 'Female',
+                'disaggregation_name' => 'Male',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'disaggregation_code' => 'DIS-25-03',
-                'disaggregation_name' => 'Not Identified',
+                'disaggregation_name' => 'Female',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'disaggregation_code' => 'DIS-25-04',
+                'disaggregation_name' => 'Not Identified',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'disaggregation_code' => 'DIS-25-05',
                 'disaggregation_name' => '4Ps',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -47,6 +53,7 @@ class PkpDisaggregationSeeder extends Seeder
                 'updated_at' => now(),
             ]
         ];
+        
         Pkp_disaggregation::insert($data);
     }
 }

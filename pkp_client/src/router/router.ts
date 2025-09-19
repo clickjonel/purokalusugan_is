@@ -16,6 +16,7 @@ import CreateEventForm from '@/pages/admin/events/forms/CreateEventForm.vue'
 import PopulateEventProgramIndicators from '@/pages/admin/events/forms/PopulateEventProgramIndicators.vue'
 import UpdateIndicator from '@/pages/admin/indicators/forms/UpdateIndicator.vue'
 import Disaggregations from '@/pages/admin/disaggregations/Disaggregations.vue'
+import UpdateEvent from '@/pages/admin/events/forms/UpdateEvent.vue'
 
 
 const router = createRouter({
@@ -40,6 +41,14 @@ const router = createRouter({
       path: '/event/create',
       name: 'Create Event',
       component: CreateEventForm,
+      meta:{
+        requiresAuth:true
+      }
+    },
+    {
+      path: '/event/update/:id',
+      name: 'Update Event',
+      component: UpdateEvent,
       meta:{
         requiresAuth:true
       }

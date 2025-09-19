@@ -3,7 +3,9 @@
     import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
     import { Button } from "@/components/ui/button";
     import axios from '@/axios/axios';
+    import { useRouter } from 'vue-router';
 
+    const router = useRouter()
     const disaggregations = ref<Disaggregation[]>([])
     const model = defineModel<Disaggregation[]>({
       default: []
@@ -74,7 +76,7 @@ const props = defineProps<{
         <PopoverContent class="w-[500px] p-0">
             <div class="w-full flex flex-col justify-start items-center p-2 gap-1">
                 <span @click="push(disaggregation)" v-for="disaggregation in disaggregations" class="w-full px-2 py-1 cursor-pointer hover:bg-gray-100 rounded-md" :class="isSelected(disaggregation) ? 'bg-gray-100' : 'bg-white' ">{{ disaggregation.disaggregation_name }}</span>
-                <Button class="w-full font-poppins font-normal" variant="outline">Add New</Button>
+                <Button @click="router.push({path:'/admin/disaggregations'})" class="w-full font-poppins font-normal" variant="outline">Add New</Button>
                 <span class="text-xs w-full text-justify text-amber-600 font-light">#Note: If not in list, click "Add New" Button and you will be redirected to Disaggregations Page then Click Create. Be sure to save selected disaggregations before clicking the "Add New Button".</span>
             </div>
         </PopoverContent>

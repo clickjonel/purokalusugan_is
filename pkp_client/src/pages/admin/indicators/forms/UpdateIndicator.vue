@@ -122,7 +122,7 @@
     function saveIndicatorDisaggregations(){
         const selectedDisaggregationIds:number[] = selectedDisaggregations.value.map(d => d.disaggregation_id);
          axios.post('/indicator/disaggregation/add',{
-            indicator_id:route.params.id,
+            indicator_id:Number(route.params.id),
             disaggregation_ids:selectedDisaggregationIds
          })
         .then((response) => {
@@ -134,6 +134,7 @@
                 },
             })
             selectedDisaggregations.value = []
+            showDisaggregationSelection.value = false;
             fetchIndicator()
         })
         .catch((error) => {

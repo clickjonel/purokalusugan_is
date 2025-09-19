@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('disaggregation_id');
             $table->string('disaggregation_code');
             $table->string('disaggregation_name');
+            $table->boolean('totalable');
             $table->timestamps();
         });
     }

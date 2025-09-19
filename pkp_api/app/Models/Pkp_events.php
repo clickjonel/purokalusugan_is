@@ -18,7 +18,8 @@ class Pkp_events extends Model
         'event_partners',
         'event_date_start',
         'event_date_end',
-        'event_type',       
+        'event_type',     
+        'is_populated'  
     ];
     protected $primaryKey = 'event_id';
     protected $appends = [

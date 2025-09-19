@@ -49,6 +49,7 @@ interface Event {
     event_venue:string,
     event_fund_source:string,
     event_id:number
+    is_populated:number
 }
 
 
@@ -105,10 +106,10 @@ interface Event {
                                     </PopoverTrigger>
                                     <PopoverContent class="w-45 p-2">
                                         <div class="flex flex-col">
-                                            <Button variant="ghost" size="sm" class="justify-start text-xs">Edit</Button>
+                                            <Button @click="router.push({path:`/event/update/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Edit</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Barangays</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Programs</Button>
-                                            <Button @click="router.push({path:`/event/populate/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Populate Indicators</Button>
+                                            <Button v-if="!event.is_populated" @click="router.push({path:`/event/populate/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Populate Indicators</Button>
                                             <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">Delete</Button>
                                         </div>
                                     </PopoverContent>

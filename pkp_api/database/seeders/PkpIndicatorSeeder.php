@@ -283,7 +283,10 @@ class PkpIndicatorSeeder extends Seeder
             ]
         ];
 
-        Pkp_indicator::insert($data);
+       collect( $data)->each(function($indicator){
+             $indicator = Pkp_indicator::create($indicator);
+             $indicator->disaggregations()->attach([1]);
+       });
 
     }
 }

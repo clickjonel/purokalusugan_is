@@ -78,6 +78,7 @@ Route::group([
     Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
     Route::post('/save', [PkpEventsController::class, 'saveEvent']);   
     Route::get('/fetch', [PkpEventsController::class, 'fetchEvent']);   
+    Route::post('/populate', [PkpEventsController::class, 'populateEvent']);
 });
 
 Route::group([

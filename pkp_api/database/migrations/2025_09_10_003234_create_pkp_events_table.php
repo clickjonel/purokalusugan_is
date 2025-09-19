@@ -22,7 +22,8 @@ return new class extends Migration
             $table->decimal('event_actual_budget', 65, 2);
             $table->string('event_fund_source');
             $table->string('event_proponents');
-            $table->string('event_partners');           
+            $table->string('event_partners');       
+            $table->boolean('is_populated')->default(0);     
             $table->timestamps();
         });
 

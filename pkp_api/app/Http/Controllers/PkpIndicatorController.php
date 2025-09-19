@@ -28,6 +28,8 @@ class PkpIndicatorController extends Controller
             'indicator_status' => 1,
             'indicator_scope' => $validated['indicator_scope'],
         ]);
+        
+        $pkpIndicator->disaggregations()->attach([1]);
 
         return response()->json([
             'message' => 'Created successfully',
