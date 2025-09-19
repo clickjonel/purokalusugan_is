@@ -8,10 +8,11 @@ use App\Models\Pkp_indicator;
 use App\Models\Pkp_indicator_disaggregation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
 class PkpIndicatorController extends Controller
 {
+    use IndicatorTrait;
+
     use IndicatorTrait;
 
     // create
@@ -40,6 +41,7 @@ class PkpIndicatorController extends Controller
     public function getIndicators(): JsonResponse
     {
         $pkpIndicators = Pkp_indicator::with(['program','disaggregations'])->get();
+        $pkpIndicators = Pkp_indicator::with(['program','disaggregations'])->get();
         return response()->json([
             'message' => 'Indicators retrieved successfully',
             'data' => $pkpIndicators
@@ -51,6 +53,7 @@ class PkpIndicatorController extends Controller
         $validatedData = $request->validate([
             'indicator_id' => 'required|integer|exists:pkp_indicators,indicator_id',            
         ]);
+        $pkpIndicator = Pkp_indicator::with(['program','disaggregations'])->findOrFail($validatedData['indicator_id']);
         $pkpIndicator = Pkp_indicator::with(['program','disaggregations'])->findOrFail($validatedData['indicator_id']);
         return response()->json([
             'message' => 'Indicator retrieved successfully',
@@ -102,15 +105,6 @@ class PkpIndicatorController extends Controller
         ], 200);
     } 
 
-    public function removeDisaggregationOnIndicator(Request $request): JsonResponse
-    {
-        Pkp_indicator_disaggregation::find($request->indicator_disaggregation_id)->delete();
-
-        return response()->json([
-            'message' => 'Disaggregation Removed from Indicator'
-        ]);
-    }
-
     public function addIndicatorDisaggregations(Request $request): JsonResponse
     {
         $indicator = Pkp_indicator::find($request->indicator_id);
@@ -118,6 +112,17 @@ class PkpIndicatorController extends Controller
 
         return response()->json([
             'message' => 'Added Disaggregations to Indicator'
+        ]);
+    }
+    
+    
+
+    public function removeDisaggregationOnIndicator(Request $request): JsonResponse
+    {
+        Pkp_indicator_disaggregation::find($request->indicator_disaggregation_id)->delete();
+
+        return response()->json([
+            'message' => 'Disaggregation Removed from Indicator'
         ]);
     }
     
