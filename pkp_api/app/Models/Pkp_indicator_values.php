@@ -20,7 +20,13 @@ class Pkp_indicator_values extends Model
     public function joinEvent(){
         return $this->hasOne(Pkp_events::class,"event_id","event_id");
     }
-    // public function joinIndicatorDisaggregation(){
 
-    // }
+    public function indicatorDisaggregation(){
+        return $this->hasOne(Pkp_indicator_disaggregation::class,"indicator_disaggregation_id","indicator_disaggregation_id");
+    }
+
+    public function barangay(){
+        return $this->hasOne(Pkp_barangay::class,"barangay_id","barangay_id");
+    }
+   
 }

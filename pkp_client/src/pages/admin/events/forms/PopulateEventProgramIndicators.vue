@@ -184,7 +184,7 @@
                     onClick: () => toast.dismiss(),
                 },
             })
-            router.push({path:'admin/events'})
+            router.push({path:'/admin/events'})
           
         })
         .catch((error) => {

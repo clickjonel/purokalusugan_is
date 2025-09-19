@@ -9,34 +9,41 @@
     import axios from '@/axios/axios';
     import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from '@/components/ui/card'
     import { toast } from 'vue-sonner'
-    import { format } from 'date-fns';
-    import { useRouter } from "vue-router";
+    import { useRouter,useRoute } from "vue-router";
     import MultipleSelectProgams from "@/components/selections/MultipleSelectProgams.vue";
     import MultipleSelectBarangay from "@/components/selections/MultipleSelectBarangay.vue";
 
     const router = useRouter()
+    const route = useRoute()
 
-    const event = ref({})
+    const event = ref<Event>({})
 
 
     onMounted(()=>{
-        //fetchProvinces()
+        fetchEvent()
     })
 
-    function fetchProvinces(){
-         axios.get('/event/fetch')
-        .then((response) => {
-            event.value = response.data.data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-        .finally(() => {
+    async function fetchEvent(): Promise<void> {
+        try {
+            const response = await axios.get('/event/fetch', {
+                params: {
+                    event_id: route.params.id
+                }
+            });
 
-        })
+            event.value = response.data.event;
+            event.value.event_type = String(event.value.event_type)
+            console.log(event.value)
+        } catch (error) {
+            console.error('Error fetching event:', error);
+            toast.error('Failed to load event data');
+        }
     }
 
 
+    interface event {
+        event_type:string|number
+    }
 
 
 
@@ -121,38 +128,6 @@
                 </CardFooter>
             </Card>
 
-            <!-- <Card class="w-full">
-                <CardHeader>
-                    <CardTitle>Update Event Programs</CardTitle>
-                    <CardDescription>Update Event Details and other data related to event</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div class="w-full flex flex-col justify-start items-start gap-4 p-4 font-poppins">
-                      programs
-
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button variant="default" class="cursor-pointer" size="sm">Update Event Programs</Button>
-                </CardFooter>
-            </Card> -->
-
-             <!-- <Card class="w-full">
-                <CardHeader>
-                    <CardTitle>Update Event Barangays</CardTitle>
-                    <CardDescription>Update Event Details and other data related to event</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div class="w-full flex flex-col justify-start items-start gap-4 p-4 font-poppins">
-                      barangays
-
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button variant="default" class="cursor-pointer" size="sm">Update Event Barangays</Button>
-                </CardFooter>
-            </Card> -->
-
              <Card class="w-full">
                 <CardHeader>
                     <CardTitle>Update Event Values</CardTitle>
@@ -160,8 +135,12 @@
                 </CardHeader>
                 <CardContent>
                     <div class="w-full flex flex-col justify-start items-start gap-4 p-4 font-poppins">
-                      values
-
+                        <div v-for="value in event.values" class="w-full flex flex-col justify-start items-center gap-2 bg-sky-50 rounded0md shadow-md p-2">
+                            <span class="w-full text-left uppercase font-medium">Barangay {{ value.barangay.barangay_name }}</span>
+                            <span class="w-full text-left uppercase text-sm font-light">{{ value.indicator_disaggregation.indicator.indicator_name }}</span>
+                           <Input v-model="value.value" type="text" placeholder="Value" class="bg-white"/>
+                           <Input v-model="value.remarks" type="text" placeholder="Remarks" class="bg-white"/>
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter>

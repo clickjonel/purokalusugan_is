@@ -92,8 +92,24 @@ class PkpEventsController extends Controller
 
     public function fetchEvent(Request $request):JsonResponse
     {
-        $event = Pkp_events::with(['programs.indicators.disaggregations','barangays'])->find($request->event_id);
-
+        $event = Pkp_events::with(['programs.indicators.disaggregations','barangays','values.indicatorDisaggregation.indicator','values.barangay'])->find($request->event_id);
+    //    $event->grouped_values = collect($event->values)
+    //     ->groupBy('barangay_id')
+    //     ->map(function ($values, $barangayId) use ($event) {
+    //         $barangay = $event->barangays->firstWhere('barangay_id', $barangayId);
+    //         return [
+    //             'barangay' => $barangay,
+    //             'values' => $values->map(function ($value) {
+    //                 return [
+    //                     'indicator_disaggregation_id' => $value->indicator_disaggregation_id,
+    //                     'value' => $value->value,
+    //                     'remarks' => $value->remarks,
+    //                     'indicatorDisaggregation' => $value->indicatorDisaggregation,
+    //                 ];
+    //             }),
+    //         ];
+    //     })
+    //     ->values();
         return response()->json([
             'event' => $event
         ], 200);
