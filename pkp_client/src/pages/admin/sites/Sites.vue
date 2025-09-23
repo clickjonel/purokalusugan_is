@@ -71,7 +71,7 @@ onMounted(() => {
 })
 
 function search() {
-  const searchTerm = searchKeyword.value.toLowerCase();
+  const searchTerm = searchKeyword.value.toLowerCase().trim();
   const searchedData = sites.value.filter(item => {
     const record = item.barangay.barangay_name.toLowerCase();
     return record.includes(searchTerm);
@@ -95,7 +95,7 @@ function fetchSites() {
     .then((response) => {
       sites.value = response.data.data
       currentList.value = response.data.data;
-      console.log(response.data.data)
+      // console.log(response.data.data)
     })
     .catch((error) => {
       console.log(error)
@@ -236,7 +236,7 @@ async function removeSite(id?: number) {
 
     <!-- table -->
     <div class="w-full h-full flex flex-col justify-start items-start border">
-      <div class="w-full h-[600px] overflow-y-scroll">
+      <div class="w-full h-[700px] overflow-y-scroll">
         <Table>
           <TableHeader>
             <TableRow>
@@ -330,6 +330,7 @@ async function removeSite(id?: number) {
             <div>
               <label class="text-sm font-medium">Barangay</label>
               <BarangaySelector v-model="newSite.barangay_id" />
+              Selected Barangay ID: <b>{{ newSite.barangay_id }}</b>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>

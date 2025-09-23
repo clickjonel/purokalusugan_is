@@ -1,20 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue'
-import ProvinceCombobox from '@/components/ui/select/barangay_selection/ProvinceCombobox.vue'
-import MunicipalityCombobox from './MunicipalityCombobox.vue'
-import BarangayCombobox from './BarangayCombobox.vue'
-import axios from "@/axios/axios"
-import {
-  Drawer,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer"
+import { ref, watch, computed, nextTick } from "vue"
+import ProvinceCombobox from "@/components/ui/select/barangay_selection/ProvinceCombobox.vue"
+import MunicipalityCombobox from "./MunicipalityCombobox.vue"
+import BarangayCombobox from "./BarangayCombobox.vue"
 import { Button } from "@/components/ui/button"
-import { MapPin, ChevronRight } from 'lucide-vue-next'
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { MapPin, ChevronRight } from "lucide-vue-next"
 
 interface Province {
   province_id: number
@@ -33,16 +24,19 @@ interface SelectedLocation {
   barangayName?: string
 }
 
-const props = withDefaults(defineProps<{
-  modelValue?: number
-  regionId?: number
-  placeholder?: string
-  disabled?: boolean
-}>(), {
-  regionId: 14,
-  placeholder: 'Select Location',
-  disabled: false
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: number
+    regionId?: number
+    placeholder?: string
+    disabled?: boolean
+  }>(),
+  {
+    regionId: 14,
+    placeholder: "Select Location",
+    disabled: false,
+  }
+)
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: number | undefined): void
@@ -67,8 +61,6 @@ const isSelectionComplete = computed(() => {
   return selectedProvince.value && selectedMunicipality.value && selectedBarangayId.value
 })
 
-
-
 async function confirmSelection() {
   if (!isSelectionComplete.value) return
   isLoading.value = true
@@ -78,7 +70,7 @@ async function confirmSelection() {
       province: selectedProvince.value,
       municipality: selectedMunicipality.value,
       barangayId: selectedBarangayId.value,
-      barangayName: selectedBarangayName.value
+      barangayName: selectedBarangayName.value,
     }
 
     emit("locationSelected", locationData)
@@ -88,7 +80,7 @@ async function confirmSelection() {
       open.value = false
     }, 100)
   } catch (error) {
-    console.error('Error confirming selection:', error)
+    console.error("Error confirming selection:", error)
   } finally {
     isLoading.value = false
   }
@@ -101,34 +93,38 @@ function resetSelections() {
   selectedBarangayName.value = undefined
 }
 
+watch(
+  selectedProvince,
+  (newProvince) => {
+    if (!newProvince) return
+    selectedMunicipality.value = undefined
+    selectedBarangayId.value = undefined
+    selectedBarangayName.value = undefined
+  },
+  { flush: "post" }
+)
 
-watch(selectedProvince, (newProvince) => {
-  if (!newProvince) return
-  selectedMunicipality.value = undefined
-  selectedBarangayId.value = undefined
-  selectedBarangayName.value = undefined
-}, { flush: 'post' })
-
-watch(selectedMunicipality, (newMunicipality) => {
-  if (!newMunicipality) return
-  selectedBarangayId.value = undefined
-  selectedBarangayName.value = undefined
-}, { flush: 'post' })
+watch(
+  selectedMunicipality,
+  (newMunicipality) => {
+    if (!newMunicipality) return
+    selectedBarangayId.value = undefined
+    selectedBarangayName.value = undefined
+  },
+  { flush: "post" }
+)
 
 watch(selectedBarangayId, (newBarangayId) => {
   if (typeof newBarangayId === "number" && !Number.isNaN(newBarangayId)) {
     emit("update:modelValue", newBarangayId)
   }
-  console.log('selectedBarangayId', newBarangayId)
 })
-
-
 </script>
 
 <template>
   <div class="w-full max-w-sm">
-    <Drawer v-model:open="open">
-      <DrawerTrigger as-child>
+    <Popover v-model:open="open">
+      <PopoverTrigger as-child>
         <Button variant="outline" class="w-full justify-between text-left font-normal" :disabled="disabled"
           :aria-label="`Open location selector. Current selection: ${buttonText}`">
           <div class="flex items-center gap-2 truncate">
@@ -137,62 +133,62 @@ watch(selectedBarangayId, (newBarangayId) => {
           </div>
           <ChevronRight class="h-4 w-4 shrink-0 opacity-50" />
         </Button>
-      </DrawerTrigger>
+      </PopoverTrigger>
 
-      <DrawerContent class="bg-gray-100 rounded-t-[10px] max-h-[96%] fixed bottom-0 left-0 right-0">
-        <DrawerHeader class="text-left">
-          <DrawerTitle>Select Your Location</DrawerTitle>
+      <PopoverContent class="w-[360px] max-h-[480px] overflow-y-auto p-4 space-y-4">
+        <!-- Header -->
+        <div class="text-left">
+          <h3 class="font-semibold">Select Your Location</h3>
           <p class="text-sm text-muted-foreground">
             Choose your province, municipality, and barangay
           </p>
-        </DrawerHeader>
+        </div>
 
-        <div class="px-4 pb-4">
-          <div class="space-y-4 max-w-sm mx-auto">
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Province</label>
-              <ProvinceCombobox v-model="selectedProvince" :region-id="regionId" aria-label="Select province" />
-            </div>
+        <!-- Province -->
+        <div class="space-y-2 w-full">
+          <label class="text-sm font-medium">Province</label>
+          <ProvinceCombobox v-model="selectedProvince" :region-id="regionId" aria-label="Select province" />
+        </div>
 
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Municipality</label>
-              <MunicipalityCombobox v-model="selectedMunicipality" :province-id="selectedProvince?.province_id"
-                :disabled="!selectedProvince" aria-label="Select municipality" />
-            </div>
+        <!-- Municipality -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Municipality</label>
+          <MunicipalityCombobox v-model="selectedMunicipality" :province-id="selectedProvince?.province_id"
+            :disabled="!selectedProvince" aria-label="Select municipality" />
+        </div>
 
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Barangay</label>
-              <BarangayCombobox v-model="selectedBarangayId" :municipality-id="selectedMunicipality?.municipality_id"
-                :disabled="!selectedMunicipality" aria-label="Select barangay" />
-            </div>
+        <!-- Barangay -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Barangay</label>
+          <BarangayCombobox v-model="selectedBarangayId" :municipality-id="selectedMunicipality?.municipality_id"
+            :disabled="!selectedMunicipality" aria-label="Select barangay" />
+        </div>
 
-            <div v-if="isSelectionComplete" class="rounded-lg border bg-muted/50 p-3 text-sm" role="status"
-              aria-live="polite">
-              <div class="font-medium text-foreground mb-1">Selected Location:</div>
-              <div class="flex items-center gap-1 text-muted-foreground">
-                <span class="font-medium">{{ selectedProvince?.province_name }}</span>
-                <ChevronRight class="h-3 w-3" />
-                <span class="font-medium">{{ selectedMunicipality?.municipality_name }}</span>
-                <ChevronRight class="h-3 w-3" />
-                <span class="font-medium">{{ selectedBarangayName || `ID: ${selectedBarangayId}` }}</span>
-              </div>
-            </div>
+        <!-- Preview -->
+        <div v-if="isSelectionComplete" class="rounded-lg border bg-muted/50 p-3 text-sm" role="status"
+          aria-live="polite">
+          <div class="font-medium text-foreground mb-1">Selected Location:</div>
+          <div class="flex items-center gap-1 text-muted-foreground">
+            <span class="font-medium">{{ selectedProvince?.province_name }}</span>
+            <ChevronRight class="h-3 w-3" />
+            <span class="font-medium">{{ selectedMunicipality?.municipality_name }}</span>
+            <ChevronRight class="h-3 w-3" />
+            <span class="font-medium">{{ selectedBarangayName || `ID: ${selectedBarangayId}` }}</span>
           </div>
         </div>
 
-        <DrawerFooter class="flex-row gap-2">
-          <DrawerClose as-child>
-            <Button variant="outline" class="flex-1">
-              Cancel
-            </Button>
-          </DrawerClose>
+        <!-- Actions -->
+        <div class="flex gap-2 pt-2">
+          <Button variant="outline" class="flex-1" @click="() => { resetSelections(); open = false }">
+            Cancel
+          </Button>
           <Button @click="confirmSelection" :disabled="!isSelectionComplete || isLoading" class="flex-1"
             :aria-label="isSelectionComplete ? 'Confirm location selection' : 'Please complete your selection'">
             <span v-if="isLoading">Confirming...</span>
-            <span v-else>Confirm Selection</span>
+            <span v-else>Confirm</span>
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </PopoverContent>
+    </Popover>
   </div>
 </template>

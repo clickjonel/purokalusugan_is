@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { User, Lock, Eye, EyeOff } from "lucide-vue-next"
+import { User, Lock, Eye, EyeOff, LogIn, Map } from "lucide-vue-next"
 import axios from '@/axios/axios'
 import { useAuthStore } from "@/store/authStore"
 import { useRouter } from "vue-router"
@@ -22,17 +22,17 @@ const showPassword = ref(false)
 
 function handleLogin() {
 
-   axios.post('/login',credentials.value)
-    .then((response)=>{
-        store.setUser(response.data.user)
-        store.setToken(response.data.token)
-        store.isAuthenticated = true
-        router.push({path:'admin/dashboard'})
+  axios.post('/login', credentials.value)
+    .then((response) => {
+      store.setUser(response.data.user)
+      store.setToken(response.data.token)
+      store.isAuthenticated = true
+      router.push({ path: 'admin/dashboard' })
     })
-    .catch((error)=>{
+    .catch((error) => {
       console.log(error)
     })
-    .finally(()=>{
+    .finally(() => {
 
     })
 
@@ -92,8 +92,16 @@ interface credentials {
           <!-- Submit -->
           <Button type="submit" class="w-full bg-blue-600 hover:bg-blue-700">
             Sign In
+            <LogIn class="w-4 h-4" />
           </Button>
+          <hr />
         </form>
+        <router-link to="/dashboard">
+          <Button class="w-full bg-green-600 hover:bg-green-700">
+            Geographical Dashboard
+            <Map class="w-4 h-4" />
+          </Button>
+        </router-link>
       </CardContent>
 
       <CardFooter class="text-center text-xs text-gray-500">

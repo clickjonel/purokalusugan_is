@@ -71,8 +71,8 @@ watch(
 
 <template>
   <div class="w-full">
-    <Combobox v-model="selectedProvince" by="province_id" :disabled="isDisabled">
-      <ComboboxAnchor>
+    <Combobox v-model="selectedProvince" by="province_id" :disabled="isDisabled" class='w-full'>
+      <ComboboxAnchor class="w-full border rounded-md">
         <div class="relative w-full items-center">
           <!-- Consistent padding and added loading icon -->
           <ComboboxInput class="pl-1" :display-value="(val) => val?.province_name ?? ''"

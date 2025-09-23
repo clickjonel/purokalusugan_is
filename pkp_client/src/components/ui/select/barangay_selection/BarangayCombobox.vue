@@ -75,7 +75,7 @@ watch(
 
 <template>
   <Combobox v-model="selectedBarangay" by="barangay_id">
-    <ComboboxAnchor>
+    <ComboboxAnchor class="w-full border rounded-md">
       <div class="relative w-full items-center">
         <ComboboxInput class="pl-1 max-w-xl" :display-value="val => val?.barangay_name ?? ''"
           placeholder="Select barangay..." />
