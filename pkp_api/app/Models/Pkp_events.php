@@ -18,7 +18,8 @@ class Pkp_events extends Model
         'event_partners',
         'event_date_start',
         'event_date_end',
-        'event_type',       
+        'event_type',     
+        'is_populated'  
     ];
     protected $primaryKey = 'event_id';
     protected $appends = [
@@ -51,6 +52,11 @@ class Pkp_events extends Model
     public function barangays()
     {
         return $this->belongsToMany(Pkp_barangay::class, 'pkp_event_barangays', 'event_id', 'barangay_id');
+    }
+
+    public function values()
+    {
+        return $this->hasMany(Pkp_indicator_values::class,'event_id','event_id');
     }
 
 }

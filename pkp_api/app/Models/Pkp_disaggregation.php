@@ -16,4 +16,14 @@ class Pkp_disaggregation extends Model
     public $timestamps = false;
 
     protected $primaryKey = 'disaggregation_id';
+
+    public function indicator()
+    {
+        return $this->belongsToMany(
+            Pkp_indicator::class,
+            'pkp_indicator_disaggregations',
+            'disaggregation_id',  // Foreign key in the pivot table for Pkp_disaggregation
+            'indicator_id'        // Foreign key in the pivot table for Pkp_indicator
+        );
+    }
 }

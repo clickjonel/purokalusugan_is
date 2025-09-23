@@ -39,6 +39,6 @@ class Pkp_indicator extends Model
 
     public function disaggregations()
     {
-       return $this->belongsToMany(Pkp_disaggregation::class, 'pkp_indicator_disaggregations', 'disaggregation_id', 'indicator_disaggregation_id');
+       return $this->belongsToMany(Pkp_disaggregation::class, 'pkp_indicator_disaggregations', 'indicator_id', 'disaggregation_id')->withPivot(['indicator_disaggregation_id']);
     }
 }
