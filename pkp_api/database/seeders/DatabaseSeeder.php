@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Pkp_site;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -21,7 +23,8 @@ class DatabaseSeeder extends Seeder
             PkpBarangaySeeder::class,
             TeamSeeder::class,
             PkpDisaggregationSeeder::class,
-            PkpIndicatorSeeder::class
+            PkpIndicatorSeeder::class,
+            PkpSiteSeeder::class
         ]);
     }
 }
