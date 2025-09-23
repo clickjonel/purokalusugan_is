@@ -17,7 +17,7 @@ import PopulateEventProgramIndicators from '@/pages/admin/events/forms/PopulateE
 import Disaggregations from '@/pages/admin/disaggregations/Disaggregations.vue'
 import UpdateIndicator from '@/pages/admin/indicators/forms/UpdateIndicator.vue'
 import UpdateEvent from '@/pages/admin/events/forms/UpdateEvent.vue'
-
+import PKAccomplishmentReport from '../pages/admin/events/reports/PKAccomplishmentReport.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,6 +73,14 @@ const router = createRouter({
       path: '/dashboard',
       name: 'PUBLIC-DASHBOARD',
       component: PublicDashboard,
+    },
+    {
+      path: '/accomplishment/report/:id',
+      name: 'PK Accomplishment Report',
+      component: PKAccomplishmentReport,
+      meta:{
+        requiresAuth:true
+      }
     },
     {
       path: '/admin',

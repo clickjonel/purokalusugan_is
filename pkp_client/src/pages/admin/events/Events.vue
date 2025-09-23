@@ -3,21 +3,21 @@ import { onMounted, ref } from "vue"
 import axios from '@/axios/axios';
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input'
-import { Search,EllipsisVertical } from "lucide-vue-next"
+import { Search, EllipsisVertical } from "lucide-vue-next"
 import { toast } from 'vue-sonner'
-import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table'
-import { Popover,PopoverContent,PopoverTrigger } from '@/components/ui/popover'
-import { useRouter } from  'vue-router';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useRouter } from 'vue-router';
 import { Badge } from '@/components/ui/badge'
 
 const router = useRouter()
 const events = ref<Event[]>([])
-
+const eventSelected = {};
 const pagination = ref({
-    page:0,
-    perPage:10,
-    searchKeyword:'',
-    total:0
+    page: 0,
+    perPage: 10,
+    searchKeyword: '',
+    total: 0
 })
 
 
@@ -40,17 +40,28 @@ function fetchEvents() {
         })
 }
 
-interface Event {
-    event_name:string,
-    event_type:number,
-    event_budget:number,
-    event_actual_budget:number,
-    event_type_name:string,
-    event_venue:string,
-    event_fund_source:string,
-    event_id:number
-    is_populated:number
+
+function generateReport(event:any) {
+    router.push({
+        name: 'PK Accomplishment Report',
+        params: { id: event.event_id },
+        state: { eventData: event } 
+    });
+
 }
+
+interface Event {
+    event_name: string,
+    event_type: number,
+    event_budget: number,
+    event_actual_budget: number,
+    event_type_name: string,
+    event_venue: string,
+    event_fund_source: string,
+    event_id: number
+    is_populated: number
+}
+
 
 
 </script>
@@ -61,12 +72,14 @@ interface Event {
         <!-- header -->
         <div class="w-full flex justify-between items-center p-2">
             <div class="relative items-center">
-                <Input v-model="pagination.searchKeyword" id="search" type="text" placeholder="Search Keyword" class="pl-8"/>
+                <Input v-model="pagination.searchKeyword" id="search" type="text" placeholder="Search Keyword"
+                    class="pl-8" />
                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <Button @click="router.push({path:'/event/create'})" variant="default" class="cursor-pointer" size="sm">Create Event</Button>
+            <Button @click="router.push({ path: '/event/create' })" variant="default" class="cursor-pointer"
+                size="sm">Create Event</Button>
         </div>
 
         <!-- table -->
@@ -106,11 +119,22 @@ interface Event {
                                     </PopoverTrigger>
                                     <PopoverContent class="w-45 p-2">
                                         <div class="flex flex-col">
-                                            <Button @click="router.push({path:`/event/update/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Edit</Button>
-                                            <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Barangays</Button>
-                                            <Button variant="ghost" size="sm" class="justify-start text-xs">Manage Programs</Button>
-                                            <Button v-if="!event.is_populated" @click="router.push({path:`/event/populate/${event.event_id}`})" variant="ghost" size="sm" class="justify-start text-xs">Populate Indicators</Button>
-                                            <Button variant="ghost" size="sm" class="justify-start text-xs text-red-600">Delete</Button>
+                                            <Button @click="router.push({ path: `/event/update/${event.event_id}` })"
+                                                variant="ghost" size="sm" class="justify-start text-xs">Edit</Button>
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs">Manage
+                                                Barangays</Button>
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs">Manage
+                                                Programs</Button>
+                                            <Button variant="ghost" size="sm" class="justify-start text-xs"
+                                                @click="generateReport(event)">
+                                                Generate Report
+                                            </Button>
+                                            <Button v-if="!event.is_populated"
+                                                @click="router.push({ path: `/event/populate/${event.event_id}` })"
+                                                variant="ghost" size="sm" class="justify-start text-xs">Populate
+                                                Indicators</Button>
+                                            <Button variant="ghost" size="sm"
+                                                class="justify-start text-xs text-red-600">Delete</Button>
                                         </div>
                                     </PopoverContent>
                                 </Popover>
@@ -123,7 +147,7 @@ interface Event {
 
         <!-- footer -->
         <div class="w-full h-[50px] flex justify-center items-center border p-2">
-           
+
         </div>
     </div>
 
