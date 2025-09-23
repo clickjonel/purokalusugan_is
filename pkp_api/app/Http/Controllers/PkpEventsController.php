@@ -138,8 +138,8 @@ class PkpEventsController extends Controller
                     foreach ($programData['indicators'] as $indicatorData) {
                         // Loop through disaggregations
                         foreach ($indicatorData['disaggregations'] as $disaggregationData) {
-                            if($disaggregationData['value']){
-                               Pkp_indicator_values::create([
+                            if(isset($disaggregationData['value']) && $disaggregationData['value'] !== null && $disaggregationData['value'] !== ''){
+                                Pkp_indicator_values::create([
                                     'event_id' => $event->event_id,
                                     'indicator_disaggregation_id' => $disaggregationData['disaggregation_id'],
                                     'value' => $disaggregationData['value'],
