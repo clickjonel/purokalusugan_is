@@ -27,10 +27,22 @@ interface EventData {
         programs: any[]
     };
 }
+interface EventValueItem {
+    barangay: object,
+    barangay_id: number,
+    event_id: number,
+    indicator_disaggregation:any,
+    indicator_disaggregation_id:number,
+    indicator_value_id:number,
+    remarks:string,
+    value: number
 
+}
 const eventData = ref<EventData | null>(null);
 const printRef = ref<HTMLElement | null>(null);
-const printSection = ref(null);
+const eventValues = ref<EventValueItem[]>([]);
+let indicatorCollectedDisaggregationValues: number[] = [];
+
 onMounted(() => {
     if (history.state.eventData) {
         eventData.value = history.state.eventData;
@@ -41,6 +53,7 @@ onMounted(() => {
             axios.get(`/event/fetch?event_id=${eventId}`)
                 .then((response) => {
                     eventData.value = response.data;
+                    eventValues.value = response.data.event.values;
                     console.log('eventData', eventData.value)
                 })
                 .catch((error) => {
@@ -58,6 +71,25 @@ const printPage = (): void => {
     };
     window.addEventListener('afterprint', removeClass);
     window.print();
+}
+
+function getIndicatorDisaggregationValue(event_id: any, barangay_id: number, disaggregation_id: number) {
+    console.log('list of values per array', eventValues)
+    const result = eventValues.value.filter(item => {
+        if(item.event_id === event_id && 
+            item.barangay_id === barangay_id &&
+            item.indicator_disaggregation_id === disaggregation_id
+        ){
+            return item.value;
+        }  
+    })
+    return result[0].value;
+    
+}
+
+function getSumOfValuesForCurrentIndicatorShown(list:number[]){    
+    const sum = list.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    return sum;
 }
 </script>
 <template>
@@ -124,7 +156,7 @@ const printPage = (): void => {
                 <div class="w-[100%] flex gap-1 items-center border-b">
                     <strong class="w-[30%] p-1 bg-green-700 text-slate-100">BARANGAYS</strong>
                     <strong v-for="(barangay, index) in eventData?.event?.barangays" :key="index">
-                        <small class="p-1 bg-blue-500 rounded text-white">
+                        <small class="p-1 bg-green-700 rounded text-white">
                             {{ barangay.barangay_name }}
                         </small>
                     </strong>
@@ -133,34 +165,59 @@ const printPage = (): void => {
         </section>
         <!-- Indicator with Values -->
         <section class="w-[100%] border">
-            <div class="w-[100%]">
-                <span>Barangay</span>
-                <small class="p-1 bg-blue-500 rounded text-white">barangay</small>
+            <div class="w-[100%] mt-2" v-for="(barangay, index) in eventData?.event?.barangays" :key='index'>
+                <strong class="p-1 bg-green-700 text-white">
+                    {{ barangay.barangay_name }}</strong>
+                <table class="w-[100%] border">
+                    <thead>
+                        <tr>
+                            <th class='border-b border-r'>Program</th>
+                            <th class='border-b border-r'>Indicators</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
+                            <td class='border-b border-r'>{{ program.program_name }}</td>
+                            <td class='border-b border-r'>
+                                <div class='flex flex-col'>
+                                    <div v-for="(indicator, indicator_index) in program.indicators"
+                                        :key="indicator_index">
+                                        <div>
+                                            <span class='border-b'>{{ indicator.indicator_name}}</span>
+                                            <div class='ml-2'
+                                                v-for="(disaggregation, disaggregation_index) in indicator.disaggregations"
+                                                :key="disaggregation_index">{{ disaggregation.disaggregation_name
+                                                }}
+                                                <span class='text-blue-800 text-lg underline'>{{ getIndicatorDisaggregationValue(eventData?.event.event_id,
+                                                    barangay.barangay_id,
+                                                    disaggregation.disaggregation_id) }}</span>
+                                                <span hidden>
+                                                {{ indicatorCollectedDisaggregationValues.push(
+                                                    getIndicatorDisaggregationValue(eventData?.event.event_id,
+                                                    barangay.barangay_id,
+                                                    disaggregation.disaggregation_id)
+                                                ) }}
+                                                </span>    
+                                            </div>                                           
+                                            <strong>
+                                                Sum: {{getSumOfValuesForCurrentIndicatorShown(
+                                                    indicatorCollectedDisaggregationValues.splice(0, 
+                                                    indicatorCollectedDisaggregationValues.length))}}
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table class="w-[100%] border">
-                <thead>
-                    <tr>
-                        <th>Program</th>
-                        <th>Indicators</th>
-                        <th>Disaggregations</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(program, pindex) in eventData?.event?.programs" :key="pindex">
-                        <td>{{ program.program_name }}</td>
-                        <td>
-                            <span v-for="(indicator, iindex) in program.indicators" :key="iindex">
-                                <small>{{ indicator.indicator_name }}</small>
-                            </span>
-                            
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </section>
     </section>
 
-    <button @click="printPage" class="px-4 py-2 bg-blue-600 text-white rounded m-2">
+    <button @click="printPage" class="px-4 py-2 bg-green-700 text-white rounded m-2">
         Print
     </button>
 </template>
