@@ -34,7 +34,8 @@ class PkpDisaggregationController extends Controller
         $validatedData = $request->validate([
             'disaggregation_id' => 'required|integer|exists:pkp_disaggregation,disaggregation_id',
             'disaggregation_code' => 'required|string',            
-            'disaggregation_name' => 'required|string'            
+            'disaggregation_name' => 'required|string',
+            'totalable'=>'boolean'            
         ]);
         $data = Pkp_disaggregation::find($validatedData['disaggregation_id'])
             ->update($validatedData);

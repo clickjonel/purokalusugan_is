@@ -2,8 +2,8 @@
 import { ref, onMounted } from "vue";
 import axios from "@/axios/axios";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, EllipsisVertical, Pencil} from "lucide-vue-next";
+
+import { Search, EllipsisVertical, Pencil } from "lucide-vue-next";
 import {
     Dialog,
     DialogContent,
@@ -28,6 +28,8 @@ import {
 } from '@/components/ui/popover'
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
+import Input from '@/components/ui/input/Input.vue'
+
 
 const router = useRouter();
 const disaggregations = ref<Disaggregation[]>([]);
@@ -40,6 +42,7 @@ let recordToEdit = ref<Disaggregation>({
     disaggregation_id: 0,
     disaggregation_code: "",
     disaggregation_name: "",
+    totalable: true
 });
 
 function search() {
@@ -54,12 +57,14 @@ interface Disaggregation {
     disaggregation_id: number;
     disaggregation_code: any;
     disaggregation_name: string;
+    totalable: boolean;
 }
 
 const disaggregation = ref<Disaggregation>({
     disaggregation_id: 0,
     disaggregation_code: "",
-    disaggregation_name: ""
+    disaggregation_name: "",
+    totalable: true
 });
 
 function generateCode() {
@@ -127,17 +132,19 @@ function handleClose() {
     isCreateModalOpen.value = false;
 }
 
-function handleEdit(record: Disaggregation) {    
+function handleEdit(record: Disaggregation) {
     recordToEdit.value = { ...record };
     isEditModalOpen.value = true;
 }
 
 function confirmEdit() {
+    console.log('record to edit',recordToEdit)
     axios
         .put("/disaggregation/update", {
             disaggregation_id: recordToEdit.value.disaggregation_id,
             disaggregation_code: recordToEdit.value.disaggregation_code,
-            disaggregation_name: recordToEdit.value.disaggregation_name
+            disaggregation_name: recordToEdit.value.disaggregation_name,
+            totalable: recordToEdit.value.totalable
         })
         .then((response) => {
             console.log(response.data);
@@ -165,6 +172,18 @@ function confirmEdit() {
         });
 }
 
+function displayBooleanInWords(value: boolean) {
+    if (value) {
+        return "Yes";
+    }
+    return "No";
+}
+function getColorForBoolean(value: boolean) {
+    if (value) {
+        return "text-green-500";
+    }
+    return "text-red-500";
+}
 onMounted(() => {
     fetchList();
 });
@@ -196,6 +215,7 @@ onMounted(() => {
                         <TableHead>Id</TableHead>
                         <TableHead>Code</TableHead>
                         <TableHead>Name</TableHead>
+                        <TableHead>Is Totallable</TableHead>
                         <TableHead class="text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -204,6 +224,8 @@ onMounted(() => {
                         <TableCell>{{ record.disaggregation_id }}</TableCell>
                         <TableCell>{{ record.disaggregation_code }}</TableCell>
                         <TableCell>{{ record.disaggregation_name }}</TableCell>
+                        <TableCell :class="getColorForBoolean(record.totalable)">{{
+                            displayBooleanInWords(record.totalable) }}</TableCell>
                         <TableCell class="w-full flex justify-end items-center gap-2">
                             <Popover>
                                 <PopoverTrigger>
@@ -276,6 +298,13 @@ onMounted(() => {
                         <label for="disaggregation_name">Disaggregation Name:</label>
                         <Input type="text" id="disaggregation_name" placeholder="Enter here..."
                             v-model="recordToEdit.disaggregation_name" required />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label for="totalable">Is totalable?:</label>
+                        <select id="totalable" v-model="recordToEdit.totalable">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
                     </div>
                     <!-- Add more fields as needed -->
                 </form>

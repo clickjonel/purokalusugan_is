@@ -11,7 +11,7 @@ class Pkp_disaggregation extends Model
     protected $fillable = [
         'disaggregation_code',        
         'disaggregation_name',
-        'is_totalable'
+        'totalable'
     ];
     public $timestamps = false;
 
