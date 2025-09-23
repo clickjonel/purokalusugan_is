@@ -18,6 +18,7 @@ import Disaggregations from '@/pages/admin/disaggregations/Disaggregations.vue'
 import UpdateIndicator from '@/pages/admin/indicators/forms/UpdateIndicator.vue'
 
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
