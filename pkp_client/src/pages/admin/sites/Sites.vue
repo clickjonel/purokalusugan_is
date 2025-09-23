@@ -47,7 +47,7 @@ const siteStatusLabels: Record<number, string> = {
 }
 
 const sites = ref<PkpSite[]>([])
-
+const currentList = ref<PkpSite[]>([]);
 const isDialogOpen = ref(false)
 const isCreateDialogOpen = ref(false) // New ref for create dialog
 const editingSite = ref<PkpSite | null>(null)
@@ -65,19 +65,28 @@ const newSite = ref<Omit<PkpSite, 'site_id' | 'barangay' | 'total_no_sitio_purok
   population: 0,
 })
 
+let searchKeyword = ref("");
 onMounted(() => {
   fetchSites()
 })
 
-function determineStatusColor(color:number){
+function search() {
+  const searchTerm = searchKeyword.value.toLowerCase();
+  const searchedData = sites.value.filter(item => {
+    const record = item.barangay.barangay_name.toLowerCase();
+    return record.includes(searchTerm);
+  });
+  currentList.value = searchedData;
+}
+function determineStatusColor(color: number) {
   let appliedColor = "";
-  switch(color){
-    case 1: appliedColor = "bg-blue-200 text-blue-800";break;
-    case 2: appliedColor = "bg-yellow-200 text-yellow-800";break;
-    case 3: appliedColor = "bg-orange-200 text-orange-800";break;
-    case 4: appliedColor = "bg-green-200 text-green-800";break;
-    case 5: appliedColor = "bg-green-400 text-green-900";break;
-    default: appliedColor = "bg-black";break;
+  switch (color) {
+    case 1: appliedColor = "bg-blue-200 text-blue-800"; break;
+    case 2: appliedColor = "bg-yellow-200 text-yellow-800"; break;
+    case 3: appliedColor = "bg-orange-200 text-orange-800"; break;
+    case 4: appliedColor = "bg-green-200 text-green-800"; break;
+    case 5: appliedColor = "bg-green-400 text-green-900"; break;
+    default: appliedColor = "bg-black"; break;
   }
   return appliedColor;
 }
@@ -85,6 +94,7 @@ function fetchSites() {
   axios.get<{ data: PkpSite[] }>('/site/list')
     .then((response) => {
       sites.value = response.data.data
+      currentList.value = response.data.data;
       console.log(response.data.data)
     })
     .catch((error) => {
@@ -212,7 +222,13 @@ async function removeSite(id?: number) {
   <div class="w-full h-full flex flex-col justify-between items-start gap-2 p-2">
     <!-- header -->
     <div class="w-full flex justify-between items-center p-2 border">
-
+      <div class="relative items-center">
+        <Input v-model="searchKeyword" id="search" type="text" placeholder="Search Barangay Name" class="pl-8"
+          @input="search" />
+        <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+          <Search class="size-4 text-muted-foreground" />
+        </span>
+      </div>
       <Button variant="default" class="cursor-pointer" size="sm" @click="isCreateDialogOpen = true">
         Create Site
       </Button>
@@ -233,13 +249,13 @@ async function removeSite(id?: number) {
               <TableHead>Sitio/Purok</TableHead>
               <TableHead>Targets</TableHead>
               <TableHead>Population</TableHead>
-              <TableHead>Households</TableHead>              
+              <TableHead>Households</TableHead>
               <TableHead>Status</TableHead>
               <TableHead class="text-end">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="site in sites" :key="site.site_id">
+            <TableRow v-for="site in currentList" :key="site.site_id">
               <TableCell>{{ site.site_id }}</TableCell>
               <TableCell>{{ site.barangay.municipality.province.province_name }}</TableCell>
               <TableCell>{{ site.barangay.municipality.municipality_name }}</TableCell>
@@ -268,9 +284,10 @@ async function removeSite(id?: number) {
               </TableCell>
               <TableCell>{{ site.total_target_sitio_purok }} ({{ site.target_purok }} Purok, {{ site.target_sitio }}
                 Sitio)</TableCell>
-                <TableCell>{{ site.population ?? '-' }}</TableCell>
-                <TableCell>{{ site.no_household ?? '-' }}</TableCell>              
-                <TableCell :class="determineStatusColor(site.site_status)">{{ site.site_status }} ({{ siteStatusLabels[site.site_status] }})</TableCell>
+              <TableCell>{{ site.population ?? '-' }}</TableCell>
+              <TableCell>{{ site.no_household ?? '-' }}</TableCell>
+              <TableCell :class="determineStatusColor(site.site_status)">{{ site.site_status }} ({{
+                siteStatusLabels[site.site_status] }})</TableCell>
               <TableCell class="w-full flex justify-end items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
