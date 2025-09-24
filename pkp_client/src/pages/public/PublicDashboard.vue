@@ -51,7 +51,6 @@ onMounted(async () => {
   try {
     const res = await axios.get("map/dashboardSites")
     sites.value = res.data
-    console.log("Sites:", sites.value)
   } catch (err) {
     console.error("Failed to fetch sites:", err)
   }

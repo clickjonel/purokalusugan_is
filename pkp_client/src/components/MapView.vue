@@ -18,21 +18,19 @@ const emit = defineEmits<{
   (e: "region-selected"): void
 }>()
 
-// Default colors
-const defaultColor = "#50C878"
-const fallbackColor = "#50C878"
-
-// Province color mapping
 const provinceColors: Record<string, string> = {
-  "Cordillera Administrative Region": "#FF5733",
-  "Abra": "#FF9999",
-  "Apayao": "#FFD700",
-  "Benguet": "#FF8C42",
-  "Ifugao": "#FF69B4",
-  "Kalinga": "#BA55D3",
-  "Mountain Province": "#FF4500",
-  "Baguio City": "#DA70D6",
+  "Cordillera Administrative Region": "#FFFFFF00", // transparent white
+  "Abra": "#4682B4",        // Steel Blue
+  "Apayao": "#FFB347",      // Soft Amber
+  "Benguet": "#20B2AA",     // Light Sea Green
+  "Ifugao": "#9370DB",      // Medium Purple
+  "Kalinga": "#5F9EA0",     // Cadet Blue
+  "Mountain Province": "#708090",  // Slate Gray
+  "Baguio City": "#FFD700", // Gold
 }
+
+const defaultColor = "#FFFFFF00" // transparent white by default
+const fallbackColor = "#3CB375"
 
 const selectedLayer = ref<Layer | null>(null)
 
@@ -46,8 +44,8 @@ onMounted(async () => {
 
   // Define CAR bounds
   const carBounds = L.latLngBounds(
-    L.latLng(15.816, 119.705),   // Southwest corner
-    L.latLng(18.639, 122.618)    // Northeast corner
+    L.latLng(15, 119.705),   // Southwest corner
+    L.latLng(20, 122.618)    // Northeast corner
   );
   map.setMaxBounds(carBounds);
   map.on("drag", () => map.panInsideBounds(carBounds, { animate: false }));
@@ -63,10 +61,17 @@ onMounted(async () => {
   // Fetch GeoJSON (Provinces only)
   const res = await axios.get("/map/geojson");
   const provinces: FeatureCollection = res.data;
-
   const geojsonLayer: GeoJSON = L.geoJSON(provinces, {
     style: (feature?: Feature<any>): PathOptions => {
-      const provName = feature?.properties?.name ?? "Unknown";
+      const provName = feature?.geometry?.properties?.name ?? "";
+      if (provName === "Cordillera Administrative Region" || provName == "") {
+        return {
+          color: "#FFFFFF00",       // outline for CAR
+          weight: 2,
+          fillColor: "#FFFFFF00", // transparent fill
+          fillOpacity: 0.0,
+        };
+      }
       return {
         color: provinceColors[provName] || defaultColor,
         weight: 2,
@@ -75,8 +80,9 @@ onMounted(async () => {
       };
     },
     onEachFeature: (feature: Feature<any>, layer: Layer) => {
-      const provName = feature.properties?.name ?? "Unknown";
-      if (feature.properties?.name) {
+      const provName = feature.properties?.name ?? "";
+
+      if (provName) {
         layer.bindTooltip(provName);
       }
 
@@ -84,23 +90,37 @@ onMounted(async () => {
         e.originalEvent?.stopPropagation();
 
         if ("getBounds" in layer) {
-          map.fitBounds((layer as any).getBounds(), { padding: [20, 20] });
+          if (provName === "Cordillera Administrative Region") {
+            map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+            emit("region-selected");
+            return;
+          } else {
+            map.fitBounds((layer as any).getBounds(), { padding: [20, 20] });
+          }
         }
 
-        // reset old province highlight
-        if (selectedLayer.value) {
+
+        // reset old highlight (skip CAR)
+        if (selectedLayer.value && (selectedLayer.value as any).feature?.properties?.name !== "Cordillera Administrative Region") {
+          const prevName = (selectedLayer.value as any).feature?.properties?.name ?? "";
           (selectedLayer.value as L.Path).setStyle({
-            color: defaultColor,
-            fillColor: defaultColor
+            color: provinceColors[prevName] || defaultColor,
+            fillColor: provinceColors[prevName] || fallbackColor,
+            fillOpacity: 0.2,
           });
         }
 
-        // highlight new province
-        const color = provinceColors[provName] || defaultColor;
-        (layer as L.Path).setStyle({ color, fillColor: color, fillOpacity: 0.5 });
-        selectedLayer.value = layer;
+        // highlight only provinces, not CAR
+        if (provName !== "Cordillera Administrative Region") {
+          const color = provinceColors[provName] || defaultColor;
+          (layer as L.Path).setStyle({
+            color,
+            fillColor: color,
+            fillOpacity: 0.5,
+          });
+          selectedLayer.value = layer;
+        }
 
-        // emit event so parent can fetch municipality data later
         emit("province-selected", {
           name: provName,
           info: feature.properties ?? {}
@@ -108,6 +128,7 @@ onMounted(async () => {
       });
     },
   }).addTo(map);
+
 
   map.fitBounds(geojsonLayer.getBounds());
 
