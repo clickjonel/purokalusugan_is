@@ -13,6 +13,9 @@
         disaggregation_id: number;
         disaggregation_code: string;
         disaggregation_name: string;
+        pivot: {
+            indicator_disaggregation_id: number;
+        };
     }
 
     interface EventIndicator {
@@ -51,6 +54,7 @@
         disaggregation_name: string;
         value: number | undefined;
         remarks: string;
+        indicator_disaggregation_id: number;
     }
 
     interface FormIndicator {
@@ -122,7 +126,7 @@
             barangays: []
         };
         setFormDataBarangays();
-        console.log(formData.value)
+        // console.log(formData.value)
     }
 
     function setFormDataBarangays(): void {
@@ -152,15 +156,17 @@
                     };
 
                     indicator.disaggregations.forEach(disaggregation => {
+                        
                         indicatorObj.disaggregations.push({
                             disaggregation_id: disaggregation.disaggregation_id,
                             disaggregation_code: disaggregation.disaggregation_code,
                             disaggregation_name: disaggregation.disaggregation_name,
                             value: undefined,
-                            remarks: ""
+                            remarks: "",
+                            indicator_disaggregation_id:disaggregation.pivot.indicator_disaggregation_id
                         });
+                        
                     });
-
                     programObj.indicators.push(indicatorObj);
                 });
 
@@ -171,37 +177,38 @@
         });
 
         formData.value.barangays = barangays;
+        // console.log(formData.value)
     }
 
     async function saveData(){
         console.log(formData.value);
-        //  axios.post('/event/populate', formData.value)
-        // .then((response) => {
-        //     toast('Action Successfull', {
-        //         description: response.data.message,
-        //         action: {
-        //             label: 'Close',
-        //             onClick: () => toast.dismiss(),
-        //         },
-        //     })
-        //     router.push({path:'/admin/events'})
+         axios.post('/event/populate', formData.value)
+        .then((response) => {
+            toast('Action Successfull', {
+                description: response.data.message,
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss(),
+                },
+            })
+            router.push({path:'/admin/events'})
           
-        // })
-        // .catch((error) => {
-        //     console.log(error)
-        //     if (error.response) {
-        //         toast('Failed With Errors', {
-        //             description: error.response.data.message,
-        //             action: {
-        //                 label: 'Close',
-        //                 onClick: () => toast.dismiss(),
-        //             },
-        //         })
-        //     }
-        // })
-        // .finally(() => {
+        })
+        .catch((error) => {
+            console.log(error)
+            if (error.response) {
+                toast('Failed With Errors', {
+                    description: error.response.data.message,
+                    action: {
+                        label: 'Close',
+                        onClick: () => toast.dismiss(),
+                    },
+                })
+            }
+        })
+        .finally(() => {
 
-        // })
+        })
     }
 
 </script>

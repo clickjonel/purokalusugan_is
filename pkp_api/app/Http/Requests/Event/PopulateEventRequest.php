@@ -31,6 +31,7 @@ class PopulateEventRequest extends FormRequest
             'barangays.*.programs.*.indicators.*.indicator_id' => 'required|integer',
             'barangays.*.programs.*.indicators.*.disaggregations' => 'required|array',
             'barangays.*.programs.*.indicators.*.disaggregations.*.disaggregation_id' => 'required|integer',
+            'barangays.*.programs.*.indicators.*.disaggregations.*.indicator_disaggregation_id' => 'required|integer',
             'barangays.*.programs.*.indicators.*.disaggregations.*.value' => 'nullable|integer',
             'barangays.*.programs.*.indicators.*.disaggregations.*.remarks' => 'nullable|string',
         ];
