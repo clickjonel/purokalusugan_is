@@ -36,14 +36,12 @@ const provinceColors: Record<string, string> = {
 const selectedLayer = ref<Layer | null>(null)
 
 // 🔹 Municipality + Barangay dataset
-const municipalityData: Record<
-  string,
-  {
-    name: string
-    lat: number
-    lng: number
-    barangays: { name: string; lat: number; lng: number }[]
-  }[]
+const municipalityData: Record<string, {
+  name: string
+  lat: number
+  lng: number
+  barangays: { name: string; lat: number; lng: number }[]
+}[]
 > = {
   Abra: [
     {
@@ -638,11 +636,35 @@ const municipalityData: Record<
 const municipalityMarkers: L.Marker[] = []
 
 onMounted(async () => {
-  const map: Map = L.map("map").setView([16.6, 121.2], 7)
+  const map: Map = L.map("map", {
+    center: [17.0, 119.0], // Central CAR
+    zoom: 9,
+    minZoom: 9,
+    maxZoom: 20,
+  });
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(map)
+  // Define bounds for Cordillera Administrative Region
+  const carBounds = L.latLngBounds(
+    L.latLng(15.816, 119.705),   // Southwest corner (Tuba, Benguet)
+    L.latLng(18.639, 122.618)    // Northeast corner (Kabugao, Apayao)
+  );
+  map.setMaxBounds(carBounds);
+  map.on("drag", function () {
+    map.panInsideBounds(carBounds, { animate: false });
+  });
+  map.on("zoomend", function () {
+    if (map.getZoom() < 8) map.setZoom(7);
+  });
+
+  // Fast and lightweight tile layer
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution: '&copy; <a href="https://carto.com/">CartoDB</a>',
+    subdomains: "abcd",
+    maxZoom: 20
+  }).addTo(map);
+  L.control.scale().addTo(map);
+
+
 
   // Fetch GeoJSON
   const res = await fetch("http://192.168.225.100:8000/api/geojson")
