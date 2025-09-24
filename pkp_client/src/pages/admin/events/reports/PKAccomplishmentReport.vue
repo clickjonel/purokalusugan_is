@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 
 const route = useRoute();
 const authStore = useAuthStore();
+
 interface EventData {
     event: {
         event_name: string;
@@ -25,9 +26,38 @@ interface EventData {
         event_proponents: string;
         event_partners: string;
         barangays: BarangayItem[];
-        programs: any[];
-        values: any[]
+        programs: ProgramObject[];
+        values: EventValueItem[]
     };
+}
+
+interface ProgramObject {
+    indicators: IndicatorObject[],
+    pivot: any[],
+    program_code: string,
+    program_id: number,
+    program_name: string,
+    program_status: number
+}
+
+interface IndicatorObject {
+    disaggregations: DisaggregationObject[],
+    indicator_code: string,
+    indicator_description: string,
+    indicator_id: number,
+    indicator_name: string,
+    indicator_scope: number,
+    indicator_scope_name: string,
+    indicator_status: number,
+    indicator_status_name: string,
+    program_id: number
+}
+
+interface DisaggregationObject{
+    disaggregation_code:string,
+    disaggregation_id:number,
+    disaggregation_name:string,
+    totalable:number
 }
 interface EventValueItem {
     barangay: BarangayItem,
@@ -43,7 +73,7 @@ interface EventValueItem {
 interface BarangayItem {
     barangay_id: number,
     barangay_name: string,
-    minicipality_id: number,
+    municipality_id: number,
     province_id: number,
     region_id: number,
     uid: number
@@ -56,31 +86,26 @@ interface IndividualTotalObject {
     total_females: number
 }
 
+interface MunicipalityObject {
+    municipality_id: number,
+    municipality_name: string,
+    province_id: number,
+    region_id: number
+}
+interface ProvinceObject {
+    province_id: number,
+    province_name: string
+}
 const eventData = ref<EventData | null>(null);
 const printRef = ref<HTMLElement | null>(null);
 const eventValues = ref<EventValueItem[]>([]);
+const municipality = ref<MunicipalityObject | null>(null);
+const province = ref<ProvinceObject | null>(null);
 let indicatorCollectedDisaggregationValues: number[] = [];
 
-onMounted(() => {
-    if (history.state.eventData) {
-        eventData.value = history.state.eventData;
-        console.log("Event data received:", eventData.value);
-    } else {
-        const eventId = route.params.id;
-        if (eventId) {
-            axios.get(`/event/fetch?event_id=${eventId}`)
-                .then((response) => {
-                    eventData.value = response.data;
-                    eventValues.value = response.data.event.values;
-                    console.log('eventData', eventData.value)
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch event data:", error);
-                    toast.error("Failed to load event data.");
-                });
-        }
-    }
-});
+
+
+
 
 const printPage = (): void => {
     document.body.classList.add('print-root');
@@ -109,7 +134,22 @@ function getSumOfValuesForCurrentIndicatorShown(list: number[]) {
     const sum = list.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     return sum;
 }
-
+function generateIndicatorData(indicators: IndicatorObject[],event_id:any,barangay_id:number) {
+    console.log('indicators', indicators)
+    console.log('event id',event_id);
+    console.log('barangay id',barangay_id)
+    let result = [];    
+    for (let i = 0; i < indicators.length; i++) {
+        const indicator_name = indicators[i].indicator_name;
+        const disaggregations =indicators[i].disaggregations;
+        let total_males = 0;
+        for(let j=i;j<disaggregations.length;j++){
+            total_males = getIndicatorDisaggregationValue(event_id,barangay_id,disaggregations[i].disaggregation_id) 
+        }
+        result.push({indicator_name:indicator_name,total_males:total_males});
+    }
+    return result;
+}
 function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
     const barangay_ids = event_values.map(item => item.barangay_id);
     const unique_barangay_ids = [...new Set(barangay_ids)];
@@ -167,17 +207,72 @@ function displayCurrentDate() {
     return current_date;
 }
 
-function displayEventType(event_type:any){
-    if(event_type === 1){
+function displayEventType(event_type: any) {
+    if (event_type === 1) {
         return "Small Scale";
     }
-    if(event_type === 2){
+    if (event_type === 2) {
         return "Large Scale";
     }
+}
+
+function getMunicipality(municipalityId: number) {
+    axios.get(`/municipality/find`, {
+        params: {
+            municipality_id: municipalityId
+        }
+    })
+        .then((response) => {
+            municipality.value = response.data.data;
+            console.log("municipality here", municipality.value)
+        })
+        .catch((error) => {
+            console.error("Error fetching municipality", error);
+        })
+}
+
+function getProvince(provinceId: number) {
+    axios.get(`/province/find`, {
+        params: {
+            province_id: provinceId
+        }
+    })
+        .then((response) => {
+            province.value = response.data.data;
+            console.log("province here", province.value)
+        })
+        .catch((error) => {
+            console.error("Error fetching province", error);
+        })
 }
 const individualsServedData = computed(() => {
     return generateIndividualServedPerPKSiteData(eventValues.value);
 });
+
+onMounted(() => {
+    if (history.state.eventData) {
+        eventData.value = history.state.eventData;
+        console.log("Event data received:", eventData.value);
+    } else {
+        const eventId = route.params.id;
+        if (eventId) {
+            axios.get(`/event/fetch?event_id=${eventId}`)
+                .then((response) => {
+                    eventData.value = response.data;
+                    eventValues.value = response.data.event.values;
+                    console.log('eventData', eventData.value)
+                })
+                .catch((error) => {
+                    console.error("Failed to fetch event data:", error);
+                    toast.error("Failed to load event data.");
+                });
+        }
+    }
+    getMunicipality(141102);
+    getProvince(1430);
+});
+
+
 
 </script>
 <template>
@@ -233,15 +328,19 @@ const individualsServedData = computed(() => {
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
                     <strong class="w-[30%] p-1 bg-green-700 text-slate-100">AREAS COVERED</strong>
-                    <strong>{{ eventData?.event?.event_name }}</strong>
+                    <strong v-for="(barangay, index) in eventData?.event?.barangays" :key="index">
+                        <small class="p-1 bg-green-700 rounded text-white">
+                            {{ barangay.barangay_name }}
+                        </small>
+                    </strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
                     <strong class="w-[30%] p-1 bg-green-700 text-slate-100">PROVINCE/CITY</strong>
-                    <strong>{{ eventData?.event?.event_name }}</strong>
+                    <strong>{{ province?.province_name }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
                     <strong class="w-[30%] p-1 bg-green-700 text-slate-100">MUNICIPALITY</strong>
-                    <strong>{{ eventData?.event?.event_name }}</strong>
+                    <strong>{{ municipality?.municipality_name }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
                     <strong class="w-[30%] p-1 bg-green-700 text-slate-100">BARANGAYS</strong>
@@ -256,14 +355,18 @@ const individualsServedData = computed(() => {
         <!-- Indicator with Values -->
         <section class="w-[100%] border">
             <h2 class="text-center text-xl"><strong>Details</strong></h2>
-            <div class="w-[100%] mt-2" v-for="(barangay, index) in eventData?.event?.barangays" :key='index'>
+            <!-- <div class="w-[100%] mt-2" v-for="(barangay, index) in eventData?.event?.barangays" :key='index'>
                 <strong class="p-1 bg-green-700 text-white">
                     {{ barangay.barangay_name }}</strong>
                 <table class="w-[100%] border">
                     <thead>
                         <tr>
                             <th class='border-b border-r'>Program</th>
-                            <th class='border-b border-r'>Indicators</th>
+                            <th class='border-b border-r'>Indicator</th>
+                            <th class='border-b border-r'>Male</th>
+                            <th class='border-b border-r'>Female</th>
+                            <th class='border-b border-r'>Not Indicated</th>
+                            <th class='border-b border-r'>4Ps</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -305,6 +408,35 @@ const individualsServedData = computed(() => {
                         </tr>
                     </tbody>
                 </table>
+            </div> -->
+            <div class="w-[100%] mt-2" v-for="(barangay, barangay_index) in eventData?.event?.barangays"
+                :key='barangay_index'>
+                <strong class="bg-green-700 text-white">
+                    {{ barangay.barangay_name }}</strong>
+                <div v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
+                    <strong class="bg-purple-700 text-white">
+                        {{ program.program_name }}</strong>
+                    <table class='w-full border'>
+                        <thead>
+                            <tr>
+                                <th class='border-r border-b'>Indicator</th>
+                                <th class='border-r border-b'>Male</th>
+                                <th class='border-r border-b'>Female</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(indicator, indicator_index) in
+                                generateIndicatorData(program.indicators,eventData?.event.event_id,barangay.barangay_id)" 
+                                :key="indicator_index">
+                                <td>{{ indicator.indicator_name }}</td>
+                                <td>{{ indicator.total_males }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -375,7 +507,7 @@ const individualsServedData = computed(() => {
                     <strong class="mt-5 text-lg">{{ displayCurrentUserLoggedIn() }}</strong>
                     <span>Project Lead</span>
                 </div>
-                <div class="flex flex-col items-center"> 
+                <div class="flex flex-col items-center">
                     <span>Reviewed By:</span>
                     <strong class="mt-10"></strong>
                     <span>MHO/PHO/DMO/Program Manager</span>
