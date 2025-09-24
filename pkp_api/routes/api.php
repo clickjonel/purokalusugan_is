@@ -19,7 +19,7 @@ use App\Http\Controllers\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/geojson', [GeoJsonController::class, 'fetch']);
+
 
 
 Route::get('/user', function (Request $request) {
@@ -75,9 +75,9 @@ Route::group([
     Route::post('/create', [PkpEventsController::class, 'createEvent']);
     Route::get('/list', [PkpEventsController::class, 'list']);
     Route::put('/update', [PkpEventsController::class, 'updateEvent']);
-    Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);    
-    Route::post('/save', [PkpEventsController::class, 'saveEvent']);   
-    Route::get('/fetch', [PkpEventsController::class, 'fetchEvent']);   
+    Route::delete('/delete', [PkpEventsController::class, 'deleteEvent']);
+    Route::post('/save', [PkpEventsController::class, 'saveEvent']);
+    Route::get('/fetch', [PkpEventsController::class, 'fetchEvent']);
     Route::post('/populate', [PkpEventsController::class, 'populateEvent']);
 });
 
@@ -88,8 +88,8 @@ Route::group([
     Route::post('/create', [PkpDisaggregationController::class, 'createDisaggregation']);
     Route::get('/list', [PkpDisaggregationController::class, 'getDisaggregations']);
     Route::put('/update', [PkpDisaggregationController::class, 'updateDisaggregation']);
-    Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']); 
-    Route::get('search/name',[PkpDisaggregationController::class,'searchDisaggregationByName']);
+    Route::delete('/delete', [PkpDisaggregationController::class, 'deleteDisaggregation']);
+    Route::get('search/name', [PkpDisaggregationController::class, 'searchDisaggregationByName']);
 });
 
 Route::group([
@@ -99,7 +99,7 @@ Route::group([
     Route::post('/create', [PkpIndicatorValuesController::class, 'createIndicatorValue']);
     Route::get('/list', [PkpIndicatorValuesController::class, 'getIndicatorValues']);
     Route::put('/update', [PkpIndicatorValuesController::class, 'updateIndicatorValue']);
-    Route::delete('/delete', [PkpIndicatorValuesController::class, 'deleteIndicatorValue']);    
+    Route::delete('/delete', [PkpIndicatorValuesController::class, 'deleteIndicatorValue']);
 });
 Route::group([
     'prefix' => 'indicator/disaggregation',
@@ -172,6 +172,7 @@ Route::group([
 //PKP SITES
 Route::group([
     'prefix' => 'site',
+    'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpSiteController::class, 'createSite']);
     Route::get('/list', [PkpSiteController::class, 'getSites']);
@@ -183,3 +184,15 @@ Route::group([
 // dashboard
 Route::get('/exec/dashboard', [DashboardController::class, 'getExecDashboardData']);
 Route::get('/dashboard/program/find', [DashboardController::class, 'getProgramDashboardData']);
+
+//map dashboard
+Route::group([
+    'prefix' => 'map',
+], function () {
+    Route::get('/red-marker', [GeoJsonController::class, 'getMarker']);
+    Route::get('/geojson', [GeoJsonController::class, 'fetch']);
+    Route::get('/pkpsites', [PkpSiteController::class, 'dashboardSites']);
+    Route::get('/pkpsites/ptotal', [PkpSiteController::class, 'dashboardProvinceTotals']);
+    Route::get('/pkpsites/mtotal', [PkpSiteController::class, 'dashboardMunicipalityTotals']);
+    Route::get('/pkpsites/btotal', [PkpSiteController::class, 'dashboardBarangayTotals']);
+});

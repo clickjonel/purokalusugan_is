@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import MapView from "@/components/MapView.vue"
 import ProvinceDashboard from "@/components/ProvinceDashboard.vue"
 import type { CatchmentOverviewProps, Site } from "@/components/ProvinceDashboard.vue"
-
+import axios from '@/axios/axios';
 
 interface ProvincePayload {
   name: string
@@ -45,7 +45,17 @@ const selectRegion = () => {
   selectedProvince.value = null;
   selectedMarker.value = null;
 };
+const sites = ref<any[]>([])
 
+onMounted(async () => {
+  try {
+    const res = await axios.get("map/dashboardSites")
+    sites.value = res.data
+    console.log("Sites:", sites.value)
+  } catch (err) {
+    console.error("Failed to fetch sites:", err)
+  }
+})
 // Example dataset
 const provinceData: Record<string, { cards: CatchmentOverviewProps[]; sites: Site[] }> = {
   Abra: {

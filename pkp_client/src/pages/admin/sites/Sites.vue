@@ -241,9 +241,11 @@ async function removeSite(id?: number) {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
+              <!-- 
               <TableHead>Province</TableHead>
               <TableHead>Municipality</TableHead>
               <TableHead>Barangay</TableHead>
+               -->
               <TableHead>Location</TableHead>
               <TableHead>Coordinates (Lat/Long)</TableHead>
               <TableHead>Sitio/Purok</TableHead>
@@ -257,9 +259,11 @@ async function removeSite(id?: number) {
           <TableBody>
             <TableRow v-for="site in currentList" :key="site.site_id">
               <TableCell>{{ site.site_id }}</TableCell>
+              <!-- 
               <TableCell>{{ site.barangay.municipality.province.province_name }}</TableCell>
               <TableCell>{{ site.barangay.municipality.municipality_name }}</TableCell>
               <TableCell>{{ site.barangay.barangay_name }}</TableCell>
+               -->
               <TableCell>
                 <Popover>
                   <PopoverTrigger asChild>
