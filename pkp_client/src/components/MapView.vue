@@ -645,7 +645,7 @@ onMounted(async () => {
   }).addTo(map)
 
   // Fetch GeoJSON
-  const res = await fetch("http://localhost:8000/api/geojson")
+  const res = await fetch("http://192.168.225.100:8000/api/geojson")
   const provinces: FeatureCollection = await res.json()
 
   const geojsonLayer: GeoJSON = L.geoJSON(provinces, {

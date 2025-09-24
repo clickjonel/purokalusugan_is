@@ -175,33 +175,33 @@
 
     async function saveData(){
         console.log(formData.value);
-         axios.post('/event/populate', formData.value)
-        .then((response) => {
-            toast('Action Successfull', {
-                description: response.data.message,
-                action: {
-                    label: 'Close',
-                    onClick: () => toast.dismiss(),
-                },
-            })
-            router.push({path:'/admin/events'})
+        //  axios.post('/event/populate', formData.value)
+        // .then((response) => {
+        //     toast('Action Successfull', {
+        //         description: response.data.message,
+        //         action: {
+        //             label: 'Close',
+        //             onClick: () => toast.dismiss(),
+        //         },
+        //     })
+        //     router.push({path:'/admin/events'})
           
-        })
-        .catch((error) => {
-            console.log(error)
-            if (error.response) {
-                toast('Failed With Errors', {
-                    description: error.response.data.message,
-                    action: {
-                        label: 'Close',
-                        onClick: () => toast.dismiss(),
-                    },
-                })
-            }
-        })
-        .finally(() => {
+        // })
+        // .catch((error) => {
+        //     console.log(error)
+        //     if (error.response) {
+        //         toast('Failed With Errors', {
+        //             description: error.response.data.message,
+        //             action: {
+        //                 label: 'Close',
+        //                 onClick: () => toast.dismiss(),
+        //             },
+        //         })
+        //     }
+        // })
+        // .finally(() => {
 
-        })
+        // })
     }
 
 </script>

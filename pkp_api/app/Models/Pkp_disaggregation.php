@@ -26,4 +26,9 @@ class Pkp_disaggregation extends Model
             'indicator_id'        // Foreign key in the pivot table for Pkp_indicator
         );
     }
+
+    public function indicatorDisaggregation(){
+        return $this->hasOne(Pkp_indicator_disaggregation::class,"indicator_disaggregation_id","disaggregation_id");
+    }
+
 }

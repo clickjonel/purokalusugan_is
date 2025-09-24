@@ -16,12 +16,17 @@ class Pkp_indicator_disaggregation extends Model
     public $timestamps = false;
     
     protected $primaryKey = 'indicator_disaggregation_id';
-   public function indicator()
+    public function indicator()
     {
         return $this->belongsTo(Pkp_indicator::class, 'indicator_id', 'indicator_id');
     }
-       public function disaggregation()
+    public function disaggregation()
     {
-        return $this->belongsTo(Pkp_disaggregation::class, 'disaggregation_id', 'disaggregation_id');
+        return $this->belongsTo(Pkp_disaggregation::class, 'indicator_disaggregation_id', 'disaggregation_id');
+    }
+
+    public function values()
+    {
+        return $this->hasMany(Pkp_indicator_values::class, 'indicator_disaggregation_id', 'indicator_disaggregation_id');
     }
 }

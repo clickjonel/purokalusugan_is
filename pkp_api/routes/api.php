@@ -182,3 +182,4 @@ Route::group([
 
 // dashboard
 Route::get('/exec/dashboard', [DashboardController::class, 'getExecDashboardData']);
+Route::get('/dashboard/program/find', [DashboardController::class, 'getProgramDashboardData']);

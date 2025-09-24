@@ -21,8 +21,9 @@ class Pkp_indicator_values extends Model
         return $this->hasOne(Pkp_events::class,"event_id","event_id");
     }
 
-    public function indicatorDisaggregation(){
-        return $this->hasOne(Pkp_indicator_disaggregation::class,"indicator_disaggregation_id","indicator_disaggregation_id");
+    public function indicatorDisaggregation()
+    {
+        return $this->belongsTo(Pkp_indicator_disaggregation::class, 'indicator_disaggregation_id', 'indicator_disaggregation_id');
     }
 
     public function barangay(){
