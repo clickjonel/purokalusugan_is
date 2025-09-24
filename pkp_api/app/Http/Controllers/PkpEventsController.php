@@ -141,7 +141,7 @@ class PkpEventsController extends Controller
                             if(isset($disaggregationData['value']) && $disaggregationData['value'] !== null && $disaggregationData['value'] !== ''){
                                 Pkp_indicator_values::create([
                                     'event_id' => $event->event_id,
-                                    'indicator_disaggregation_id' => $disaggregationData['disaggregation_id'],
+                                    'indicator_disaggregation_id' => $disaggregationData['indicator_disaggregation_id'],
                                     'value' => $disaggregationData['value'],
                                     'remarks' => $disaggregationData['remarks'],
                                     'barangay_id' => $barangay->barangay_id,

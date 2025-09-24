@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EventBarangay;
 use App\Models\Hrh;
+use App\Models\Pkp_events;
 use App\Models\Pkp_indicator;
 use App\Models\Pkp_indicator_values;
 use App\Models\Pkp_site;
@@ -21,14 +23,20 @@ class DashboardController extends Controller
         // $indicators = Pkp_indicator::with(['program', 'disaggregations'])->get();
         $programs = Programs::withCount(['indicators'])->get();
 
+        $eventData['total'] = Pkp_events::count();
+        $eventData['total_budget_spent'] = Pkp_events::sum('event_actual_budget');
+        $eventData['total_barangays'] = EventBarangay::count();
+        $eventData['total_small_scale'] = Pkp_events::where('event_type',1)->count();
+        $eventData['total_large_scale'] = Pkp_events::where('event_type',2)->count();
+
         return response()->json([
             'data' => [
                 'programs_count' => $programs_count,
                 'indicators_count' => $indicators_count,
                 'pk_sites_count' => $pk_sites_count,
                 'hrh_count' => $hrh_count,
-                // 'indicators' => $indicators,
                 'programs' => $programs,
+                'eventData' => $eventData
             ]
         ]);
     }
@@ -53,7 +61,6 @@ class DashboardController extends Controller
 
         return response()->json([
             'program' => $program,
-            // 'indicators' => $indicators
         ]);
     }
 

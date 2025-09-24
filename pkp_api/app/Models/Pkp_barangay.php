@@ -16,6 +16,9 @@ class Pkp_barangay extends Model
         'barangay_name',
         'uid'
     ];
+
+    protected $appends = ['is_pk_site'];
+
     public function municipality()
     {
         return $this->belongsTo(Pkp_Municipality::class, 'municipality_id', 'municipality_id')
@@ -32,6 +35,11 @@ class Pkp_barangay extends Model
     {
         return $this->belongsTo(Pkp_province::class, 'province_id', 'province_id')
             ->select('province_id', 'province_name');
+    }
+
+    public function getIsPkSiteAttribute()
+    {
+        return Pkp_site::where('barangay_id', $this->barangay_id)->exists();
     }
 
     
