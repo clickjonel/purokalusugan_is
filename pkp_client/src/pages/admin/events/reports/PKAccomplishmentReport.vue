@@ -53,11 +53,11 @@ interface IndicatorObject {
     program_id: number
 }
 
-interface DisaggregationObject{
-    disaggregation_code:string,
-    disaggregation_id:number,
-    disaggregation_name:string,
-    totalable:number
+interface DisaggregationObject {
+    disaggregation_code: string,
+    disaggregation_id: number,
+    disaggregation_name: string,
+    totalable: number
 }
 interface EventValueItem {
     barangay: BarangayItem,
@@ -103,10 +103,6 @@ const municipality = ref<MunicipalityObject | null>(null);
 const province = ref<ProvinceObject | null>(null);
 let indicatorCollectedDisaggregationValues: number[] = [];
 
-
-
-
-
 const printPage = (): void => {
     document.body.classList.add('print-root');
     const removeClass = () => {
@@ -126,6 +122,7 @@ function getIndicatorDisaggregationValue(event_id: any, barangay_id: number, dis
             return item.value;
         }
     })
+
     return result[0].value;
 
 }
@@ -134,28 +131,45 @@ function getSumOfValuesForCurrentIndicatorShown(list: number[]) {
     const sum = list.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     return sum;
 }
-function generateIndicatorData(indicators: IndicatorObject[],event_id:any,barangay_id:number) {
-    console.log('indicators', indicators)
-    console.log('event id',event_id);
-    console.log('barangay id',barangay_id)
-    let result = [];    
+function generateIndicatorData(indicators: IndicatorObject[], event_id: any, barangay_id: number) {
+    // console.log('indicators', indicators)
+    // console.log('event id', event_id);
+    // console.log('barangay id', barangay_id)
+    // console.log('event values here', eventValues) 
+    const event_values_per_barangay_id = eventValues.value.filter(item=>item.barangay_id = barangay_id);
+    // console.log('event values per barangay',event_values_per_barangay_id);
+    let result = [];
+
     for (let i = 0; i < indicators.length; i++) {
-        const indicator_name = indicators[i].indicator_name;
-        const disaggregations =indicators[i].disaggregations;
-        let total_males = 0;
-        for(let j=i;j<disaggregations.length;j++){
-            total_males = getIndicatorDisaggregationValue(event_id,barangay_id,disaggregations[i].disaggregation_id) 
-        }
-        result.push({indicator_name:indicator_name,total_males:total_males});
+        const indicator_id = indicators[i].indicator_id;
+        // console.log('indicator for references',indicator_id)
+        const indicator_name = indicators[i].indicator_name;        
+        
+        // let females = 0;
+        // const indicator_values = eventValues.value.filter(item=>{
+        //     if(item.indicator_disaggregation.indicator.indicator_id === indicator_id){
+        //         return item;
+        //     }
+        // })
+        // console.log('indicator values',indicator_values)
+        // const indicator_values_based_on_barangay_id = indicator_values.filter(item=>{
+        //     if(item.barangay_id ===37494){
+        //         return item;
+        //     }
+        // })
+        result.push({ indicator_name: indicator_name, 
+            males: 0,
+            females: 0});
     }
+    
     return result;
 }
 function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
-    const barangay_ids = event_values.map(item => item.barangay_id);
-    const unique_barangay_ids = [...new Set(barangay_ids)];
+    const barangay_ids = event_values.map(item => item.barangay.barangay_id);    
+    const unique_barangay_ids = [...new Set(barangay_ids)];    
     const individualsPerBarangay = unique_barangay_ids.map(id =>
-        event_values.filter(item => item.barangay_id == id)
-    );
+        event_values.filter(item => item.barangay.barangay_id == id)
+    );    
     let barangay_name = "";
     let result = [];
     for (let i = 0; i < individualsPerBarangay.length; i++) {
@@ -165,10 +179,10 @@ function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
         for (let j = 0; j < individualsPerBarangay[i].length; j++) {
             barangay_name = individualsPerBarangay[i][j].barangay.barangay_name;
             total_individuals += individualsPerBarangay[i][j].value;
-            if (individualsPerBarangay[i][j].indicator_disaggregation_id == 2) {
+            if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 2) {
                 total_males += individualsPerBarangay[i][j].value;
             }
-            if (individualsPerBarangay[i][j].indicator_disaggregation_id == 3) {
+            if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 3) {
                 total_females += individualsPerBarangay[i][j].value;
             }
         }
@@ -413,7 +427,8 @@ onMounted(() => {
                 :key='barangay_index'>
                 <strong class="bg-green-700 text-white">
                     {{ barangay.barangay_name }}</strong>
-                <div v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
+                <div class="hover:border-black"
+                    v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
                     <strong class="bg-purple-700 text-white">
                         {{ program.program_name }}</strong>
                     <table class='w-full border'>
@@ -425,12 +440,14 @@ onMounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(indicator, indicator_index) in
-                                generateIndicatorData(program.indicators,eventData?.event.event_id,barangay.barangay_id)" 
+                            <tr class="hover:bg-slate-100"
+                                v-for="(indicator, indicator_index) in
+                                generateIndicatorData(program.indicators, eventData?.event.event_id, barangay.barangay_id)"
                                 :key="indicator_index">
-                                <td>{{ indicator.indicator_name }}</td>
-                                <td>{{ indicator.total_males }}</td>
-                                <td></td>
+                                <td class='border-r border-b'>{{ indicator.indicator_name }}</td>
+                                <td class='border-r border-b'>{{ indicator.males }}</td>
+                                <td class='border-r border-b'>{{ indicator.females }}</td>
+                                <td class='border-r border-b'></td>
                             </tr>
                         </tbody>
                         <tfoot>
