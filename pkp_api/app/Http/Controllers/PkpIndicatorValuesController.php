@@ -31,7 +31,7 @@ class PkpIndicatorValuesController extends Controller
             'data' => $data
         ], 200);
     }
-     public function updateIndicatorValue(Request $request): JsonResponse
+    public function updateIndicatorValue(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'indicator_value_id' => 'required|integer|exists:pkp_indicator_values,indicator_value_id',

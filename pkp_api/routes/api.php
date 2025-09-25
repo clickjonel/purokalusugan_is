@@ -79,6 +79,7 @@ Route::group([
     Route::post('/save', [PkpEventsController::class, 'saveEvent']);
     Route::get('/fetch', [PkpEventsController::class, 'fetchEvent']);
     Route::post('/populate', [PkpEventsController::class, 'populateEvent']);
+    Route::post('/update/details',[PkpEventsController::class,'updateEventDetails']);
 });
 
 Route::group([

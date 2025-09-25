@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('indicator_disaggregation_id');
             $table->bigInteger('value');
             $table->bigInteger('barangay_id');
-            $table->string('remarks');
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }
