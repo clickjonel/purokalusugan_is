@@ -83,7 +83,9 @@ interface IndividualTotalObject {
     barangay_name: string,
     individual_total: number,
     total_males: number,
-    total_females: number
+    total_females: number,
+    total_4Ps:number,
+    total_household:number
 }
 
 interface MunicipalityObject {
@@ -176,6 +178,9 @@ function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
         let total_individuals = 0;
         let total_males = 0;
         let total_females = 0;
+        let total_not_indicated =0;
+        let total_4Ps= 0;
+        let total_household=0;
         for (let j = 0; j < individualsPerBarangay[i].length; j++) {
             barangay_name = individualsPerBarangay[i][j].barangay.barangay_name;
             total_individuals += individualsPerBarangay[i][j].value;
@@ -185,12 +190,25 @@ function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
             if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 3) {
                 total_females += individualsPerBarangay[i][j].value;
             }
+            if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 4) {
+                total_not_indicated += individualsPerBarangay[i][j].value;
+            }
+            if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 5) {
+                total_4Ps += individualsPerBarangay[i][j].value;
+            }
+            if (individualsPerBarangay[i][j].indicator_disaggregation.disaggregation_id == 6) {
+                total_household += individualsPerBarangay[i][j].value;
+            }
+
         }
         result.push({
             barangay_name: barangay_name,
             individual_total: total_individuals,
             total_males: total_males,
-            total_females: total_females
+            total_females: total_females,
+            total_not_indicated:total_not_indicated,
+            total_4Ps:total_4Ps,
+            total_household:total_household
         })
     }
     return result;
@@ -206,6 +224,14 @@ function getOverAllTotalForMales(totals: IndividualTotalObject[]) {
 }
 function getOverAllTotalForFemales(totals: IndividualTotalObject[]) {
     const result = totals.reduce((accumulator, current) => accumulator + current.total_females, 0);
+    return result;
+}
+function getOverAllTotalFor4Ps(totals: IndividualTotalObject[]) {
+    const result = totals.reduce((accumulator, current) => accumulator + current.total_4Ps, 0);
+    return result;
+}
+function getOverAllTotalForHousehold(totals: IndividualTotalObject[]) {
+    const result = totals.reduce((accumulator, current) => accumulator + current.total_household, 0);
     return result;
 }
 
@@ -469,6 +495,7 @@ onMounted(() => {
                         <th class='border-b border-r p-2'>Male</th>
                         <th class='border-b border-r p-2'>Female</th>
                         <th class='border-b border-r p-2'>4Ps</th>
+                        <th class='border-b border-r p-2'>Household</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -477,7 +504,8 @@ onMounted(() => {
                         <td class='border-b border-r p-2'>{{ item.individual_total }}</td>
                         <td class='border-b border-r p-2'>{{ item.total_males }}</td>
                         <td class='border-b border-r p-2'>{{ item.total_females }}</td>
-                        <td class='border-b border-r p-2'>0</td>
+                        <td class='border-b border-r p-2'>{{ item.total_4Ps }}</td>
+                        <td class='border-b border-r p-2'>{{ item.total_household }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -495,7 +523,10 @@ onMounted(() => {
                             <strong>{{ getOverAllTotalForFemales(individualsServedData) }}</strong>
                         </td>
                         <td class='border-b border-r p-2'>
-                            <strong>0</strong>
+                            <strong>{{ getOverAllTotalFor4Ps(individualsServedData) }}</strong>
+                        </td>
+                        <td class='border-b border-r p-2'>
+                            <strong>{{ getOverAllTotalForHousehold(individualsServedData) }}</strong>
                         </td>
                     </tr>
                 </tfoot>
