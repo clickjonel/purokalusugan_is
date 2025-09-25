@@ -20,11 +20,11 @@ interface MarkerPayload {
 
 const selectedProvince = ref<ProvincePayload | null>(null)
 const selectedMarker = ref<MarkerPayload | null>(null)
-
 const selectProvince = (province: ProvincePayload) => {
   selectedProvince.value = province
   selectedMarker.value = null
 }
+
 const selectMarker = (marker: MarkerPayload) => {
   selectedMarker.value = {
     ...marker,
@@ -33,24 +33,24 @@ const selectMarker = (marker: MarkerPayload) => {
   }
   selectedProvince.value = null
 }
+
 const selectRegion = () => {
   selectedProvince.value = null
   selectedMarker.value = null
 }
 
 // --- API Data ---
-// NOTE: keys are province_name (so we can look up with selectedProvince.name)
 const provinceData = ref<Record<
   string,
   {
     cards: CatchmentOverviewProps[]
-    sites: Site[]                // province-level site entry
+    sites: Site[]
     municipalities: Record<
       string,
       {
         cards: CatchmentOverviewProps[]
-        sites: Site[]            // municipality-level site entry (array of 1)
-        barangays: Site[]        // barangay-level entries (many)
+        sites: Site[]
+        barangays: Site[]
       }
     >
   }
@@ -61,21 +61,38 @@ const carData = ref<{ cards: CatchmentOverviewProps[]; sites: Site[] }>({
   sites: []
 })
 
+// Add barangay lookup ref
+const barangayLookup = ref<Record<string, any>>({})
+
 // computed array of sites (province + all municipalities) for the currently selected province
 const municipalitySites = computed<Site[]>(() => {
   const sel = selectedProvince.value
   if (!sel) return []
-  const prov = provinceData.value[sel.name]   // using province_name as key
+  const prov = provinceData.value[sel.name]
   if (!prov) return []
   const munSites = Object.values(prov.municipalities || {}).flatMap(m => m.sites || [])
-  // include the province-level site entry (if you want that in the table too)
   return [...(prov.sites || []), ...munSites]
 })
 
-// simple handler for row clicks (you can extend this later for deeper drilldown)
+// Add computed properties for barangay data
+const barangayCards = computed(() => {
+  if (!selectedMarker.value || selectedMarker.value.level !== 'barangay') return []
+  return barangayLookup.value[selectedMarker.value.title]?.cards || []
+})
+
+const barangaySites = computed(() => {
+  if (!selectedMarker.value || selectedMarker.value.level !== 'barangay') return []
+  const brgy = barangayLookup.value[selectedMarker.value.title]
+  if (!brgy) return []
+  return [{
+    code: brgy.barangay_id,
+    name: brgy.barangay_name,
+    status: "Active",
+    cards: brgy.cards
+  }]
+})
+
 const handleRowClick = (row: Site) => {
-  // placeholder — just log for now
-  // extend: if row is province -> set selectedProvince; if row is municipality -> show barangays, etc.
   console.log("row clicked", row)
 }
 
@@ -91,7 +108,6 @@ onMounted(async () => {
     const apiProv = resProv.data.data
     const apiMun = resMun.data.data
     const apiBrgy = resBrgy.data.data
-
     const provinces: Record<
       string,
       {
@@ -101,6 +117,20 @@ onMounted(async () => {
       }
     > = {}
 
+    // Create barangay lookup map
+    const lookup: Record<string, any> = {}
+    apiBrgy.forEach((brgy: any) => {
+      lookup[brgy.barangay_name] = {
+        ...brgy,
+        cards: [
+          { title: "Total No. Sitio + Purok", value: Number(brgy.total_no_sitio_purok), subtitle: "" },
+          { title: "Target Sitio + Purok", value: Number(brgy.total_target_sitio_purok), subtitle: "" },
+          { title: "Total Sites", value: Number(brgy.site_count), subtitle: "" }
+        ]
+      }
+    })
+    barangayLookup.value = lookup
+
     // --- Provinces (key by province_name) ---
     apiProv.forEach((prov: any) => {
       const provCards = [
@@ -108,8 +138,6 @@ onMounted(async () => {
         { title: "Target Sitio + Purok", value: Number(prov.total_target_sitio_purok), subtitle: "" },
         { title: "Total Sites", value: Number(prov.site_count), subtitle: "" }
       ]
-
-      // key by province_name to match selectedProvince.name (map emits name)
       provinces[prov.province_name] = {
         cards: provCards,
         sites: [
@@ -131,13 +159,10 @@ onMounted(async () => {
         { title: "Target Sitio + Purok", value: Number(mun.total_target_sitio_purok), subtitle: "" },
         { title: "Total Sites", value: Number(mun.site_count), subtitle: "" }
       ]
-
       const provKey = mun.province_name
       if (!provinces[provKey]) {
-        // if province not present (defensive), create minimal entry
         provinces[provKey] = { cards: [], sites: [], municipalities: {} }
       }
-
       provinces[provKey].municipalities[mun.municipality_name] = {
         cards: munCards,
         sites: [
@@ -159,7 +184,6 @@ onMounted(async () => {
         { title: "Target Sitio + Purok", value: Number(brgy.total_target_sitio_purok), subtitle: "" },
         { title: "Total Sites", value: Number(brgy.site_count), subtitle: "" }
       ]
-
       const provKey = brgy.province_name
       const munKey = brgy.municipality_name
       if (provinces[provKey] && provinces[provKey].municipalities[munKey]) {
@@ -204,7 +228,6 @@ onMounted(async () => {
     <div class="flex-1">
       <MapView @province-selected="selectProvince" @marker-selected="selectMarker" @region-selected="selectRegion" />
     </div>
-
     <div
       class="w-full md:w-[48rem] border-t md:border-t-0 md:border-l bg-card text-card-foreground overflow-y-auto shadow-lg">
       <div class="p-4 sm:p-6 space-y-4">
@@ -213,22 +236,17 @@ onMounted(async () => {
             ← Back to CAR
           </Button>
         </div>
-
         <!-- Province Mode: show province cards + municipalities as sites -->
         <ProvinceDashboard v-if="selectedProvince" level="province" :provinceName="selectedProvince.name"
           :cards="provinceData[selectedProvince.name]?.cards || []" :sites="municipalitySites"
           @row-clicked="handleRowClick" />
-
         <!-- Barangay Mode -->
         <ProvinceDashboard v-else-if="selectedMarker?.level === 'barangay'"
-          :provinceName="`${selectedMarker.title} (Barangay)`" :cards="[]"
-          :sites="[{ code: 'BRG', name: selectedMarker.title, status: selectedMarker.status || '' }]"
+          :provinceName="`${selectedMarker.title} (Barangay)`" :cards="barangayCards" :sites="barangaySites"
           level="municipality" />
-
         <!-- Province Capital Marker Mode -->
         <ProvinceDashboard v-else-if="selectedMarker?.level === 'province'" :provinceName="selectedMarker.title"
           :cards="[]" :sites="[]" level="municipality" />
-
         <!-- Region (CAR) Mode -->
         <ProvinceDashboard v-else provinceName="Cordillera Administrative Region" :cards="carData.cards"
           :sites="carData.sites" level="region" />
