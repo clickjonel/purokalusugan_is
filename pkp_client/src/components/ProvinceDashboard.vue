@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Table,
@@ -20,24 +21,45 @@ export interface Site {
   code: string
   name: string
   status: string
+  cards?: CatchmentOverviewProps[]
 }
 
 const props = defineProps<{
+  level: "region" | "province" | "municipality"
   provinceName: string
   cards: CatchmentOverviewProps[]
   sites: Site[]
 }>()
+
+const emit = defineEmits<{
+  (e: "row-clicked", payload: Site): void
+}>()
+
+const handleRowClick = (site: Site) => {
+  emit("row-clicked", site)
+}
+
+const tableTitle = computed(() => {
+  if (props.level === "region") {
+    return `Provinces (${props.sites.length})`
+  } else if (props.level === "province") {
+    return `Municipalities (${props.sites.length})`
+  } else if (props.level === "municipality") {
+    return `Barangays (${props.sites.length})`
+  }
+  return "Sites"
+})
 </script>
 
 <template>
   <div class="p-3 space-y-4">
-    <!-- Compact Title -->
+    <!-- Title -->
     <div class="text-center space-y-1">
       <h2 class="text-lg font-bold tracking-tight">CATCHMENT OVERVIEW</h2>
       <p class="text-xs text-muted-foreground">{{ props.provinceName }}</p>
     </div>
 
-    <!-- Compact Cards Grid -->
+    <!-- Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       <Card v-for="card in props.cards" :key="card.title" class="rounded-lg shadow-sm">
         <CardHeader class="p-3 space-y-1">
@@ -52,20 +74,26 @@ const props = defineProps<{
       </Card>
     </div>
 
-    <!-- Compact Table -->
+    <!-- Table -->
     <div class="space-y-2">
-      <h3 class="font-semibold text-sm text-center sm:text-left">Sites ({{ props.sites.length }})</h3>
+      <h3 class="font-semibold text-sm text-center sm:text-left">
+        {{ tableTitle }}
+      </h3>
       <div class="border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow class="h-10">
               <TableHead class="text-xs font-semibold py-2">Code</TableHead>
-              <TableHead class="text-xs font-semibold py-2">Barangay</TableHead>
+              <TableHead class="text-xs font-semibold py-2">Name</TableHead>
               <TableHead class="text-xs font-semibold py-2 text-center w-20">Status</TableHead>
+              <TableHead class="text-xs font-semibold py-2 text-center">No. Sitio + Purok</TableHead>
+              <TableHead class="text-xs font-semibold py-2 text-center">Target Sitio + Purok</TableHead>
+              <TableHead class="text-xs font-semibold py-2 text-center">Sites</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="(row, i) in props.sites" :key="i" class="h-12">
+            <TableRow v-for="(row, i) in props.sites" :key="i" class="h-12 cursor-pointer hover:bg-muted/30"
+              @click="handleRowClick(row)">
               <TableCell class="text-sm py-2 font-mono">{{ row.code }}</TableCell>
               <TableCell class="text-sm py-2">{{ row.name }}</TableCell>
               <TableCell class="text-center py-2">
@@ -73,6 +101,9 @@ const props = defineProps<{
                   {{ row.status }}
                 </Badge>
               </TableCell>
+              <TableCell class="text-center py-2">{{ row.cards?.[0]?.value || 0 }}</TableCell>
+              <TableCell class="text-center py-2">{{ row.cards?.[1]?.value || 0 }}</TableCell>
+              <TableCell class="text-center py-2">{{ row.cards?.[2]?.value || 0 }}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

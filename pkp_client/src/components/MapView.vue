@@ -58,19 +58,14 @@ onMounted(async () => {
   }).addTo(map);
   L.control.scale().addTo(map);
 
-  // Fetch GeoJSON (Provinces only)
+  // --- Load GeoJSON provinces ---
   const res = await axios.get("/map/geojson");
   const provinces: FeatureCollection = res.data;
   const geojsonLayer: GeoJSON = L.geoJSON(provinces, {
     style: (feature?: Feature<any>): PathOptions => {
       const provName = feature?.geometry?.properties?.name ?? "";
       if (provName === "Cordillera Administrative Region" || provName == "") {
-        return {
-          color: "#FFFFFF00",       // outline for CAR
-          weight: 2,
-          fillColor: "#FFFFFF00", // transparent fill
-          fillOpacity: 0.0,
-        };
+        return { color: "#FFFFFF00", weight: 2, fillColor: "#FFFFFF00", fillOpacity: 0.0 };
       }
       return {
         color: provinceColors[provName] || defaultColor,
@@ -81,11 +76,9 @@ onMounted(async () => {
     },
     onEachFeature: (feature: Feature<any>, layer: Layer) => {
       const provName = feature.properties?.name ?? "";
-
       if (provName) {
         layer.bindTooltip(provName);
       }
-
       layer.on("click", (e) => {
         e.originalEvent?.stopPropagation();
 
@@ -99,9 +92,9 @@ onMounted(async () => {
           }
         }
 
-
-        // reset old highlight (skip CAR)
-        if (selectedLayer.value && (selectedLayer.value as any).feature?.properties?.name !== "Cordillera Administrative Region") {
+        // reset highlight (skip CAR)
+        if (selectedLayer.value &&
+          (selectedLayer.value as any).feature?.properties?.name !== "Cordillera Administrative Region") {
           const prevName = (selectedLayer.value as any).feature?.properties?.name ?? "";
           (selectedLayer.value as L.Path).setStyle({
             color: provinceColors[prevName] || defaultColor,
@@ -110,7 +103,7 @@ onMounted(async () => {
           });
         }
 
-        // highlight only provinces, not CAR
+        // highlight only provinces
         if (provName !== "Cordillera Administrative Region") {
           const color = provinceColors[provName] || defaultColor;
           (layer as L.Path).setStyle({
@@ -121,18 +114,14 @@ onMounted(async () => {
           selectedLayer.value = layer;
         }
 
-        emit("province-selected", {
-          name: provName,
-          info: feature.properties ?? {}
-        });
+        emit("province-selected", { name: provName, info: feature.properties ?? {} });
       });
     },
   }).addTo(map);
 
-
   map.fitBounds(geojsonLayer.getBounds());
 
-  // Province-level capital markers
+  // --- Province capitals ---
   const bigIcon = L.icon({
     iconUrl: await axios.get("/map/red-marker", { responseType: "blob" }).then(res => URL.createObjectURL(res.data)),
     iconSize: [40, 40],
@@ -140,24 +129,59 @@ onMounted(async () => {
     popupAnchor: [0, -35],
   });
 
-  function addMarker(lat: number, lng: number, title: string, population: number, region: string) {
+  function addCapital(lat: number, lng: number, title: string, population: number, region: string) {
     L.marker([lat, lng], { icon: bigIcon })
       .addTo(map)
       .bindTooltip(`${title} (Capital)`)
       .on("click", () => {
         map.setView([lat, lng], 11);
-        emit("marker-selected", { title, population, region });
+        emit("marker-selected", { title, population, region, level: "province" });
       });
   }
 
-  addMarker(17.5556, 120.7906, "Bangued, Abra", 250000, "Cordillera Administrative Region");
-  addMarker(18.022963, 121.18412, "Kabugao Apayao", 125000, "Cordillera Administrative Region");
-  addMarker(16.4484, 120.5905, "La Trinidad Benguet", 450000, "Cordillera Administrative Region");
-  addMarker(16.8083, 121.1939, "Lagawe Ifugao", 200000, "Cordillera Administrative Region");
-  addMarker(17.41, 121.4583, "Tabuk Kalinga", 220000, "Cordillera Administrative Region");
-  addMarker(17.0913, 121.0106, "Bontoc Mountain Province", 160000, "Cordillera Administrative Region");
-  addMarker(16.4130, 120.5914, "Baguio City", 345000, "Cordillera Administrative Region");
+  addCapital(17.5556, 120.7906, "Bangued, Abra", 250000, "Cordillera Administrative Region");
+  addCapital(18.022963, 121.18412, "Kabugao, Apayao", 125000, "Cordillera Administrative Region");
+  addCapital(16.4484, 120.5905, "La Trinidad, Benguet", 450000, "Cordillera Administrative Region");
+  addCapital(16.8083, 121.1939, "Lagawe, Ifugao", 200000, "Cordillera Administrative Region");
+  addCapital(17.41, 121.4583, "Tabuk, Kalinga", 220000, "Cordillera Administrative Region");
+  addCapital(17.0913, 121.0106, "Bontoc, Mountain Province", 160000, "Cordillera Administrative Region");
+  addCapital(16.4130, 120.5914, "Baguio City", 345000, "Cordillera Administrative Region");
+
+  // --- Barangay markers ---
+  const barangayRes = await axios.get("/map/pkpsites/btotal");
+  const barangayData = barangayRes.data.data;
+
+  // simple SVG marker factory
+  function createSvgIcon(color: string) {
+    return L.divIcon({
+      className: "",
+      html: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${color}" viewBox="0 0 16 16">
+              <circle cx="8" cy="8" r="6" />
+             </svg>`,
+      iconAnchor: [8, 8],
+    });
+  }
+
+  barangayData.forEach((brgy: any) => {
+    if (!brgy.latitude || !brgy.longitude) return;
+
+    const provName = brgy.province_name;
+    const icon = createSvgIcon(provinceColors[provName] || "#FF0000");
+
+    L.marker([parseFloat(brgy.latitude), parseFloat(brgy.longitude)], { icon })
+      .bindTooltip(`${brgy.barangay_name}, ${brgy.municipality_name}`)
+      .on("click", () => {
+        map.setView([parseFloat(brgy.latitude), parseFloat(brgy.longitude)], 13);
+        emit("marker-selected", {
+          title: brgy.barangay_name,
+          region: provName,
+          level: "barangay",
+        });
+      })
+      .addTo(map);
+  });
 });
+
 
 </script>
 

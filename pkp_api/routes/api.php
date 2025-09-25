@@ -79,7 +79,7 @@ Route::group([
     Route::post('/save', [PkpEventsController::class, 'saveEvent']);
     Route::get('/fetch', [PkpEventsController::class, 'fetchEvent']);
     Route::post('/populate', [PkpEventsController::class, 'populateEvent']);
-    Route::post('/update/details',[PkpEventsController::class,'updateEventDetails']);
+    Route::post('/update/details', [PkpEventsController::class, 'updateEventDetails']);
 });
 
 Route::group([
@@ -191,8 +191,10 @@ Route::group([
     'prefix' => 'map',
 ], function () {
     Route::get('/red-marker', [GeoJsonController::class, 'getMarker']);
+    Route::get('/blue-marker', [GeoJsonController::class, 'getBlueMarker']);
     Route::get('/geojson', [GeoJsonController::class, 'fetch']);
     Route::get('/pkpsites', [PkpSiteController::class, 'dashboardSites']);
+    Route::get('/pkpsites/rtotal', [PkpSiteController::class, 'dashboardRegionTotals']);
     Route::get('/pkpsites/ptotal', [PkpSiteController::class, 'dashboardProvinceTotals']);
     Route::get('/pkpsites/mtotal', [PkpSiteController::class, 'dashboardMunicipalityTotals']);
     Route::get('/pkpsites/btotal', [PkpSiteController::class, 'dashboardBarangayTotals']);

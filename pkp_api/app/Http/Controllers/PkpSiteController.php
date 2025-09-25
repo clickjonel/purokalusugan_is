@@ -6,6 +6,7 @@ use App\Models\Pkp_site;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Type\Decimal;
 
 class PkpSiteController extends Controller
 {
@@ -120,7 +121,7 @@ class PkpSiteController extends Controller
             $site->province_name = data_get($site, 'barangay.municipality.province.province_name');
             $site->municipality_id = data_get($site, 'barangay.municipality.municipality_id');
             $site->municipality_name = data_get($site, 'barangay.municipality.municipality_name');
-            $site->barangay_id = data_get($site, 'barangay.barangay_id');
+            $site->barangay_id = data_get($site, key: 'barangay.barangay_id');
             $site->barangay_name = data_get($site, 'barangay.barangay_name');
 
             return $site;
@@ -149,6 +150,8 @@ class PkpSiteController extends Controller
                             'barangay_name' => $s->barangay_name,
                             'total_no_sitio_purok' => (int) $s->total_no_sitio_purok,
                             'total_target_sitio_purok' => (int) $s->total_target_sitio_purok,
+                            'longitude' => ($s->longitude ?? 0),
+                            'latitude' => ($s->latitude ?? 0),
                             // add other site fields you need here (status, coords, etc.)
                         ];
                     })->values(),
@@ -243,6 +246,8 @@ class PkpSiteController extends Controller
                 'pkp_municipality.municipality_name',
                 'pkp_barangay.barangay_id',
                 'pkp_barangay.barangay_name',
+                'pkp_site.longitude',
+                'pkp_site.latitude',
                 DB::raw('SUM(COALESCE(pkp_site.no_sitio,0) + COALESCE(pkp_site.no_purok,0)) as total_no_sitio_purok'),
                 DB::raw('SUM(COALESCE(pkp_site.target_sitio,0) + COALESCE(pkp_site.target_purok,0)) as total_target_sitio_purok'),
                 DB::raw('COUNT(pkp_site.site_id) as site_count')
@@ -260,6 +265,45 @@ class PkpSiteController extends Controller
         return response()->json([
             'message' => 'Barangay totals retrieved successfully',
             'data' => $barangayTotals
+        ], 200);
+    }
+    public function dashboardRegionTotals()
+    {
+        // Get province totals per region (flat structure)
+        $provinceTotals = DB::table('pkp_site')
+            ->leftJoin('pkp_barangay', 'pkp_site.barangay_id', '=', 'pkp_barangay.barangay_id')
+            ->leftJoin('pkp_municipality', 'pkp_barangay.municipality_id', '=', 'pkp_municipality.municipality_id')
+            ->leftJoin('pkp_province', 'pkp_municipality.province_id', '=', 'pkp_province.province_id')
+            ->leftJoin('pkp_region', 'pkp_province.region_id', '=', 'pkp_region.region_id')
+            ->select(
+                'pkp_region.region_id',
+                'pkp_region.region_name',
+                'pkp_province.province_id',
+                'pkp_province.province_name',
+                'pkp_site.site_id',
+                DB::raw('SUM(COALESCE(pkp_site.no_sitio,0) + COALESCE(pkp_site.no_purok,0)) as total_no_sitio_purok'),
+                DB::raw('SUM(COALESCE(pkp_site.target_sitio,0) + COALESCE(pkp_site.target_purok,0)) as total_target_sitio_purok'),
+                DB::raw('COUNT(pkp_site.site_id) as site_count')
+            )
+            ->groupBy(
+                'pkp_region.region_id',
+                'pkp_region.region_name',
+                'pkp_province.province_id',
+                'pkp_province.province_name'
+            )
+            ->get();
+
+        // Calculate grand totals
+        $grandTotals = [
+            'total_no_sitio_purok' => (int) $provinceTotals->sum('total_no_sitio_purok'),
+            'total_target_sitio_purok' => (int) $provinceTotals->sum('total_target_sitio_purok'),
+            'site_count' => (int) $provinceTotals->sum('site_count'),
+        ];
+
+        return response()->json([
+            'message' => 'Regional totals retrieved successfully',
+            'grand_totals' => $grandTotals,
+            'data' => $provinceTotals,
         ], 200);
     }
 }

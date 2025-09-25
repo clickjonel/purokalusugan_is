@@ -51,4 +51,14 @@ class GeoJsonController extends Controller
             abort(404, 'Image not found');
         }
     }
+    public function getBlueMarker()
+    {
+        $imagePath = public_path('geojson/blue-marker.png');
+
+        if (File::exists($imagePath)) {
+            return response()->file($imagePath);
+        } else {
+            abort(404, 'Image not found');
+        }
+    }
 }
