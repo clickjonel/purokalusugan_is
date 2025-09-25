@@ -19,6 +19,7 @@ class PkpDisaggregationSeeder extends Seeder
             [
                 'disaggregation_code' => 'DIS-25-01',
                 'disaggregation_name' => 'Total',
+                // 'totalable' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

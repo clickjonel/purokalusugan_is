@@ -51,10 +51,10 @@
 <template>
      <Popover>
         <PopoverTrigger as-child>
-            <Button class="w-full font-poppins font-normal" 
+            <Button class="w-full font-poppins font-normal h-auto" 
                 variant="outline">
                 <span v-if="model.length === 0">Select Programs</span>
-                <div class="w-full flex justify-start items-center gap-2" >
+                <div class="w-full flex flex-wrap justify-start items-center gap-2" >
                     <span v-for="program in model" @click="splice(program,$event)" class="rounded-full text-xs bg-gray-200 px-2 cursor-pointer hover:bg-red-200">{{ program.program_name }}</span>
                 </div>
             </Button>
