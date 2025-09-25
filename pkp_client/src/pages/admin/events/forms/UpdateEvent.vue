@@ -352,7 +352,7 @@ export interface Indicator {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="default" class="cursor-pointer" size="sm">Update All Event Values</Button>
+                    <!-- <Button variant="default" class="cursor-pointer" size="sm">Update All Event Values</Button> -->
                 </CardFooter>
             </Card>
 

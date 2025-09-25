@@ -361,9 +361,9 @@ onMounted(() => {
     </div>
 
     <!-- footer -->
-    <div class="w-full h-[50px] flex justify-center items-center border p-2">
+    <!-- <div class="w-full h-[50px] flex justify-center items-center border p-2">
       <span>Pagination Here</span>
-    </div>
+    </div> -->
   </div>
   <Dialog v-model:open="isCreateModalOpen">
     <DialogTrigger />
