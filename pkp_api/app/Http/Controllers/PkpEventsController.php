@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Event\CreateEventRequest;
 use App\Http\Requests\Event\PopulateEventRequest;
+use App\Http\Requests\Event\UpdateEventDetails;
 use App\Models\Pkp_barangay;
 use App\Models\Pkp_events;
 use App\Models\Pkp_indicator;
@@ -93,26 +94,33 @@ class PkpEventsController extends Controller
     public function fetchEvent(Request $request):JsonResponse
     {
         $event = Pkp_events::with(['programs.indicators.disaggregations','barangays','values.indicatorDisaggregation.indicator','values.barangay'])->find($request->event_id);
-    //    $event->grouped_values = collect($event->values)
-    //     ->groupBy('barangay_id')
-    //     ->map(function ($values, $barangayId) use ($event) {
-    //         $barangay = $event->barangays->firstWhere('barangay_id', $barangayId);
-    //         return [
-    //             'barangay' => $barangay,
-    //             'values' => $values->map(function ($value) {
-    //                 return [
-    //                     'indicator_disaggregation_id' => $value->indicator_disaggregation_id,
-    //                     'value' => $value->value,
-    //                     'remarks' => $value->remarks,
-    //                     'indicatorDisaggregation' => $value->indicatorDisaggregation,
-    //                 ];
-    //             }),
-    //         ];
-    //     })
-    //     ->values();
         return response()->json([
             'event' => $event
         ], 200);
+    }
+
+    public function  updateEventDetails(UpdateEventDetails $request):JsonResponse
+    {
+        $validated = $request->validated();
+
+        $event = Pkp_events::findOrFail($validated['event_id']);
+        $event->update($validated);
+        
+        // Sync barangays - extract IDs from the barangay objects
+        // if (isset($validated['barangays'])) {
+        //     $current_barangays = $event->barangays->pluck('barangay_id');
+        //     $event->barangays()->sync($validated['barangays']);
+        // }
+        
+        // // Sync programs if you also have programs relation
+        // if (isset($validated['programs'])) {
+        //     $event->programs()->sync($validated['programs']);
+        // }
+        
+
+        return response()->json([
+            'message' => 'Updated Successfully'
+        ]);
     }
 
     public function populateEvent(PopulateEventRequest $request){
@@ -138,15 +146,15 @@ class PkpEventsController extends Controller
                     foreach ($programData['indicators'] as $indicatorData) {
                         // Loop through disaggregations
                         foreach ($indicatorData['disaggregations'] as $disaggregationData) {
-                            if(isset($disaggregationData['value']) && $disaggregationData['value'] !== null && $disaggregationData['value'] !== ''){
+                            // if(isset($disaggregationData['value']) && $disaggregationData['value'] !== null && $disaggregationData['value'] !== ''){
                                 Pkp_indicator_values::create([
                                     'event_id' => $event->event_id,
                                     'indicator_disaggregation_id' => $disaggregationData['indicator_disaggregation_id'],
-                                    'value' => $disaggregationData['value'],
-                                    'remarks' => $disaggregationData['remarks'],
+                                    'value' => isset($disaggregationData['value']) ? $disaggregationData['value'] : 0,
+                                    'remarks' => $disaggregationData['remarks'] ?? null,
                                     'barangay_id' => $barangay->barangay_id,
                                 ]); 
-                            }
+                            //}
                         }
                     }
                 }
@@ -175,5 +183,6 @@ class PkpEventsController extends Controller
         }
 
     }
+
 
 }
