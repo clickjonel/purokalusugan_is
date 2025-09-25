@@ -84,8 +84,9 @@ interface IndividualTotalObject {
     individual_total: number,
     total_males: number,
     total_females: number,
-    total_4Ps:number,
-    total_household:number
+    total_not_indicated: number,
+    total_4Ps: number,
+    total_household: number
 }
 
 interface MunicipalityObject {
@@ -103,7 +104,6 @@ const printRef = ref<HTMLElement | null>(null);
 const eventValues = ref<EventValueItem[]>([]);
 const municipality = ref<MunicipalityObject | null>(null);
 const province = ref<ProvinceObject | null>(null);
-let indicatorCollectedDisaggregationValues: number[] = [];
 
 const printPage = (): void => {
     document.body.classList.add('print-root');
@@ -115,72 +115,87 @@ const printPage = (): void => {
     window.print();
 }
 
-function getIndicatorDisaggregationValue(event_id: any, barangay_id: number, disaggregation_id: number) {
-    const result = eventValues.value.filter(item => {
-        if (item.event_id === event_id &&
-            item.barangay_id === barangay_id &&
-            item.indicator_disaggregation_id === disaggregation_id
-        ) {
-            return item.value;
-        }
-    })
-
-    return result[0].value;
-
+function displayTotalOfDisaggregationValues(indicator: any) {
+    let result = indicator.males + indicator.females + indicator.not_indicated + indicator.fourPs + indicator.household;
+    return result;
 }
-
-function getSumOfValuesForCurrentIndicatorShown(list: number[]) {
-    const sum = list.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    return sum;
-}
-function generateIndicatorData(indicators: IndicatorObject[], event_id: any, barangay_id: number) {
-    // console.log('indicators', indicators)
-    // console.log('event id', event_id);
-    // console.log('barangay id', barangay_id)
-    // console.log('event values here', eventValues) 
-    const event_values_per_barangay_id = eventValues.value.filter(item=>item.barangay_id = barangay_id);
-    // console.log('event values per barangay',event_values_per_barangay_id);
+function generateIndicatorData(indicators: IndicatorObject[], barangay_id: number) {
+    //step 1: prepare result
     let result = [];
-
+    //step 2: loop through all the indicators in this event, (this already involves which barangay the indicators are in)
     for (let i = 0; i < indicators.length; i++) {
+        //step 3: prepare comparing variables
         const indicator_id = indicators[i].indicator_id;
-        // console.log('indicator for references',indicator_id)
-        const indicator_name = indicators[i].indicator_name;        
-        
-        // let females = 0;
-        // const indicator_values = eventValues.value.filter(item=>{
-        //     if(item.indicator_disaggregation.indicator.indicator_id === indicator_id){
-        //         return item;
-        //     }
-        // })
-        // console.log('indicator values',indicator_values)
-        // const indicator_values_based_on_barangay_id = indicator_values.filter(item=>{
-        //     if(item.barangay_id ===37494){
-        //         return item;
-        //     }
-        // })
-        result.push({ indicator_name: indicator_name, 
-            males: 0,
-            females: 0});
+        const indicator_name = indicators[i].indicator_name;
+        //step 4: get values for the disaggregations (note: should only have one record in each array each)     
+        const males = eventValues.value.filter(item => {
+            if (item.barangay.barangay_id === barangay_id &&
+                item.indicator_disaggregation.indicator_id === indicator_id &&
+                item.indicator_disaggregation.disaggregation_id === 2
+            ) {
+                return item;
+            }
+        })
+        const females = eventValues.value.filter(item => {
+            if (item.barangay.barangay_id === barangay_id &&
+                item.indicator_disaggregation.indicator_id === indicator_id &&
+                item.indicator_disaggregation.disaggregation_id === 3
+            ) {
+                return item;
+            }
+        })
+        const not_indicated = eventValues.value.filter(item => {
+            if (item.barangay.barangay_id === barangay_id &&
+                item.indicator_disaggregation.indicator_id === indicator_id &&
+                item.indicator_disaggregation.disaggregation_id === 4
+            ) {
+                return item;
+            }
+        })
+        const fourPs = eventValues.value.filter(item => {
+            if (item.barangay.barangay_id === barangay_id &&
+                item.indicator_disaggregation.indicator_id === indicator_id &&
+                item.indicator_disaggregation.disaggregation_id === 5
+            ) {
+                return item;
+            }
+        })
+        const household = eventValues.value.filter(item => {
+            if (item.barangay.barangay_id === barangay_id &&
+                item.indicator_disaggregation.indicator_id === indicator_id &&
+                item.indicator_disaggregation.disaggregation_id === 6
+            ) {
+                return item;
+            }
+        })
+        //step 5: push the results
+        result.push({
+            indicator_name: indicator_name,
+            males: males.length > 0 ? males[0].value : 0,
+            females: females.length > 0 ? females[0].value : 0,
+            not_indicated: not_indicated.length > 0 ? not_indicated[0].value : 0,
+            fourPs: fourPs.length > 0 ? fourPs[0].value : 0,
+            household: household.length > 0 ? household[0].value : 0
+        });
     }
-    
+
     return result;
 }
 function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
-    const barangay_ids = event_values.map(item => item.barangay.barangay_id);    
-    const unique_barangay_ids = [...new Set(barangay_ids)];    
+    const barangay_ids = event_values.map(item => item.barangay.barangay_id);
+    const unique_barangay_ids = [...new Set(barangay_ids)];
     const individualsPerBarangay = unique_barangay_ids.map(id =>
         event_values.filter(item => item.barangay.barangay_id == id)
-    );    
+    );
     let barangay_name = "";
     let result = [];
     for (let i = 0; i < individualsPerBarangay.length; i++) {
         let total_individuals = 0;
         let total_males = 0;
         let total_females = 0;
-        let total_not_indicated =0;
-        let total_4Ps= 0;
-        let total_household=0;
+        let total_not_indicated = 0;
+        let total_4Ps = 0;
+        let total_household = 0;
         for (let j = 0; j < individualsPerBarangay[i].length; j++) {
             barangay_name = individualsPerBarangay[i][j].barangay.barangay_name;
             total_individuals += individualsPerBarangay[i][j].value;
@@ -206,9 +221,9 @@ function generateIndividualServedPerPKSiteData(event_values: EventValueItem[]) {
             individual_total: total_individuals,
             total_males: total_males,
             total_females: total_females,
-            total_not_indicated:total_not_indicated,
-            total_4Ps:total_4Ps,
-            total_household:total_household
+            total_not_indicated: total_not_indicated,
+            total_4Ps: total_4Ps,
+            total_household: total_household
         })
     }
     return result;
@@ -224,6 +239,10 @@ function getOverAllTotalForMales(totals: IndividualTotalObject[]) {
 }
 function getOverAllTotalForFemales(totals: IndividualTotalObject[]) {
     const result = totals.reduce((accumulator, current) => accumulator + current.total_females, 0);
+    return result;
+}
+function getOverAllTotalForNotIndicated(totals: IndividualTotalObject[]) {
+    const result = totals.reduce((accumulator, current) => accumulator + current.total_not_indicated, 0);
     return result;
 }
 function getOverAllTotalFor4Ps(totals: IndividualTotalObject[]) {
@@ -257,7 +276,6 @@ function displayEventType(event_type: any) {
 }
 
 function getMunicipality(municipalityId: number) {    
-    // const municipalityId =event_data.barangays[0].municipality_id;
     axios.get(`/municipality/find`, {
         params: {
             municipality_id: municipalityId
@@ -306,7 +324,7 @@ onMounted(() => {
                     eventData.value = response.data;
                     eventValues.value = response.data.event.values;
                     console.log('eventData', eventData.value)
-                    if(eventData.value){
+                    if (eventData.value) {
                         getMunicipality(eventData.value.event.barangays[0].municipality_id);
                         getProvince(eventData.value.event.barangays[0].province_id);
                     }
@@ -316,14 +334,13 @@ onMounted(() => {
                     toast.error("Failed to load event data.");
                 });
         }
-    }    
+    }
 });
-
 
 
 </script>
 <template>
-    <section ref="printRef" class="print-section">
+    <section ref="printRef" class="print-section font-poppins">
         <!-- Header -->
         <section class="w-[100%] flex flex-col border">
             <div class="w-[100%] flex justify-center gap-1">
@@ -334,63 +351,56 @@ onMounted(() => {
                 </div>
                 <img :src="DapayLogo" class="h-[5rem] w-[5rem]" />
             </div>
-            <div class="w-[100%] flex flex-col text-sm">
+            
+            <div class="mt-5 w-[100%] flex flex-col text-sm">
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">TITLE</strong>
-                    <strong>{{ eventData?.event?.event_name }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Title</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_name }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">TYPE OF ACTIVITY</strong>
-                    <strong>{{ displayEventType(eventData?.event?.event_type) }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Type of Activity</strong>
+                    <strong class="text-sm">{{ displayEventType(eventData?.event?.event_type) }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">DATE OF ACTIVITY</strong>
-                    <strong>{{ eventData?.event?.event_date_start }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Date</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_date_start }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">VENUE OF ACTIVITY</strong>
-                    <strong>{{ eventData?.event?.event_date_end }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Venue</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_date_end }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">BUDGET OF ACTIVITY</strong>
-                    <strong>{{ eventData?.event?.event_budget }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Budget</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_budget }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">ACTUAL BUDGET UTILIZED</strong>
-                    <strong>{{ eventData?.event?.event_actual_budget }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Actual Budget Utilized</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_actual_budget }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">SOURCE OF FUNDING</strong>
-                    <strong>{{ eventData?.event?.event_fund_source }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Fund Source</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_fund_source }}</strong>
                 </div>
             </div>
             <div class="w-[100%] flex flex-col">
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">NAME OF PROPONENT</strong>
-                    <strong>{{ eventData?.event?.event_proponents }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Proponents</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_proponents }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">PARTNER STAKEHOLDERS</strong>
-                    <strong>{{ eventData?.event?.event_partners }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Partner Stakeholders</strong>
+                    <strong class="text-sm">{{ eventData?.event?.event_partners }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">AREAS COVERED</strong>
-                    <strong v-for="(barangay, index) in eventData?.event?.barangays" :key="index">
-                        <small class="p-1 bg-green-700 rounded text-white">
-                            {{ barangay.barangay_name }}
-                        </small>
-                    </strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Province</strong>
+                    <strong class="text-sm">{{ province?.province_name }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">PROVINCE/CITY</strong>
-                    <strong>{{ province?.province_name }}</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Municipality/City</strong>
+                    <strong class="text-sm">{{ municipality?.municipality_name }}</strong>
                 </div>
                 <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">MUNICIPALITY</strong>
-                    <strong>{{ municipality?.municipality_name }}</strong>
-                </div>
-                <div class="w-[100%] flex gap-1 items-center border-b">
-                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100">BARANGAYS</strong>
+                    <strong class="w-[30%] p-1 bg-green-700 text-slate-100 text-xs">Areas / Barangays Covered</strong>
                     <strong v-for="(barangay, index) in eventData?.event?.barangays" :key="index">
                         <small class="p-1 bg-green-700 rounded text-white">
                             {{ barangay.barangay_name }}
@@ -401,86 +411,44 @@ onMounted(() => {
         </section>
         <!-- Indicator with Values -->
         <section class="w-[100%] border">
-            <h2 class="text-center text-xl"><strong>Details</strong></h2>
-            <!-- <div class="w-[100%] mt-2" v-for="(barangay, index) in eventData?.event?.barangays" :key='index'>
-                <strong class="p-1 bg-green-700 text-white">
-                    {{ barangay.barangay_name }}</strong>
-                <table class="w-[100%] border">
-                    <thead>
-                        <tr>
-                            <th class='border-b border-r'>Program</th>
-                            <th class='border-b border-r'>Indicator</th>
-                            <th class='border-b border-r'>Male</th>
-                            <th class='border-b border-r'>Female</th>
-                            <th class='border-b border-r'>Not Indicated</th>
-                            <th class='border-b border-r'>4Ps</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
-                            <td class='border-b border-r'>{{ program.program_name }}</td>
-                            <td class='border-b border-r'>
-                                <div class='flex flex-col'>
-                                    <div v-for="(indicator, indicator_index) in program.indicators"
-                                        :key="indicator_index">
-                                        <div>
-                                            <span class='border-b'>{{ indicator.indicator_name }}</span>
-                                            <div class='ml-2'
-                                                v-for="(disaggregation, disaggregation_index) in indicator.disaggregations"
-                                                :key="disaggregation_index">{{ disaggregation.disaggregation_name
-                                                }}
-                                                <span class='text-blue-800 text-lg underline'>{{
-                                                    getIndicatorDisaggregationValue(eventData?.event.event_id,
-                                                        barangay.barangay_id,
-                                                        disaggregation.disaggregation_id) }}</span>
-                                                <span hidden>
-                                                    {{ indicatorCollectedDisaggregationValues.push(
-                                                        getIndicatorDisaggregationValue(eventData?.event.event_id,
-                                                            barangay.barangay_id,
-                                                            disaggregation.disaggregation_id)
-                                                    ) }}
-                                                </span>
-                                            </div>
-                                            <strong>
-                                                Sum: {{ getSumOfValuesForCurrentIndicatorShown(
-                                                    indicatorCollectedDisaggregationValues.splice(0,
-                                                        indicatorCollectedDisaggregationValues.length)) }}
-                                            </strong>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div> -->
+            <h2 class="text-center text-sm text-white bg-slate-500"><strong>Details</strong></h2>
             <div class="w-[100%] mt-2" v-for="(barangay, barangay_index) in eventData?.event?.barangays"
                 :key='barangay_index'>
-                <strong class="bg-green-700 text-white">
-                    {{ barangay.barangay_name }}</strong>
-                <div class="hover:border-black"
-                    v-for="(program, progam_index) in eventData?.event?.programs" :key="progam_index">
-                    <strong class="bg-purple-700 text-white">
-                        {{ program.program_name }}</strong>
+                <div class="bg-green-700 text-white text-center text-xs">
+                    <strong >
+                        {{ barangay.barangay_name }}</strong>
+                </div>
+
+                <div class="hover:border-black" v-for="(program, progam_index) in eventData?.event?.programs"
+                    :key="progam_index">
+                    <div class="w-full bg-purple-500 text-white text-center text-xs">
+                        <strong>
+                            {{ program.program_name }}</strong>
+                    </div>
                     <table class='w-full border'>
                         <thead>
                             <tr>
-                                <th class='border-r border-b'>Indicator</th>
-                                <th class='border-r border-b'>Male</th>
-                                <th class='border-r border-b'>Female</th>
+                                <th class='border-r border-b p-2 text-xs'>Indicator</th>
+                                <th class='border-r border-b p-2 text-xs'>Male</th>
+                                <th class='border-r border-b p-2 text-xs'>Female</th>
+                                <th class='border-r border-b p-2 text-xs'>Not Indicated</th>
+                                <th class='border-r border-b p-2 text-xs'>4Ps</th>
+                                <th class='border-r border-b p-2 text-xs'>Household</th>
+                                <th class='border-r border-b p-2 text-xs'>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="hover:bg-slate-100"
-                                v-for="(indicator, indicator_index) in
-                                generateIndicatorData(program.indicators, eventData?.event.event_id, barangay.barangay_id)"
+                            <tr class="hover:bg-slate-100" v-for="(indicator, indicator_index) in
+                                generateIndicatorData(program.indicators, barangay.barangay_id)"
                                 :key="indicator_index">
-                                <td class='border-r border-b'>{{ indicator.indicator_name }}</td>
-                                <td class='border-r border-b'>{{ indicator.males }}</td>
-                                <td class='border-r border-b'>{{ indicator.females }}</td>
-                                <td class='border-r border-b'></td>
+                                <td class='border-r border-b p-2 text-xs'>{{ indicator.indicator_name }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'>{{ indicator.males }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'>{{ indicator.females }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'>{{ indicator.not_indicated }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'>{{ indicator.fourPs }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'>{{ indicator.household }}</td>
+                                <td class='border-r border-b p-2 text-center text-xs'><strong>{{
+                                    displayTotalOfDisaggregationValues(indicator) }}</strong></td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -492,27 +460,29 @@ onMounted(() => {
 
         <!-- Individuals Served Summary -->
         <section class="mt-5 w-full">
-            <h2 class="text-left text-xl"><strong>Number of individuals served per Barangay/PuroKalusugan
+            <h2 class="text-center text-sm text-white bg-slate-500"><strong>Number of individuals served per Barangay/PuroKalusugan
                     Sites:</strong></h2>
             <table class="w-full border">
                 <thead>
                     <tr>
-                        <th class='border-b border-r p-2'>Barangay/Purok Kalugusan Site</th>
-                        <th class='border-b border-r p-2'>Total Number of Individuals Served</th>
-                        <th class='border-b border-r p-2'>Male</th>
-                        <th class='border-b border-r p-2'>Female</th>
-                        <th class='border-b border-r p-2'>4Ps</th>
-                        <th class='border-b border-r p-2'>Household</th>
+                        <th class='border-b border-r p-2 text-xs'>Barangay/Purok Kalugusan Site</th>
+                        <th class='border-b border-r p-2 text-xs'>Total Number of Individuals Served</th>
+                        <th class='border-b border-r p-2 text-xs'>Male</th>
+                        <th class='border-b border-r p-2 text-xs'>Female</th>
+                        <th class='border-b border-r p-2 text-xs'>Not Indicated</th>
+                        <th class='border-b border-r p-2 text-xs'>4Ps</th>
+                        <th class='border-b border-r p-2 text-xs'>Household</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in individualsServedData" :key="index">
-                        <td class='border-b border-r p-2'>{{ item.barangay_name }}</td>
-                        <td class='border-b border-r p-2'>{{ item.individual_total }}</td>
-                        <td class='border-b border-r p-2'>{{ item.total_males }}</td>
-                        <td class='border-b border-r p-2'>{{ item.total_females }}</td>
-                        <td class='border-b border-r p-2'>{{ item.total_4Ps }}</td>
-                        <td class='border-b border-r p-2'>{{ item.total_household }}</td>
+                        <td class='border-b border-r p-2 text-xs'>{{ item.barangay_name }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.individual_total }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.total_males }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.total_females }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.total_not_indicated }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.total_4Ps }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.total_household }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -520,19 +490,22 @@ onMounted(() => {
                         <td class='border-b border-r p-2'>
                             <strong>Total</strong>
                         </td>
-                        <td class='border-b border-r p-2'>
+                        <td class='border-b border-r p-2 text-center'>
                             <strong>{{ getOverAllTotalForIndividualServed(individualsServedData) }}</strong>
                         </td>
-                        <td class='border-b border-r p-2'>
+                        <td class='border-b border-r p-2 text-center'>
                             <strong>{{ getOverAllTotalForMales(individualsServedData) }}</strong>
                         </td>
-                        <td class='border-b border-r p-2'>
+                        <td class='border-b border-r p-2 text-center'>
                             <strong>{{ getOverAllTotalForFemales(individualsServedData) }}</strong>
                         </td>
-                        <td class='border-b border-r p-2'>
+                        <td class='border-b border-r p-2 text-center'>
+                            <strong>{{ getOverAllTotalForNotIndicated(individualsServedData) }}</strong>
+                        </td>
+                        <td class='border-b border-r p-2 text-center'>
                             <strong>{{ getOverAllTotalFor4Ps(individualsServedData) }}</strong>
                         </td>
-                        <td class='border-b border-r p-2'>
+                        <td class='border-b border-r p-2 text-center'>
                             <strong>{{ getOverAllTotalForHousehold(individualsServedData) }}</strong>
                         </td>
                     </tr>
@@ -542,15 +515,20 @@ onMounted(() => {
 
         <!-- Logistics or Drugs Dispensed -->
         <section class="mt-5 w-full border">
-            <h2 class="text-left text-xl"><strong>Logistics or Drugs Dispensed</strong></h2>
+            <h2 class="text-center text-sm text-white bg-slate-500"><strong>Logistics or Drugs Dispensed</strong></h2>
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th class='border-b border-r'>Type of Logistics or Drugs Provided</th>
-                        <th class='border-b border-r'>Number of Beneficiaries</th>
-                        <th class='border-b border-r'>Amount if applicable</th>
+                        <th class='border-b border-r text-xs'>Type of Logistics or Drugs Provided</th>
+                        <th class='border-b border-r text-xs'>Number of Beneficiaries</th>
+                        <th class='border-b border-r text-xs'>Amount if applicable</th>
                     </tr>
                 </thead>
+                <tbody>
+                    <tr>
+                        <td colspan='3' class="text-center">---No Data available at the moment---</td>
+                    </tr>
+                </tbody>
             </table>
         </section>
 
