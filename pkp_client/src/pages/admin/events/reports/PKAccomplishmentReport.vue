@@ -256,7 +256,8 @@ function displayEventType(event_type: any) {
     }
 }
 
-function getMunicipality(municipalityId: number) {
+function getMunicipality(municipalityId: number) {    
+    // const municipalityId =event_data.barangays[0].municipality_id;
     axios.get(`/municipality/find`, {
         params: {
             municipality_id: municipalityId
@@ -293,6 +294,10 @@ onMounted(() => {
     if (history.state.eventData) {
         eventData.value = history.state.eventData;
         console.log("Event data received:", eventData.value);
+        if (eventData.value) {
+            getMunicipality(eventData.value.event.barangays[0].municipality_id);
+            getProvince(eventData.value.event.barangays[0].province_id);
+        }
     } else {
         const eventId = route.params.id;
         if (eventId) {
@@ -301,15 +306,17 @@ onMounted(() => {
                     eventData.value = response.data;
                     eventValues.value = response.data.event.values;
                     console.log('eventData', eventData.value)
+                    if(eventData.value){
+                        getMunicipality(eventData.value.event.barangays[0].municipality_id);
+                        getProvince(eventData.value.event.barangays[0].province_id);
+                    }
                 })
                 .catch((error) => {
                     console.error("Failed to fetch event data:", error);
                     toast.error("Failed to load event data.");
                 });
         }
-    }
-    getMunicipality(141102);
-    getProvince(1430);
+    }    
 });
 
 
