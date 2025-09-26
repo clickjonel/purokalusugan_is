@@ -22,7 +22,7 @@ class Pkp_indicator_disaggregation extends Model
     }
     public function disaggregation()
     {
-        return $this->belongsTo(Pkp_disaggregation::class, 'indicator_disaggregation_id', 'disaggregation_id');
+        return $this->belongsTo(Pkp_disaggregation::class, 'disaggregation_id', 'disaggregation_id');
     }
 
     public function values()

@@ -43,22 +43,24 @@ class DashboardController extends Controller
 
     public function getProgramDashboardData(Request $request)
     {
-       $program = Programs::with(['indicators.disaggregations.indicatorDisaggregation.values'])->find($request->program_id);
+        $program = Programs::with(['indicators.disaggregations.indicatorDisaggregation.disaggregation'])->find($request->program_id);
 
         $program['indicators'] = $program['indicators']->map(function ($indicator) {
             // Get the indicator_disaggregation_ids for this indicator
             $indicator_disaggregation_ids = $indicator->disaggregations->pluck('pivot.indicator_disaggregation_id');
 
             // Fetch only the values for these indicator_disaggregation_ids
-            $values = Pkp_indicator_values::whereIn('indicator_disaggregation_id', $indicator_disaggregation_ids)->get();
+            $values = Pkp_indicator_values::with(['indicatorDisaggregation.disaggregation'])->whereIn('indicator_disaggregation_id', $indicator_disaggregation_ids)->get();
 
             // Assign the values to the indicator
-            $indicator->values = $values;
-            $indicator->sum_of_values = $values->sum('value');
+            $indicator->values = $values->each(function ($value) {
+                $value->totalable = $value['indicatorDisaggregation']['disaggregation']['totalable'];
+                return $value;
+            });
+            $indicator->sum_of_values = $values->where('totalable',true)->sum('value');
 
             return $indicator;
         });
-
         return response()->json([
             'program' => $program,
         ]);
