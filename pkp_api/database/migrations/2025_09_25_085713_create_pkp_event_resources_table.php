@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pkp_event_resources', function (Blueprint $table) {
-            $table->id();
+            $table->id('event_resource_id');
+            $table->string('name');
+            $table->integer('type');
+            $table->integer('beneficiary_count');
+            $table->decimal('amount');
+            $table->integer('event_id');
             $table->timestamps();
         });
     }

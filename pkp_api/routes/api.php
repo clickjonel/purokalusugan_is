@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HrhController;
 use App\Http\Controllers\PkpDisaggregationController;
+use App\Http\Controllers\PkpEventResourcesController;
 use App\Http\Controllers\PkpEventsController;
 use App\Http\Controllers\PkpIndicatorController;
 use App\Http\Controllers\PkpIndicatorDisaggregationController;
@@ -198,4 +199,13 @@ Route::group([
     Route::get('/pkpsites/ptotal', [PkpSiteController::class, 'dashboardProvinceTotals']);
     Route::get('/pkpsites/mtotal', [PkpSiteController::class, 'dashboardMunicipalityTotals']);
     Route::get('/pkpsites/btotal', [PkpSiteController::class, 'dashboardBarangayTotals']);
+});
+
+Route::group([
+    'prefix' => 'event/resources',
+    'middleware' => 'auth:sanctum'
+], function () {
+    Route::post('/create', [PkpEventResourcesController::class, 'createEventResource']);
+    Route::get('/list', [PkpEventResourcesController::class, 'getEventResources']);   
+    Route::delete('/delete', [PkpEventResourcesController::class, 'deleteEventResources']);    
 });
