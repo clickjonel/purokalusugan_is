@@ -62,7 +62,7 @@
 <template>
     <div class="w-full h-full flex flex-col justify-start items-start gap-4 p-4 overflow-y-scroll">
 
-        <div class="w-full grid grid-cols-4 gap-4 p-2">
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
             <Card class="w-full">
                 <CardHeader>
                     <CardTitle>
@@ -127,10 +127,10 @@
 
         <div class="w-full flex flex-col justify-start items-start p-2">
             <Select @update:model-value="setSelected">
-                <SelectTrigger class="w-1/3">
+                <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select Program to Show Indicator Data" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent class="w-[300px] md:w-[500px]">
                     <SelectGroup>
                         <SelectLabel>Programs</SelectLabel>
                         <SelectItem v-for="program in dashboardData?.programs" :value="program.program_id">{{ program.program_name }}</SelectItem>
@@ -140,7 +140,7 @@
             <!-- <span class="p-2 text-sm font-medium">Accumulated Data for this month:</span> -->
         </div>
 
-        <div v-if="selectedProgram" class="w-full grid grid-cols-2 gap-2">
+        <div v-if="selectedProgram" class="w-full grid grid-cols-1 md:grid-cols-2 gap-2">
             <Card v-for="indicator in selectedProgram?.indicators" class="w-full">
                 <CardHeader>
                     <CardTitle>
@@ -175,7 +175,7 @@
             </CardHeader>
             <CardContent>
                 <span class="text-7xl font-black p-4">{{ dashboardData?.eventData?.total }}</span>
-                <div class="w-full grid grid-cols-3 gap-4 p-4">
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
 
                     <Card class="w-full">
                         <CardHeader>
@@ -188,7 +188,7 @@
                             <CardDescription>Total Budget Spent on Events</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <span class="text-5xl font-black">{{ dashboardData?.eventData?.total_budget_spent }}</span>
+                            <span class="text-2xl font-black">{{ dashboardData?.eventData?.total_budget_spent }}</span>
                         </CardContent>
                     </Card>
 
@@ -203,7 +203,7 @@
                             <CardDescription> Total Number of Barangay Participants on PK Events</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <span class="text-5xl font-black">{{ dashboardData?.eventData?.total_barangays }}</span>
+                            <span class="text-3xl font-black">{{ dashboardData?.eventData?.total_barangays }}</span>
                         </CardContent>
                     </Card>
 
@@ -218,7 +218,7 @@
                             <CardDescription>Event Breakdown Small Scale vs Large Scale</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <span class="text-5xl font-black">{{ `${dashboardData?.eventData?.total_small_scale} - ${dashboardData?.eventData?.total_large_scale}` }}</span>
+                            <span class="text-3xl font-black">{{ `${dashboardData?.eventData?.total_small_scale} - ${dashboardData?.eventData?.total_large_scale}` }}</span>
                         </CardContent>
                     </Card>
                 </div>
