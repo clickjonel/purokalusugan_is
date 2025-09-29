@@ -13,6 +13,7 @@ class Pkp_event_resources extends Model
         'name',
         'type',
         'beneficiary_count',
-        'amount'
+        'amount',
+        'event_id'
     ];
 }
