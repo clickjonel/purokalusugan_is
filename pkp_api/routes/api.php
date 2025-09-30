@@ -203,9 +203,10 @@ Route::group([
 
 Route::group([
     'prefix' => 'event/resources',
-    'middleware' => 'auth:sanctum'
+    // 'middleware' => 'auth:sanctum'
 ], function () {
     Route::post('/create', [PkpEventResourcesController::class, 'createEventResource']);
     Route::get('/list', [PkpEventResourcesController::class, 'getEventResources']);   
+    Route::get('/find', [PkpEventResourcesController::class, 'getEventResourcesForAnEvent']);   
     Route::delete('/delete', [PkpEventResourcesController::class, 'deleteEventResources']);    
 });

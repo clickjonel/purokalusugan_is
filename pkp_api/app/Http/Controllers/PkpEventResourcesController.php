@@ -8,19 +8,19 @@ use Illuminate\Http\Request;
 
 class PkpEventResourcesController extends Controller
 {
-    public function createEventResource(Request $request):JsonResponse
+    public function createEventResource(Request $request): JsonResponse
     {
-        $validatedData=$request->validate([            
+        $validatedData = $request->validate([
             'name' => 'required|string',
             'type' => 'integer',
-            'beneficiary_count'=>'integer',
-            'amount'=>'numeric',
-            'event_id'=>'integer'
+            'beneficiary_count' => 'integer',
+            'amount' => 'numeric',
+            'event_id' => 'integer'
         ]);
-        $program=Pkp_event_resources::create($validatedData);
-         return response()->json([
+        $program = Pkp_event_resources::create($validatedData);
+        return response()->json([
             'message' => 'Created successfully',
-            'data'=>$program
+            'data' => $program
         ], 201);
     }
     public function getEventResources(): JsonResponse
@@ -31,12 +31,24 @@ class PkpEventResourcesController extends Controller
             'data' => $data
         ], 200);
     }
+
+    public function getEventResourcesForAnEvent(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'event_id' => 'required|integer|exists:pkp_event_resources,event_id',
+        ]);
+        $data = Pkp_event_resources::where('event_id', $validatedData['event_id'])->get();
+        return response()->json([
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ], 200);
+    }
     public function deleteEventResources(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'event_resource_id' => 'required|integer|exists:pkp_event_resources,event_resource_id',            
+            'event_resource_id' => 'required|integer|exists:pkp_event_resources,event_resource_id',
         ]);
-        Pkp_event_resources::findOrFail($validatedData['event_resource_id'])->delete();        
+        Pkp_event_resources::findOrFail($validatedData['event_resource_id'])->delete();
         return response()->json([
             'message' => 'Deleted successfully'
         ], 200);

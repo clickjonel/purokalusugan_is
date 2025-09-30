@@ -99,11 +99,19 @@ interface ProvinceObject {
     province_id: number,
     province_name: string
 }
+interface EventResourcesObject{
+    event_resources_id: number,
+    name:string,
+    type:number,
+    beneficiary_count: number,
+    amount:number
+}
 const eventData = ref<EventData | null>(null);
 const printRef = ref<HTMLElement | null>(null);
 const eventValues = ref<EventValueItem[]>([]);
 const municipality = ref<MunicipalityObject | null>(null);
 const province = ref<ProvinceObject | null>(null);
+const event_resources = ref<EventResourcesObject[]>([]);
 
 const printPage = (): void => {
     document.body.classList.add('print-root');
@@ -304,6 +312,31 @@ function getProvince(provinceId: number) {
             console.error("Error fetching province", error);
         })
 }
+
+function getEventResources(event_id:number){
+    axios.get(`/event/resources/find`, {
+        params: {
+            event_id: event_id
+        }
+    })
+        .then((response) => {
+            event_resources.value = response.data.data;
+            console.log("event resources here", event_resources.value)
+        })
+        .catch((error) => {
+            console.error("Error fetching data", error);
+        })
+}
+
+function displayEventResourceType(type:number){
+    let result = "";
+    switch(type){
+        case 1: result = "Drug";break;
+        case 2: result = "Logistic";break;
+        default: break;
+    }
+    return result;
+}
 const individualsServedData = computed(() => {
     return generateIndividualServedPerPKSiteData(eventValues.value);
 });
@@ -327,6 +360,7 @@ onMounted(() => {
                     if (eventData.value) {
                         getMunicipality(eventData.value.event.barangays[0].municipality_id);
                         getProvince(eventData.value.event.barangays[0].province_id);
+                        getEventResources(eventData.value.event.event_id);
                     }
                 })
                 .catch((error) => {
@@ -336,6 +370,7 @@ onMounted(() => {
         }
     }
 });
+
 
 
 </script>
@@ -519,14 +554,18 @@ onMounted(() => {
             <table class="w-full">
                 <thead>
                     <tr>
-                        <th class='border-b border-r text-xs'>Type of Logistics or Drugs Provided</th>
-                        <th class='border-b border-r text-xs'>Number of Beneficiaries</th>
-                        <th class='border-b border-r text-xs'>Amount if applicable</th>
+                        <th class='border-b border-r text-xs'>Item</th>
+                        <th class='border-b border-r text-xs'>Type</th>
+                        <th class='border-b border-r text-xs'>Beneficiary Count</th>
+                        <th class='border-b border-r text-xs'>Amount</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td colspan='3' class="text-center">---No Data available at the moment---</td>
+                    <tr v-for="(item, index) in event_resources" :key="index">
+                        <td class='border-b border-r p-2 text-xs'>{{ item.name }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ displayEventResourceType(item.type) }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.beneficiary_count }}</td>
+                        <td class='border-b border-r p-2 text-center text-xs'>{{ item.amount }}</td>
                     </tr>
                 </tbody>
             </table>
