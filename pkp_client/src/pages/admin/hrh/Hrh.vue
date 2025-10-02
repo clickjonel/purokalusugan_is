@@ -125,7 +125,7 @@ function confirmDeactivateHrh(id:number){
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <!-- <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button> -->
+            <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button>
         </div>
 
         <!-- table -->
