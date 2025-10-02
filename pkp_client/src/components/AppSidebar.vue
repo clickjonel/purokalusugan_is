@@ -68,11 +68,11 @@ const items = [
     url: "/admin/sites",
     icon: Map,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   url: "#",
+  //   icon: Settings,
+  // },
 ];
 
 const route = useRoute()
