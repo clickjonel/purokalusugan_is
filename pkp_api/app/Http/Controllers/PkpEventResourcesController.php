@@ -13,7 +13,7 @@ class PkpEventResourcesController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string',
             'type' => 'integer',
-            'beneficiary_count' => 'integer',
+            'beneficiary_count' => 'numeric',
             'amount' => 'numeric',
             'event_id' => 'integer'
         ]);

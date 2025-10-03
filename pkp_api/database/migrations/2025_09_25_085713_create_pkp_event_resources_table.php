@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('event_resource_id');
             $table->string('name');
             $table->integer('type');
-            $table->integer('beneficiary_count');
+            $table->decimal('beneficiary_count');
             $table->decimal('amount');
             $table->integer('event_id');
             $table->timestamps();

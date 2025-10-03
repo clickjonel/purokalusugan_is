@@ -337,6 +337,10 @@ function displayEventResourceType(type:number){
     }
     return result;
 }
+function displayTotalBeneficiaryCount(event_resources:any){
+    console.log('event resource',event_resources.value)
+    // const totalBeneficiaries = event_resources.value.reduce()
+}
 const individualsServedData = computed(() => {
     return generateIndividualServedPerPKSiteData(eventValues.value);
 });
@@ -568,6 +572,13 @@ onMounted(() => {
                         <td class='border-b border-r p-2 text-center text-xs'>{{ item.amount }}</td>
                     </tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Total</td>
+                        <td>{{ displayTotalBeneficiaryCount(event_resources) }}</td>
+                        <td>x</td>
+                    </tr>
+                </tfoot>
             </table>
         </section>
 
