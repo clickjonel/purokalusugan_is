@@ -125,7 +125,7 @@ function confirmDeactivateHrh(id:number){
                     <Search class="size-4 text-muted-foreground" />
                 </span>
             </div>
-            <!-- <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button> -->
+            <Button @click="isCreateHrhModalOpen = true" variant="default" class="cursor-pointer" size="sm">Create Hrh</Button>
         </div>
 
         <!-- table -->
@@ -183,9 +183,9 @@ function confirmDeactivateHrh(id:number){
         </div>
 
         <!-- footer -->
-        <div class="w-full h-[50px] flex justify-center items-center border p-2">
+        <!-- <div class="w-full h-[50px] flex justify-center items-center border p-2">
             <span>Pagination Here</span>
-        </div>
+        </div> -->
     </div>
 
     <Dialog v-model:open="isCreateHrhModalOpen">
